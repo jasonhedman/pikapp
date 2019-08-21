@@ -1,0 +1,374 @@
+===============================================================================
+EXTENSION NAME : linecount
+EXTENSION VERSION : 0.1.7
+-------------------------------------------------------------------------------
+count time : 2019-08-17 18:39:42
+count workspace : /Users/jasonhedman/Documents/pikapp
+total files : 175
+total code lines : 39352
+total comment lines : 252
+total blank lines : 639
+
+.com.greenworldsoft.syncfolderspro, code is 0, comment is 0, blank is 0.
+.expo-shared/assets.json, code is 24, comment is 0, blank is 0.
+.expo/packager-info.json, code is 10, comment is 0, blank is 0.
+.expo/settings.json, code is 7, comment is 0, blank is 0.
+.firebaserc, code is 5, comment is 0, blank is 0.
+.gitignore, code is 2, comment is 9, blank is 0.
+.watchmanconfig, code is 1, comment is 0, blank is 0.
+__tests__/__snapshots__/App-test.js.snap, code is 19, comment is 1, blank is 2.
+__tests__/App-test.js, code is 22, comment is 0, blank is 7.
+_DelSyncFiles/.expo/packager-info.json, code is 10, comment is 0, blank is 0.
+_DelSyncFiles/.expo/settings.json, code is 7, comment is 0, blank is 0.
+_DelSyncFiles/App 3.js, code is 82, comment is 16, blank is 8.
+_DelSyncFiles/App.js, code is 67, comment is 13, blank is 7.
+_DelSyncFiles/navigation/AppNavigator 3.js, code is 17, comment is 2, blank is 2.
+_DelSyncFiles/navigation/MainTabNavigator 3.js, code is 64, comment is 0, blank is 14.
+_DelSyncFiles/package 2.json, code is 40, comment is 0, blank is 0.
+_DelSyncFiles/package.json, code is 45, comment is 0, blank is 1.
+_DelSyncFiles/screens/Profile.js, code is 249, comment is 117, blank is 11.
+_DelSyncFiles/screens/Register 2.js, code is 344, comment is 3, blank is 21.
+_DelSyncFiles/screens/SettingsScreen 2.js, code is 22, comment is 7, blank is 2.
+_DelSyncFiles/screens/SignIn.js, code is 170, comment is 0, blank is 12.
+App.js, code is 96, comment is 14, blank is 10.
+app.json, code is 32, comment is 0, blank is 2.
+assets/font/argon.json, code is 1, comment is 0, blank is 0.
+assets/font/argon.ttf, it is a binary file.
+assets/fonts/OFL.txt, code is 77, comment is 1, blank is 18.
+assets/fonts/OpenSans-Bold.ttf, it is a binary file.
+assets/fonts/OpenSans-BoldItalic.ttf, it is a binary file.
+assets/fonts/OpenSans-ExtraBold.ttf, it is a binary file.
+assets/fonts/OpenSans-ExtraBoldItalic.ttf, it is a binary file.
+assets/fonts/OpenSans-Light.ttf, it is a binary file.
+assets/fonts/OpenSans-LightItalic.ttf, it is a binary file.
+assets/fonts/OpenSans-Regular.ttf, it is a binary file.
+assets/fonts/OpenSans-RegularItalic.ttf, it is a binary file.
+assets/fonts/OpenSans-SemiBold.ttf, it is a binary file.
+assets/fonts/OpenSans-SemiBoldItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Black.ttf, it is a binary file.
+assets/fonts/Raleway-BlackItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Bold.ttf, it is a binary file.
+assets/fonts/Raleway-BoldItalic.ttf, it is a binary file.
+assets/fonts/Raleway-ExtraBold.ttf, it is a binary file.
+assets/fonts/Raleway-ExtraBoldItalic.ttf, it is a binary file.
+assets/fonts/Raleway-ExtraLight.ttf, it is a binary file.
+assets/fonts/Raleway-ExtraLightItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Light.ttf, it is a binary file.
+assets/fonts/Raleway-LightItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Medium.ttf, it is a binary file.
+assets/fonts/Raleway-MediumItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Regular.ttf, it is a binary file.
+assets/fonts/Raleway-RegularItalic.ttf, it is a binary file.
+assets/fonts/Raleway-SemiBold.ttf, it is a binary file.
+assets/fonts/Raleway-SemiBoldItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Thin.ttf, it is a binary file.
+assets/fonts/Raleway-ThinItalic.ttf, it is a binary file.
+assets/fonts/SpaceMono-Regular.ttf, it is a binary file.
+assets/icon.png, it is a binary file.
+assets/images/bball_map.png, it is a binary file.
+assets/images/defaultUser.jpg, it is a binary file.
+assets/images/fball_map.png, it is a binary file.
+assets/images/fullLogo.png, it is a binary file.
+assets/images/icon.png, it is a binary file.
+assets/images/icon1.png, it is a binary file.
+assets/images/letterLogo.png, it is a binary file.
+assets/images/robot-dev.png, it is a binary file.
+assets/images/robot-prod.png, it is a binary file.
+assets/images/sball_map.png, it is a binary file.
+assets/images/splash.png, it is a binary file.
+assets/images/userLocation.png, it is a binary file.
+assets/imgs/android.png, it is a binary file.
+assets/imgs/argon-logo-onboarding.png, it is a binary file.
+assets/imgs/argon-logo-onboarding@2x.png, it is a binary file.
+assets/imgs/argon-logo.png, it is a binary file.
+assets/imgs/argon-logo@2x.png, it is a binary file.
+assets/imgs/argonlogo.png, it is a binary file.
+assets/imgs/bg.png, it is a binary file.
+assets/imgs/getPro-bg.png, it is a binary file.
+assets/imgs/getPro-bg@2x.png, it is a binary file.
+assets/imgs/icon.png, it is a binary file.
+assets/imgs/ios.png, it is a binary file.
+assets/imgs/profile-screen-bg.png, it is a binary file.
+assets/imgs/register-bg.png, it is a binary file.
+assets/imgs/splash.png, it is a binary file.
+assets/nucleo icons/svg/bag-17.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/basket.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/bell.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/calendar-date.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/chart-pie-35.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/diamond.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/engine-start.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/g-check.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/hat-3.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/ic_mail_24px.svg, code is 5, comment is 0, blank is 0.
+assets/nucleo icons/svg/map-big.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/menu-8.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/nav-down.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/nav-left.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/nav-right.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/padlock-unlocked.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/palette.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/search-zoom-in.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/shop.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/spaceship.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/support.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/switches.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/ungroup.svg, code is 1, comment is 0, blank is 0.
+assets/splash.png, it is a binary file.
+babel.config.js, code is 6, comment is 0, blank is 0.
+components/__tests__/__snapshots__/StyledText-test.js.snap, code is 14, comment is 1, blank is 1.
+components/__tests__/StyledText-test.js, code is 7, comment is 0, blank is 3.
+components/AgeAndIntensity.js, code is 184, comment is 0, blank is 13.
+components/Button.js, code is 49, comment is 0, blank is 8.
+components/Card.js, code is 89, comment is 1, blank is 8.
+components/DrawerItem.js, code is 115, comment is 0, blank is 8.
+components/EditProfile.js, code is 275, comment is 1, blank is 23.
+components/EmailAndPassword.js, code is 204, comment is 0, blank is 16.
+components/fonts/SpaceMono-Regular.ttf, it is a binary file.
+components/GameForm.js, code is 170, comment is 0, blank is 12.
+components/GameResult.js, code is 81, comment is 0, blank is 9.
+components/Header.js, code is 264, comment is 0, blank is 15.
+components/Icon.js, code is 31, comment is 0, blank is 6.
+components/images/icon.png, it is a binary file.
+components/images/robot-dev.png, it is a binary file.
+components/images/robot-prod.png, it is a binary file.
+components/images/splash.png, it is a binary file.
+components/index.js, code is 18, comment is 0, blank is 1.
+components/Input.js, code is 67, comment is 0, blank is 9.
+components/LoadingOverlay.js, code is 15, comment is 0, blank is 3.
+components/LobbyMember.js, code is 104, comment is 0, blank is 9.
+components/LobbyModal.js, code is 83, comment is 0, blank is 8.
+components/MemberLobbyStatus.js, code is 28, comment is 0, blank is 3.
+components/NameAndUsername.js, code is 241, comment is 0, blank is 15.
+components/Notification.js, code is 26, comment is 0, blank is 6.
+components/OwnerLobbyButton.js, code is 27, comment is 0, blank is 3.
+components/ScoreForm.js, code is 321, comment is 0, blank is 12.
+components/Select.js, code is 88, comment is 0, blank is 10.
+components/SportInfo.js, code is 58, comment is 0, blank is 6.
+components/SportsTabs.js, code is 58, comment is 0, blank is 5.
+components/StyledText.js, code is 7, comment is 0, blank is 1.
+components/Switch.js, code is 20, comment is 0, blank is 4.
+components/TabBarIcon.js, code is 13, comment is 0, blank is 2.
+components/Tabs.js, code is 136, comment is 2, blank is 21.
+components/TeamMember.js, code is 71, comment is 0, blank is 8.
+components/UserInfo.js, code is 202, comment is 0, blank is 16.
+constants/articles.js, code is 29, comment is 0, blank is 0.
+constants/Colors.js, code is 13, comment is 0, blank is 1.
+constants/Images.js, code is 35, comment is 2, blank is 4.
+constants/index.js, code is 10, comment is 0, blank is 1.
+constants/Layout.js, code is 10, comment is 0, blank is 2.
+constants/tabs.js, code is 8, comment is 0, blank is 0.
+constants/Theme.js, code is 31, comment is 3, blank is 0.
+constants/utils.js, code is 5, comment is 0, blank is 1.
+firebase.json, code is 6, comment is 0, blank is 1.
+functions/.eslintrc.json, code is 47, comment is 39, blank is 37.
+functions/.gitignore, code is 1, comment is 0, blank is 0.
+functions/index.js, code is 46, comment is 6, blank is 3.
+functions/package-lock.json, code is 2717, comment is 0, blank is 0.
+functions/package.json, code is 26, comment is 0, blank is 0.
+navigation/AppNavigator.js, code is 19, comment is 2, blank is 3.
+navigation/AppNavigator.web.js, code is 8, comment is 2, blank is 3.
+navigation/MainTabNavigator.js, code is 122, comment is 0, blank is 22.
+package-lock 2.json, code is 13864, comment is 0, blank is 0.
+package-lock.json, code is 15647, comment is 0, blank is 0.
+package.json, code is 60, comment is 0, blank is 1.
+screens/AuthLoading.js, code is 32, comment is 0, blank is 5.
+screens/ChangeEmail.js, code is 165, comment is 0, blank is 16.
+screens/ChangePassword.js, code is 154, comment is 0, blank is 15.
+screens/ForgotPassword.js, code is 91, comment is 0, blank is 13.
+screens/GameLobby.js, code is 265, comment is 0, blank is 16.
+screens/HomeScreen.js, code is 181, comment is 0, blank is 17.
+screens/MapScreen.js, code is 472, comment is 1, blank is 19.
+screens/Profile.js, code is 253, comment is 0, blank is 19.
+screens/Register.js, code is 214, comment is 2, blank is 24.
+screens/SearchPlayers.js, code is 142, comment is 0, blank is 17.
+screens/SettingsScreen.js, code is 22, comment is 7, blank is 2.
+screens/SignIn.js, code is 145, comment is 0, blank is 16.
+===============================================================================
+===============================================================================
+EXTENSION NAME : linecount
+EXTENSION VERSION : 0.1.7
+-------------------------------------------------------------------------------
+count time : 2019-08-17 18:43:49
+count workspace : /Users/jasonhedman/Documents/pikapp
+total files : 175
+total code lines : 39352
+total comment lines : 252
+total blank lines : 639
+
+.com.greenworldsoft.syncfolderspro, code is 0, comment is 0, blank is 0.
+.expo-shared/assets.json, code is 24, comment is 0, blank is 0.
+.expo/packager-info.json, code is 10, comment is 0, blank is 0.
+.expo/settings.json, code is 7, comment is 0, blank is 0.
+.firebaserc, code is 5, comment is 0, blank is 0.
+.gitignore, code is 2, comment is 9, blank is 0.
+.watchmanconfig, code is 1, comment is 0, blank is 0.
+__tests__/__snapshots__/App-test.js.snap, code is 19, comment is 1, blank is 2.
+__tests__/App-test.js, code is 22, comment is 0, blank is 7.
+_DelSyncFiles/.expo/packager-info.json, code is 10, comment is 0, blank is 0.
+_DelSyncFiles/.expo/settings.json, code is 7, comment is 0, blank is 0.
+_DelSyncFiles/App 3.js, code is 82, comment is 16, blank is 8.
+_DelSyncFiles/App.js, code is 67, comment is 13, blank is 7.
+_DelSyncFiles/navigation/AppNavigator 3.js, code is 17, comment is 2, blank is 2.
+_DelSyncFiles/navigation/MainTabNavigator 3.js, code is 64, comment is 0, blank is 14.
+_DelSyncFiles/package 2.json, code is 40, comment is 0, blank is 0.
+_DelSyncFiles/package.json, code is 45, comment is 0, blank is 1.
+_DelSyncFiles/screens/Profile.js, code is 249, comment is 117, blank is 11.
+_DelSyncFiles/screens/Register 2.js, code is 344, comment is 3, blank is 21.
+_DelSyncFiles/screens/SettingsScreen 2.js, code is 22, comment is 7, blank is 2.
+_DelSyncFiles/screens/SignIn.js, code is 170, comment is 0, blank is 12.
+App.js, code is 96, comment is 14, blank is 10.
+app.json, code is 32, comment is 0, blank is 2.
+assets/font/argon.json, code is 1, comment is 0, blank is 0.
+assets/font/argon.ttf, it is a binary file.
+assets/fonts/OFL.txt, code is 77, comment is 1, blank is 18.
+assets/fonts/OpenSans-Bold.ttf, it is a binary file.
+assets/fonts/OpenSans-BoldItalic.ttf, it is a binary file.
+assets/fonts/OpenSans-ExtraBold.ttf, it is a binary file.
+assets/fonts/OpenSans-ExtraBoldItalic.ttf, it is a binary file.
+assets/fonts/OpenSans-Light.ttf, it is a binary file.
+assets/fonts/OpenSans-LightItalic.ttf, it is a binary file.
+assets/fonts/OpenSans-Regular.ttf, it is a binary file.
+assets/fonts/OpenSans-RegularItalic.ttf, it is a binary file.
+assets/fonts/OpenSans-SemiBold.ttf, it is a binary file.
+assets/fonts/OpenSans-SemiBoldItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Black.ttf, it is a binary file.
+assets/fonts/Raleway-BlackItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Bold.ttf, it is a binary file.
+assets/fonts/Raleway-BoldItalic.ttf, it is a binary file.
+assets/fonts/Raleway-ExtraBold.ttf, it is a binary file.
+assets/fonts/Raleway-ExtraBoldItalic.ttf, it is a binary file.
+assets/fonts/Raleway-ExtraLight.ttf, it is a binary file.
+assets/fonts/Raleway-ExtraLightItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Light.ttf, it is a binary file.
+assets/fonts/Raleway-LightItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Medium.ttf, it is a binary file.
+assets/fonts/Raleway-MediumItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Regular.ttf, it is a binary file.
+assets/fonts/Raleway-RegularItalic.ttf, it is a binary file.
+assets/fonts/Raleway-SemiBold.ttf, it is a binary file.
+assets/fonts/Raleway-SemiBoldItalic.ttf, it is a binary file.
+assets/fonts/Raleway-Thin.ttf, it is a binary file.
+assets/fonts/Raleway-ThinItalic.ttf, it is a binary file.
+assets/fonts/SpaceMono-Regular.ttf, it is a binary file.
+assets/icon.png, it is a binary file.
+assets/images/bball_map.png, it is a binary file.
+assets/images/defaultUser.jpg, it is a binary file.
+assets/images/fball_map.png, it is a binary file.
+assets/images/fullLogo.png, it is a binary file.
+assets/images/icon.png, it is a binary file.
+assets/images/icon1.png, it is a binary file.
+assets/images/letterLogo.png, it is a binary file.
+assets/images/robot-dev.png, it is a binary file.
+assets/images/robot-prod.png, it is a binary file.
+assets/images/sball_map.png, it is a binary file.
+assets/images/splash.png, it is a binary file.
+assets/images/userLocation.png, it is a binary file.
+assets/imgs/android.png, it is a binary file.
+assets/imgs/argon-logo-onboarding.png, it is a binary file.
+assets/imgs/argon-logo-onboarding@2x.png, it is a binary file.
+assets/imgs/argon-logo.png, it is a binary file.
+assets/imgs/argon-logo@2x.png, it is a binary file.
+assets/imgs/argonlogo.png, it is a binary file.
+assets/imgs/bg.png, it is a binary file.
+assets/imgs/getPro-bg.png, it is a binary file.
+assets/imgs/getPro-bg@2x.png, it is a binary file.
+assets/imgs/icon.png, it is a binary file.
+assets/imgs/ios.png, it is a binary file.
+assets/imgs/profile-screen-bg.png, it is a binary file.
+assets/imgs/register-bg.png, it is a binary file.
+assets/imgs/splash.png, it is a binary file.
+assets/nucleo icons/svg/bag-17.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/basket.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/bell.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/calendar-date.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/chart-pie-35.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/diamond.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/engine-start.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/g-check.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/hat-3.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/ic_mail_24px.svg, code is 5, comment is 0, blank is 0.
+assets/nucleo icons/svg/map-big.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/menu-8.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/nav-down.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/nav-left.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/nav-right.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/padlock-unlocked.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/palette.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/search-zoom-in.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/shop.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/spaceship.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/support.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/switches.svg, code is 1, comment is 0, blank is 0.
+assets/nucleo icons/svg/ungroup.svg, code is 1, comment is 0, blank is 0.
+assets/splash.png, it is a binary file.
+babel.config.js, code is 6, comment is 0, blank is 0.
+components/__tests__/__snapshots__/StyledText-test.js.snap, code is 14, comment is 1, blank is 1.
+components/__tests__/StyledText-test.js, code is 7, comment is 0, blank is 3.
+components/AgeAndIntensity.js, code is 184, comment is 0, blank is 13.
+components/Button.js, code is 49, comment is 0, blank is 8.
+components/Card.js, code is 89, comment is 1, blank is 8.
+components/DrawerItem.js, code is 115, comment is 0, blank is 8.
+components/EditProfile.js, code is 275, comment is 1, blank is 23.
+components/EmailAndPassword.js, code is 204, comment is 0, blank is 16.
+components/fonts/SpaceMono-Regular.ttf, it is a binary file.
+components/GameForm.js, code is 170, comment is 0, blank is 12.
+components/GameResult.js, code is 81, comment is 0, blank is 9.
+components/Header.js, code is 264, comment is 0, blank is 15.
+components/Icon.js, code is 31, comment is 0, blank is 6.
+components/images/icon.png, it is a binary file.
+components/images/robot-dev.png, it is a binary file.
+components/images/robot-prod.png, it is a binary file.
+components/images/splash.png, it is a binary file.
+components/index.js, code is 18, comment is 0, blank is 1.
+components/Input.js, code is 67, comment is 0, blank is 9.
+components/LoadingOverlay.js, code is 15, comment is 0, blank is 3.
+components/LobbyMember.js, code is 104, comment is 0, blank is 9.
+components/LobbyModal.js, code is 83, comment is 0, blank is 8.
+components/MemberLobbyStatus.js, code is 28, comment is 0, blank is 3.
+components/NameAndUsername.js, code is 241, comment is 0, blank is 15.
+components/Notification.js, code is 26, comment is 0, blank is 6.
+components/OwnerLobbyButton.js, code is 27, comment is 0, blank is 3.
+components/ScoreForm.js, code is 321, comment is 0, blank is 12.
+components/Select.js, code is 88, comment is 0, blank is 10.
+components/SportInfo.js, code is 58, comment is 0, blank is 6.
+components/SportsTabs.js, code is 58, comment is 0, blank is 5.
+components/StyledText.js, code is 7, comment is 0, blank is 1.
+components/Switch.js, code is 20, comment is 0, blank is 4.
+components/TabBarIcon.js, code is 13, comment is 0, blank is 2.
+components/Tabs.js, code is 136, comment is 2, blank is 21.
+components/TeamMember.js, code is 71, comment is 0, blank is 8.
+components/UserInfo.js, code is 202, comment is 0, blank is 16.
+constants/articles.js, code is 29, comment is 0, blank is 0.
+constants/Colors.js, code is 13, comment is 0, blank is 1.
+constants/Images.js, code is 35, comment is 2, blank is 4.
+constants/index.js, code is 10, comment is 0, blank is 1.
+constants/Layout.js, code is 10, comment is 0, blank is 2.
+constants/tabs.js, code is 8, comment is 0, blank is 0.
+constants/Theme.js, code is 31, comment is 3, blank is 0.
+constants/utils.js, code is 5, comment is 0, blank is 1.
+firebase.json, code is 6, comment is 0, blank is 1.
+functions/.eslintrc.json, code is 47, comment is 39, blank is 37.
+functions/.gitignore, code is 1, comment is 0, blank is 0.
+functions/index.js, code is 46, comment is 6, blank is 3.
+functions/package-lock.json, code is 2717, comment is 0, blank is 0.
+functions/package.json, code is 26, comment is 0, blank is 0.
+navigation/AppNavigator.js, code is 19, comment is 2, blank is 3.
+navigation/AppNavigator.web.js, code is 8, comment is 2, blank is 3.
+navigation/MainTabNavigator.js, code is 122, comment is 0, blank is 22.
+package-lock 2.json, code is 13864, comment is 0, blank is 0.
+package-lock.json, code is 15647, comment is 0, blank is 0.
+package.json, code is 60, comment is 0, blank is 1.
+screens/AuthLoading.js, code is 32, comment is 0, blank is 5.
+screens/ChangeEmail.js, code is 165, comment is 0, blank is 16.
+screens/ChangePassword.js, code is 154, comment is 0, blank is 15.
+screens/ForgotPassword.js, code is 91, comment is 0, blank is 13.
+screens/GameLobby.js, code is 265, comment is 0, blank is 16.
+screens/HomeScreen.js, code is 181, comment is 0, blank is 17.
+screens/MapScreen.js, code is 472, comment is 1, blank is 19.
+screens/Profile.js, code is 253, comment is 0, blank is 19.
+screens/Register.js, code is 214, comment is 2, blank is 24.
+screens/SearchPlayers.js, code is 142, comment is 0, blank is 17.
+screens/SettingsScreen.js, code is 22, comment is 7, blank is 2.
+screens/SignIn.js, code is 145, comment is 0, blank is 16.
+===============================================================================
