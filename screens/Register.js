@@ -80,6 +80,7 @@ class Register extends React.Component {
           gameHistory: [],
           wins: 0,
           losses: 0,
+          points:0,
           email: this.state.email,
           sports:{
             basketball: {
@@ -100,8 +101,21 @@ class Register extends React.Component {
               ptsFor: 0,
               ptsAgainst:0
             },
+            volleyball: {
+              wins:0,
+              losses:0,
+              ptsFor: 0,
+              ptsAgainst:0
+            },
+            soccer: {
+              wins:0,
+              losses:0,
+              ptsFor: 0,
+              ptsAgainst:0
+            },
           },
           friendsList:[],
+          followers:[]
         })
         .then(() => {
           uploadImageAsync(this.state.image, cred)

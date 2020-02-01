@@ -5,10 +5,13 @@ import React, { useState } from 'react';
 import { Platform, StatusBar, StyleSheet, View, SafeAreaView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as firebase from 'firebase';
+import 'firebase/firestore';
+
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import * as Permissions from 'expo-permissions';
 
 import AppNavigator from './navigation/AppNavigator';
+import { user } from 'firebase-functions/lib/providers/auth';
 
 
 const {height,width} = Dimensions.get('window')
@@ -61,6 +64,55 @@ export default class App extends React.Component {
     };
     firebase.initializeApp(firebaseConfig);
   }
+
+  // componentDidMount(){
+  //   firebase.firestore().collection('users').get()
+  //     .then((users) => {
+  //       users.forEach((user) => {
+  //         firebase.firestore().collection('users').doc(user.id).update({
+  //           gameHistory: [],
+  //           wins: 0,
+  //           losses: 0,
+  //           sports:{
+  //             basketball: {
+  //               wins:0,
+  //               losses:0,
+  //               ptsFor: 0,
+  //               ptsAgainst:0
+  //             },
+  //             football: {
+  //               wins:0,
+  //               losses:0,
+  //               ptsFor: 0,
+  //               ptsAgainst:0
+  //             },
+  //             spikeball: {
+  //               wins:0,
+  //               losses:0,
+  //               ptsFor: 0,
+  //               ptsAgainst:0
+  //             },
+  //             volleyball: {
+  //               wins:0,
+  //               losses:0,
+  //               ptsFor: 0,
+  //               ptsAgainst:0
+  //             },
+  //             soccer: {
+  //               wins:0,
+  //               losses:0,
+  //               ptsFor: 0,
+  //               ptsAgainst:0
+  //             },
+  //           },
+  //           friendsList:[],
+  //           followers:[],
+  //           points:0
+  //         })
+  //       })
+  //     })
+  // }
+  
   render(){
     if (!this.state.isLoadingComplete) {
       return (
@@ -94,7 +146,7 @@ async function loadResourcesAsync() {
       ...Ionicons.font,
       // We include SpaceMono because we use it in HomeScreen.js. Feel free to
       // remove this if you are not using it in your app
-      'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
+      'space-mono': require('./assets/fonts/Lato-Light.ttf'),
       'open-sans-regular': require('./assets/fonts/OpenSans-Regular.ttf'),
       'raleway': require('./assets/fonts/Raleway-Regular.ttf')
     }),

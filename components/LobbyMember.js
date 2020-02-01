@@ -1,7 +1,8 @@
 import React from 'react';
 import {
   StyleSheet,
-  Dimensions
+  Dimensions,
+  TouchableOpacity
 } from 'react-native';
 import {
   Block,
@@ -44,27 +45,35 @@ class LobbyMember extends React.Component{
   render(){
     if(this.state.complete != false){
       return (
-        <Block column style={styles.container}>
-          <Block flex row middle center>
-            {
-              this.state.proPicUrl != null
-              ? <Avatar.Image
-                  source={{ uri: this.state.proPicUrl }}
-                  size={height*.045}
-                />
-              : <Avatar.Image
-                  source={defaultUser}
-                  size={height*.045}
-                />
+        <TouchableOpacity
+          onPress={() => {
+            if(this.props.user.id == firebase.auth().currentUser.uid){
+              this.props.navToProfile();
+            } else {
+              this.props.navToUserProfile(this.props.user.id)
             }
-            <Block flex column style={{marginLeft:height*.01}}>
-              <Text style={{color:"#FFF"}}>{this.state.user.name}</Text>
-              <Text style={{color:"#FFF"}}>@{this.state.user.username}</Text>
-              <Text style={{color:"#FFF"}}>{`Age: ${moment().diff(moment.unix(parseInt(this.props.user.dob.seconds)),'years',false)}`}</Text>
+          }}
+        >
+            <Block row middle center style={styles.container}>
+              {
+                this.state.proPicUrl != null
+                ? <Avatar.Image
+                    source={{ uri: this.state.proPicUrl }}
+                    size={height*.045}
+                  />
+                : <Avatar.Image
+                    source={defaultUser}
+                    size={height*.045}
+                  />
+              }
+              <Block flex column style={{marginLeft:height*.01}}>
+                <Text style={{color:"#FFF"}}>{this.state.user.name}</Text>
+                <Text style={{color:"#FFF"}}>@{this.state.user.username}</Text>
+                <Text style={{color:"#FFF"}}>{`Age: ${moment().diff(moment.unix(parseInt(this.props.user.dob.seconds)),'years',false)}`}</Text>
+              </Block>
+              <Text style={{color:"#FFF"}}>{this.state.user.record}</Text>
             </Block>
-            <Text style={{color:"#FFF"}}>{this.state.user.record}</Text>
-          </Block>
-        </Block>
+        </TouchableOpacity>
       );
     } else {
       return (
@@ -81,9 +90,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     borderColor: '#E68A54',
-    padding:height*.005,
+    padding:5,
     paddingRight:height*.01,
-    height: height* .085,
+    // height: height* .085,
     marginBottom: height*.01,
     width: width*.8
   },
@@ -91,9 +100,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     borderColor: '#FFF',
-    padding:height*.005,
+    padding:15,
     paddingRight:height*.01,
-    height: height* .075,
+    //height: height* .075,
     marginBottom: height*.01,
     width: width*.8
   },

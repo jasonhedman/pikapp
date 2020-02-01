@@ -5,7 +5,8 @@ import {
 } from 'galio-framework';
 
 import {
-  StyleSheet
+  StyleSheet,
+  TouchableOpacity
 } from 'react-native';
 
 import * as firebase from 'firebase';
@@ -39,10 +40,12 @@ class GameResult extends React.Component {
               {
                 this.state.home.map((player, index) => {
                   return (
-                    <Block column style={player.id==this.state.userId ? this.styles.currentUser : this.styles.otherUser} key={index}>
-                      <Text style={{color:"white"}}>{player.name}</Text>
-                      <Text style={{color:"white"}}>@{player.username}</Text>
-                    </Block>
+                    <TouchableOpacity onPress={() => this.props.navToUserProfile(player.id)}>
+                      <Block column style={player.id==this.state.userId ? this.styles.currentUser : this.styles.otherUser} key={index}>
+                        <Text style={{color:"white"}}>{player.name}</Text>
+                        <Text style={{color:"white"}}>@{player.username}</Text>
+                      </Block>
+                    </TouchableOpacity>
                   )
                 })
               }
@@ -55,10 +58,12 @@ class GameResult extends React.Component {
               {
                 this.state.away.map((player, index) => {
                   return (
-                    <Block column style={player.id==this.state.userId ? this.styles.currentUser : this.styles.otherUser} key={index}>
-                      <Text style={{color:"white"}}>{player.name}</Text>
-                      <Text style={{color:"white"}}>@{player.username}</Text>
-                    </Block>
+                    <TouchableOpacity onPress={() => this.props.navToUserProfile(player.id)}>
+                      <Block column style={player.id==this.state.userId ? this.styles.currentUser : this.styles.otherUser} key={index}>
+                        <Text style={{color:"white"}}>{player.name}</Text>
+                        <Text style={{color:"white"}}>@{player.username}</Text>
+                      </Block>
+                    </TouchableOpacity>
                   )
                 })
               }

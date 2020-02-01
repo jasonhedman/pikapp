@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions,Keyboard,TouchableWithoutFeedback,ScrollView,TouchableHighlight} from 'react-native';
+import {Dimensions,Keyboard,TouchableWithoutFeedback,ScrollView,TouchableOpacity} from 'react-native';
 import {Block} from 'galio-framework';
 
 import {withTheme, TextInput, Text, Headline, Subheading} from 'react-native-paper'
@@ -39,17 +39,16 @@ class SearchPlayers extends React.Component {
                         userArray.push(userData);
                     } else {
                         this.setState({user:user.data()}, () => {
-                            firebase.firestore().collection('notifications').where('date', '==', new Date().toDateString()).orderBy('time','desc').get()
-                                .then((notifications) => {
-                                    let notificationsList = new Array();
-                                    notifications.forEach((notification) => {
-                                        notificationsList.push(notification.data());
-                                    })
-                                    notificationsList = notificationsList.filter((notification) => {
-                                        return this.state.user.friendsList.includes(notification.userId)
-                                    })
-                                    this.setState({notifications:notificationsList});
+                            firebase.firestore().collection('notifications').where('date', '==', new Date().toDateString()).orderBy('time','desc').onSnapshot((notifications) => {
+                                let notificationsList = new Array();
+                                notifications.forEach((notification) => {
+                                    notificationsList.push(notification.data());
                                 })
+                                notificationsList = notificationsList.filter((notification) => {
+                                    return this.state.user.friendsList.includes(notification.userId)
+                                })
+                                this.setState({notifications:notificationsList});
+                            })
                         })
                     }
                 });
@@ -83,20 +82,18 @@ class SearchPlayers extends React.Component {
         this.props.navigation.navigate('MapScreen',{marker});
     }
 
+    navToUserProfile = (id) => {
+        if(id != firebase.auth().currentUser.uid){
+          this.props.navigation.navigate("UserProfile", {userId:id});
+         } else {
+          this.props.navigation.navigate('Profile')
+         }
+      }
+
     render(){
         const colors = this.props.theme.colors;
         return (
             <>
-                <SlideModal
-                    transparent={true}
-                    isVisible={this.state.visible}
-                    style={{width,height,marginLeft:0,padding:0}}
-                    backdropColor={colors.dBlue}
-                    backdropOpacity={1}
-                    coverScreen={true}
-                >
-                    <UserInfo currentUser={this.state.user} user={this.state.focusUser} close={this.closeModal} />
-                </SlideModal>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} height={height} width={width}>
                     <Block column center flex style={{backgroundColor:colors.dBlue,width}}>
                         <Block flex width={width*.9}>
@@ -116,7 +113,7 @@ class SearchPlayers extends React.Component {
                                     {
                                         this.state.filteredUsers.map((user,key) => {
                                             return (
-                                                <TouchableHighlight onPress={() => this.onUserPress(user)} key={key}>
+                                                <TouchableOpacity onPress={() => this.navToUserProfile(user.id)} key={key}>
                                                     <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width: width*.9,marginBottom:10}}>
                                                         <Block column>
                                                             <Text style={{color:"#fff"}}>{user.name}</Text>
@@ -124,7 +121,7 @@ class SearchPlayers extends React.Component {
                                                         </Block>
                                                         <Text style={{color:"#fff"}}>{`${user.wins}-${user.losses}`}</Text>
                                                     </Block>
-                                                </TouchableHighlight>
+                                                </TouchableOpacity>
                                             )
                                         })
                                     }

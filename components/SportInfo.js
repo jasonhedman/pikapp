@@ -17,6 +17,8 @@ class SportInfo extends React.Component {
 
   render() {
     return (
+        <Block>
+            <Headline style={{color:"#fff",textAlign:'center',marginTop:10,marginBottom:10,fontSize:20}}>{this.props.sport}</Headline>
             <Block row style={styles.container}>
                 <Block column middle center style={styles.statContainer}>
                     <Subheading style={styles.subheading}>Record</Subheading>
@@ -27,10 +29,12 @@ class SportInfo extends React.Component {
                     <Headline style={styles.stat}>{`${this.props.user.ptsFor}-${this.props.user.ptsAgainst}`}</Headline>
                 </Block>
                 <Block column middle center style={styles.statContainer}>
-                    <Subheading style={styles.subheading}>Win Percentage</Subheading>
+                    <Subheading style={styles.subheading}>Percentage</Subheading>
                     <Headline style={styles.stat}>{`${(this.props.user.losses + this.props.user.wins) > 0 ? Math.floor(this.props.user.wins/(this.props.user.losses + this.props.user.wins)*100) : 0}%`}</Headline>
                 </Block>
             </Block>
+        </Block>
+        
     );
   }
 }
@@ -38,8 +42,6 @@ class SportInfo extends React.Component {
 const styles = StyleSheet.create({
     container:{
         justifyContent: "space-between",
-        marginBottom:height*.025,
-        marginTop:height*.025,
     },
     subheading:{
         color:"#83838A",

@@ -32,7 +32,6 @@ class UserInfo extends React.Component {
       proPicUrl: null,
       lastThree: new Array(),
       complete:false,
-      editModalVisible:false,
       loading:false
     }
   }
@@ -82,6 +81,9 @@ class UserInfo extends React.Component {
       firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
         friendsList:firebase.firestore.FieldValue.arrayUnion(this.props.user.id)
       })
+      firebase.firestore().collection('users').doc(this.props.user.id).update({
+        followers:firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid)
+      })
     })
   }
 
@@ -91,7 +93,10 @@ class UserInfo extends React.Component {
     this.setState({currentUser}, () => {
       firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
         friendsList:firebase.firestore.FieldValue.arrayRemove(this.props.user.id)
-      })    
+      })   
+      firebase.firestore().collection('users').doc(this.props.user.id).update({
+        followers:firebase.firestore.FieldValue.arrayRemove(firebase.auth().currentUser.uid)
+      }) 
     });
   }
 
@@ -135,10 +140,10 @@ class UserInfo extends React.Component {
                     {
                       this.state.currentUser.friendsList.includes(this.props.user.id)
                       ? <Button mode="contained" onPress={this.removeFriend} dark={true} style={{marginBottom: height*.025,justifyContent:"center",alignItems:"center",borderWidth:1,borderColor:colors.white}} theme={{colors:{primary:colors.dBlue},fonts:{medium:this.props.theme.fonts.regular}}}>
-                            Remove Friend
+                            Unfollow
                         </Button>
                       : <Button mode="contained" onPress={this.addFriend} dark={true} style={{marginBottom: height*.025,justifyContent:"center",alignItems:"center"}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                            Add Friend
+                            Follow
                         </Button>
                     }
                     <Block row style={{width,justifyContent:"space-around",}}>

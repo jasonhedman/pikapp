@@ -3,7 +3,9 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
-  View
+  View,
+  TouchableOpacity,
+  Share
 } from "react-native";
 import { Block } from "galio-framework";
 
@@ -21,7 +23,7 @@ const { width, height } = Dimensions.get("window");
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 
-import {withTheme,Text,Avatar,Button,Headline, Subheading, IconButton} from 'react-native-paper';
+import {withTheme,Text,Avatar,Button,Headline, Subheading, IconButton, Caption} from 'react-native-paper';
 
 import {TabView,SceneMap} from 'react-native-tab-view';
 
@@ -69,6 +71,26 @@ class Profile extends React.Component {
           })
       })
   }
+
+  onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: 'Join me on PikApp Mobile, the newest way to organize and join pickup sports games.',
+        url: "https://apps.apple.com/us/app/pikapp-mobile/id1475855291"
+      });
+
+      if (result.action === Share.sharedAction) {
+        firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
+          points: firebase.firestore.FieldValue.increment(1)
+        })
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   componentDidMount(){
     this.getData();
     firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot(() => {
@@ -117,6 +139,19 @@ class Profile extends React.Component {
     })
   }
 
+  navToUserProfile = (id) => {
+    if(id != firebase.auth().currentUser.uid){
+      this.props.navigation.navigate("UserProfile", {userId:id});
+     } else {
+      this.props.navigation.navigate('Profile')
+     }
+  }
+
+  navToUserList = (users, listType) => {
+    this.props.navigation.navigate('UserList',{users,listType});
+  }
+
+
   render() {
     const fonts = this.props.theme.fontss;
     const colors = this.props.theme.colors;
@@ -138,10 +173,12 @@ class Profile extends React.Component {
             transparent={true}
             isVisible={this.state.settingsVisible}
             onBackdropPress={() => this.setState({settingsVisible:false})}
-            style={{width,marginLeft:0,padding:0,marginTop: height*.7,marginBottom:0}}
+            style={{width,marginLeft:0,padding:0,marginBottom:0, justifyContent:'flex-end',zIndex:100}}
             backdropColor={colors.dBlue}
+            coverScreen={false}
+
           >
-            <Block flex center middle style={{width,backgroundColor:colors.dBlue,borderTopWidth:2,borderTopColor:colors.orange, alignItems:'center'}}>
+            <Block center middle style={{width,backgroundColor:colors.dBlue,borderTopWidth:2,borderTopColor:colors.orange, alignItems:'center',flex:0, padding:10}}>
                 <Button mode="contained" dark={true} style={[styles.button]} onPress={this.toChangePassword} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                   Change Password
                 </Button>
@@ -164,41 +201,63 @@ class Profile extends React.Component {
               <Block row style={{justifyContent:'flex-end',position:'absolute',top:height*.1,right:0,zIndex:2}}>
                   <IconButton color={colors.white} icon={'settings'} onPress={() => this.setState({settingsVisible:true})}></IconButton>
               </Block>
-              <Block style={{marginRight:"auto",marginLeft:"auto",marginTop:height*.1}} width={width*.9}>
+              <Block style={{marginRight:"auto",marginLeft:"auto",marginTop:height*.1,marginBottom:20}} width={width*.9}>
                 <Block center middle style={{marginBottom:height*.025}}>
                   <Headline style={styles.header}>{this.state.user.name}</Headline>
                   <Subheading style={styles.header}>{`@${this.state.user.username}`}</Subheading>
-                  <Block center middle style={{width:height*.1,height:height*.1,borderRadius:height*.05,borderWidth:2,borderColor:this.props.theme.colors.orange,marginBottom:height*.015}}>
-                    {
-                      this.state.proPicUrl != null
-                      ? <Avatar.Image
-                          theme={{colors:{primary:colors.dBlue}}}
-                          source={{uri:this.state.proPicUrl}}
-                          size={height*.1-4}
-                        />
-                      : <Avatar.Image
-                          theme={{colors:{primary:colors.dBlue}}}
-                          source={defaultUser}
-                          size={height*.1-4}
-                        />
-                    }
+                  <Block row style={{alignItems:'center',marginTop:height*.015,marginBottom:height*.015}}>
+                    <Block center middle style={{width:height*.1,height:height*.1,borderRadius:height*.1/2,borderWidth:2,borderColor:this.props.theme.colors.orange,marginBottom:height*.015}}>
+                      {
+                        this.state.proPicUrl != null
+                        ? <Avatar.Image
+                            theme={{colors:{primary:colors.dBlue}}}
+                            source={{uri:this.state.proPicUrl}}
+                            size={height*.1-4}
+                          />
+                        : <Avatar.Image
+                            theme={{colors:{primary:colors.dBlue}}}
+                            source={defaultUser}
+                            size={height*.1-4}
+                          />
+                      }
+                    </Block>
+                    <Block column flex style={{paddingRight:30,paddingLeft:30}}>
+                      <Block row flex style={{justifyContent:'space-around'}}>
+                        <TouchableOpacity onPress={() => this.navToUserList(this.state.user.followers, "Followers")}>
+                          <Block column center middle>
+                            <Subheading style={styles.subheading}>Followers</Subheading>
+                            <Headline style={styles.stat}>{this.state.user.followers.length}</Headline>
+                          </Block>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => this.navToUserList(this.state.user.friendsList, "Following")}>
+                          <Block column center middle>
+                            <Subheading style={styles.subheading}>Following</Subheading>
+                            <Headline style={styles.stat}>{this.state.user.friendsList.length}</Headline>
+                          </Block>
+                        </TouchableOpacity>
+                      </Block>
+                      <Button mode="contained" onPress={() => this.setState({editModalVisible:true})} style={styles.button} dark={true} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                        Edit Profile
+                      </Button>
+                    </Block>
                   </Block>
-                  <Button mode="contained" onPress={() => this.setState({editModalVisible:true})} style={styles.button} dark={true} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                    Edit Profile
-                  </Button>
                   <Block row style={{width,justifyContent:"space-around",}}>
                     <Block style={styles.statContainer} column center middle>
                       <Subheading style={styles.subheading}>Overall</Subheading>
                       <Headline style={styles.info}>{`${this.state.user.wins}-${this.state.user.losses}`}</Headline>
                     </Block>
                     <Block style={styles.statContainer} column center middle>
-                      <Subheading style={styles.subheading}>Last 10 Games</Subheading>
-                      <Headline style={styles.info}>6-4</Headline>
+                      <Subheading style={styles.subheading}>Points</Subheading>
+                      <Headline style={styles.info}>{this.state.user.points}</Headline>
+                    </Block>
+                    <Block style={styles.statContainer} column center middle>
+                      <Subheading style={styles.subheading}>Last 10</Subheading>
+                      <Headline style={styles.info}>{this.getLastTen()}</Headline>
                     </Block>
                   </Block>
                 </Block>
                 <Headline style={[styles.header,{marginBottom:height*.015,textAlign:"center"}]}>Stats Breakdown</Headline>
-                <SportsTabs style={{height:100}} user={this.state.user} />
+                <SportsTabs user={this.state.user} />
                 <Headline style={[styles.header,{marginBottom:height*.015,textAlign:"center"}]}>Last Three Games</Headline>
                 {
                   this.state.lastThree.length > 0
@@ -206,14 +265,14 @@ class Profile extends React.Component {
                     <Block column>
                       {
                         this.state.lastThree.map((game,index) => {
-                          return <GameResult game={game} key={index} user={firebase.auth().currentUser.uid} />
+                          return <GameResult game={game} key={index} user={firebase.auth().currentUser.uid} navToUserProfile={this.navToUserProfile}/>
                         })
                       }
                     </Block>
                   )
                   : (
                     <Block flex center middle style={{backgroundColor:colors.dBlue, width:width}}>
-                      <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,width:width*.9}}>
+                      <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,width:width*.9,padding:10}}>
                         <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025,textAlign:'center'}}>You have not completed any games.</Headline>
                         <Button
                           mode="contained" 
@@ -230,12 +289,23 @@ class Profile extends React.Component {
                 }
               </Block>
             </ScrollView>
+            <Block style={{borderTopWidth:1, borderTopColor:colors.orange, paddingTop:5}}>
+              <Caption style={{color:colors.grey,textAlign:"center"}}>
+                For Bonus Points:
+              </Caption>
+              <Block width={width}>
+                <Button mode="contained" dark={true} onPress={() =>this.onShare()} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto',marginLeft:'auto'}}>
+                  Share
+                </Button>
+              </Block>
+              
+            </Block>
           </View>
         </>
       );
     } else {
       return (
-        <Block flex style={{backdropColor:colors.dBlue}}>
+        <Block flex style={{backgroundColor:colors.dBlue}}>
 
         </Block>
       )
@@ -261,6 +331,11 @@ const styles = StyleSheet.create({
   subheading:{
     color:"#83838A",
     fontSize:14,
+    marginTop:0
+  },
+  stat:{
+    color:"white",
+    marginBottom:10
   },
   info:{
     color:"white",

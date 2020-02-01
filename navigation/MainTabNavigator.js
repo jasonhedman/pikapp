@@ -10,6 +10,10 @@ import SearchPlayers from '../screens/SearchPlayers';
 import Profile from '../screens/Profile';
 import ChangePassword from '../screens/ChangePassword';
 import ChangeEmail from '../screens/ChangeEmail';
+import UserProfile from '../screens/UserProfile';
+import UserList from '../screens/UserList';
+
+
 
 
 import {withTheme} from 'react-native-paper';
@@ -22,6 +26,18 @@ const GameStack = createStackNavigator(
   {
     Lobby: {
       screen: GameLobby,
+      navigationOptions: {
+        header:null
+      }
+    },
+    UserProfile: {
+      screen: UserProfile,
+      navigationOptions: {
+        header:null
+      }
+    },
+    UserList: {
+      screen: UserList,
       navigationOptions: {
         header:null
       }
@@ -54,6 +70,18 @@ const MapStack = createStackNavigator(
         header:null
       }
     },
+    UserProfile: {
+      screen: UserProfile,
+      navigationOptions: {
+        header:null
+      }
+    },
+    UserList: {
+      screen: UserList,
+      navigationOptions: {
+        header:null
+      }
+    },
   },
   config
 );
@@ -76,6 +104,19 @@ const SocialStack = createStackNavigator(
         header:null
       }
     },
+    UserProfile: {
+      screen: UserProfile,
+      navigationOptions: {
+        header:null
+      }
+    },
+    UserList: {
+      screen: UserList,
+      navigationOptions: {
+        header:null
+      }
+    },
+    
   },
   config
 );
@@ -110,7 +151,19 @@ const ProfileStack = createStackNavigator(
       navigationOptions: {
         header:null
       }
-    }
+    },
+    UserProfile: {
+      screen: UserProfile,
+      navigationOptions: {
+        header:null
+      }
+    },
+    UserList: {
+      screen: UserList,
+      navigationOptions: {
+        header:null
+      }
+    },
   },
   {
     initialRouteName:"Profile"

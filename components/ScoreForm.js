@@ -34,179 +34,209 @@ class ScoreForm extends React.Component{
       winningTeam: parseInt(this.state.home) > parseInt(this.state.away) ? "home" : "away"
     })
     .then(() => {
-      if(parseInt(this.state.home) > parseInt(this.state.away)){
-        docRef.get()
-          .then((doc) => {
-            if(this.props.game.sport == "basketball"){
-              doc.data().teams.home.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  wins: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:true
-                  }),
-                  "sports.basketball.wins": firebase.firestore.FieldValue.increment(1),
-                  "sports.basketball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                  "sports.basketball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                })
+      let homeWin = parseInt(this.state.home) > parseInt(this.state.away);
+      docRef.get()
+        .then((doc) => {
+          if(this.props.game.sport == "basketball"){
+            doc.data().teams.home.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                points: firebase.firestore.FieldValue.increment(homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:homeWin
+                }),
+                "sports.basketball.wins": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.basketball.losses": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.basketball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
+                "sports.basketball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
               })
-              doc.data().teams.away.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  losses: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:false
-                  }),
-                  "sports.basketball.losses": firebase.firestore.FieldValue.increment(1),
-                  "sports.basketball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                  "sports.basketball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                })
+            })
+            doc.data().teams.away.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 0 : 1),
+                points: firebase.firestore.FieldValue.increment(!homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:!homeWin
+                }),
+                "sports.basketball.wins": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.basketball.losses": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.basketball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
+                "sports.basketball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
               })
-            } else if(this.props.game.sport == "spikeball"){
-              doc.data().teams.home.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  wins: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:true
-                  }),
-                  "sports.spikeball.wins": firebase.firestore.FieldValue.increment(1),
-                  "sports.spikeball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                  "sports.spikeball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                })
+            })
+          } else if(this.props.game.sport == "spikeball"){
+            doc.data().teams.home.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                points: firebase.firestore.FieldValue.increment(homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:homeWin
+                }),
+                "sports.spikeball.wins": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.spikeball.losses": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.spikeball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
+                "sports.spikeball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
               })
-              doc.data().teams.away.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  losses: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:false
-                  }),
-                  "sports.spikeball.losses": firebase.firestore.FieldValue.increment(1),
-                  "sports.spikeball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                  "sports.spikeball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                })
+            })
+            doc.data().teams.away.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 0 : 1),
+                points: firebase.firestore.FieldValue.increment(!homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:!homeWin
+                }),
+                "sports.spikeball.wins": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.spikeball.losses": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.spikeball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
+                "sports.spikeball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
               })
-            } else if(this.props.game.sport == "football"){
-              doc.data().teams.home.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  wins: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:true
-                  }),
-                  "sports.football.wins": firebase.firestore.FieldValue.increment(1),
-                  "sports.football.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                  "sports.football.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                })
+            })
+          } else if(this.props.game.sport == "football"){
+            doc.data().teams.home.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                points: firebase.firestore.FieldValue.increment(homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:homeWin
+                }),
+                "sports.football.wins": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.football.losses": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.football.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
+                "sports.football.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
               })
-              doc.data().teams.away.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  losses: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:false
-                  }),
-                  "sports.football.losses": firebase.firestore.FieldValue.increment(1),
-                  "sports.football.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                  "sports.football.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                })
+            })
+            doc.data().teams.away.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 0 : 1),
+                points: firebase.firestore.FieldValue.increment(!homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:!homeWin
+                }),
+                "sports.football.wins": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.football.losses": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.football.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
+                "sports.football.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
               })
-            }
-          })
-      } else {
-        docRef.get()
-          .then((doc) => {
-            if(this.props.game.sport == "basketball"){
-              doc.data().teams.away.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  wins: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:true
-                  }),
-                  "sports.basketball.wins": firebase.firestore.FieldValue.increment(1),
-                  "sports.basketball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                  "sports.basketball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                })
+            })
+          } else if(this.props.game.sport == "soccer"){
+            doc.data().teams.home.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                points: firebase.firestore.FieldValue.increment(homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:homeWin
+                }),
+                "sports.soccer.wins": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.soccer.losses": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.soccer.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
+                "sports.soccer.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
               })
-              doc.data().teams.home.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  losses: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:false
-                  }),
-                  "sports.basketball.losses": firebase.firestore.FieldValue.increment(1),
-                  "sports.basketball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                  "sports.basketball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                })
+            })
+            doc.data().teams.away.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 0 : 1),
+                points: firebase.firestore.FieldValue.increment(!homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:!homeWin
+                }),
+                "sports.soccer.wins": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.soccer.losses": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.soccer.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
+                "sports.soccer.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
               })
-            } else if(this.props.game.sport == "spikeball"){
-              doc.data().teams.away.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  wins: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:true
-                  }),
-                  "sports.spikeball.wins": firebase.firestore.FieldValue.increment(1),
-                  "sports.spikeball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                  "sports.spikeball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                })
+            })
+          } else if(this.props.game.sport == "volleyball"){
+            doc.data().teams.home.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                points: firebase.firestore.FieldValue.increment(homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:homeWin
+                }),
+                "sports.volleyball.wins": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.volleyball.losses": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.volleyball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
+                "sports.volleyball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
               })
-              doc.data().teams.home.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  losses: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:false
-                  }),
-                  "sports.spikeball.losses": firebase.firestore.FieldValue.increment(1),
-                  "sports.spikeball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                  "sports.spikeball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                })
+            })
+            doc.data().teams.away.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 0 : 1),
+                points: firebase.firestore.FieldValue.increment(!homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:!homeWin
+                }),
+                "sports.volleyball.wins": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.volleyball.losses": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.volleyball.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
+                "sports.volleyball.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
               })
-            } else if(this.props.game.sport == "football"){
-              doc.data().teams.away.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  wins: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:true
-                  }),
-                  "sports.football.wins": firebase.firestore.FieldValue.increment(1),
-                  "sports.football.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                  "sports.football.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                })
-              });
-              doc.data().teams.home.forEach((player) => {
-                firebase.firestore().collection("users").doc(player.id).update({
-                  currentGame: null,
-                  losses: firebase.firestore.FieldValue.increment(1),
-                  gameHistory: firebase.firestore.FieldValue.arrayUnion({
-                    id: doc.id,
-                    win:false
-                  }),
-                  "sports.football.losses": firebase.firestore.FieldValue.increment(1),
-                  "sports.football.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
-                  "sports.football.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
-                })
-              });
-            }
-          });
-      }
+            })
+          } else if(this.props.game.sport == "rugby"){
+            doc.data().teams.home.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                points: firebase.firestore.FieldValue.increment(homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:homeWin
+                }),
+                "sports.rugby.wins": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.rugby.losses": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.rugby.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
+                "sports.rugby.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
+              })
+            })
+            doc.data().teams.away.forEach((player) => {
+              firebase.firestore().collection("users").doc(player.id).update({
+                currentGame: null,
+                wins: firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                losses: firebase.firestore.FieldValue.increment(!homeWin ? 0 : 1),
+                points: firebase.firestore.FieldValue.increment(!homeWin ? 5 : -2),
+                gameHistory: firebase.firestore.FieldValue.arrayUnion({
+                  id: doc.id,
+                  win:!homeWin
+                }),
+                "sports.rugby.wins": firebase.firestore.FieldValue.increment(!homeWin ? 1 : 0),
+                "sports.rugby.losses": firebase.firestore.FieldValue.increment(homeWin ? 1 : 0),
+                "sports.rugby.ptsAgainst": firebase.firestore.FieldValue.increment(parseInt(this.state.home)),
+                "sports.rugby.ptsFor": firebase.firestore.FieldValue.increment(parseInt(this.state.away)),
+              })
+            })
+          }
+        })
     });
   }
 
@@ -234,6 +264,7 @@ class ScoreForm extends React.Component{
                 maxValue={21}
                 borderColor={colors.orange}
                 rounded={true}
+                editable={false}
                 rightButtonBackgroundColor={colors.dBlue}
                 leftButtonBackgroundColor={colors.dBlue}
                 textColor={colors.white}
@@ -265,6 +296,7 @@ class ScoreForm extends React.Component{
                 maxValue={21}
                 borderColor={colors.orange}
                 rounded={true}
+                editable={false}
                 rightButtonBackgroundColor={colors.dBlue}
                 leftButtonBackgroundColor={colors.dBlue}
                 textColor={colors.white}
@@ -272,6 +304,7 @@ class ScoreForm extends React.Component{
                 iconStyle={{color:colors.white}}
                 inputStyle={{fontFamily:this.props.theme.fonts.regular}}
                 containerStyle={{marginBottom:10}}
+                extraTextInputProps={{disabled:false}}
               />
               {
                 this.props.game.teams.away.map((user,index) => {

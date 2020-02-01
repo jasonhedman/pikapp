@@ -21,6 +21,8 @@ import * as Location from 'expo-location';
 import basketballMarker from '../assets/images/bball_map.png';
 import spikeballMarker from '../assets/images/sball_map.png';
 import footballMarker from '../assets/images/fball_map.png';
+import soccerMarker from '../assets/images/soccer_map.png';
+import volleyballMarker from '../assets/images/vball_map.png';
 
 
 const { width, height } = Dimensions.get("screen");
@@ -193,6 +195,14 @@ class MapScreen extends React.Component {
      },500)
    }
 
+   navToUserProfile = (id) => {
+     if(id != firebase.auth().currentUser.uid){
+      this.props.navigation.navigate("UserProfile", {userId:id});
+     } else {
+      this.props.navigation.navigate('Profile')
+     }
+    }
+
   render() {
     if(this.props.navigation.getParam("marker",null) != null){
       this.setState({focusMarker:this.props.navigation.getParam("marker",null)}, () => {
@@ -207,18 +217,18 @@ class MapScreen extends React.Component {
           <>
             <Portal>
               <Modal contentContainerStyle={{backgroundColor:this.props.theme.colors.dBlue, width:width*.8, height: height*.4, marginLeft:"auto", marginRight:"auto", borderRadius:8, borderWidth:2, borderColor:colors.orange}} visible={this.state.gameModalVisible} onDismiss={() => {this.setGameModalVisible(false)}}>
-                <GameForm navToGame={this.navToGame} />
+                <GameForm navToGame={this.navToGame} closeModal={() => this.setGameModalVisible(false)}/>
               </Modal>
             </Portal>
             <SlideModal
               animationType="slide"
-              transparent={true}
               isVisible={this.state.lobbyModalVisible}
               onBackdropPress={() => {this.setState({lobbyModalVisible:false})}}
               backdropOpacity={0}
-              style={{width:width, flex:1, margin:0}}
+              coverScreen={false}
+              style={{width:width, margin:0,justifyContent:'flex-end'}}
             >
-              <LobbyModal userLoc={this.state.userLoc} user={this.state.user} addToTeam={this.addToTeam} marker={this.state.markers[this.state.modalGameId]} />
+              <LobbyModal closeModal={() => {this.setState({lobbyModalVisible:false})}} navToUserProfile={this.navToUserProfile} userLoc={this.state.userLoc} user={this.state.user} addToTeam={this.addToTeam} marker={this.state.markers[this.state.modalGameId]} />
             </SlideModal>
                 <MapView
                   onRegionChangeComplete={(region) => {
@@ -245,26 +255,30 @@ class MapScreen extends React.Component {
                       coordinate={{longitude:marker.location.longitude,latitude:marker.location.latitude}}
                       onPress={()=>{this.mapView.root.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
                     >
-                      <Image source={marker.sport == 'basketball' ? basketballMarker : marker.sport == 'spikeball' ? spikeballMarker : marker.sport == 'football' ? footballMarker : null} style={{height:50, width:50}}/>
+                      <Image source={marker.sport == 'basketball' ? basketballMarker : marker.sport == 'spikeball' ? spikeballMarker : marker.sport == 'football' ? footballMarker : marker.sport == 'soccer' ? soccerMarker : marker.sport == 'volleyball' ? volleyballMarker : null} style={{height:50, width:50}}/>
                     </Marker>
                   );
                 })
               }
             </MapView>
-            <FAB
-              icon="add"
-              label="Create Game"
-              onPress={() => {this.setGameModalVisible(true)}}
-              style={[styles.fab,{backgroundColor:colors.orange,color:colors.white},this.state.user.currentGame != null ? styles.disabled:null]}
-              disabled={this.state.user.currentGame != null}
-            />
+            {
+              this.state.lobbyModalVisible
+              ? null
+              : <FAB
+                icon="add"
+                label="Create Game"
+                onPress={() => {this.setGameModalVisible(true)}}
+                style={[styles.fab,{backgroundColor:colors.orange,color:colors.white},this.state.user.currentGame != null ? styles.disabled:null]}
+                disabled={this.state.user.currentGame != null}
+              />
+            }
           </>
         );
       } else {
         return (
           <Block flex center middle style={{width,backgroundColor:colors.dBlue}}>
             <Block center middle style={{width:width*.9, borderColor:colors.orange, borderWidth:1, borderRadius:8, padding:10}}>
-              <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025}}>You must have your location enabled to use the map.</Headline>
+              <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025,textAlign:'center'}}>You must have your location enabled to use the map.</Headline>
             </Block>
           </Block>
         )
@@ -298,7 +312,7 @@ const styles = StyleSheet.create({
     bottom:0,
     right:0,
     margin:12,
-    zIndex:100
+    zIndex:2
   }
 });
 

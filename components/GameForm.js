@@ -7,7 +7,7 @@ import { Block} from "galio-framework";
 
 import { argonTheme } from "../constants";
 
-import {withTheme,Headline,Button,Menu} from 'react-native-paper';
+import {withTheme,Headline,Button,Menu,IconButton} from 'react-native-paper';
 
 import * as Location from 'expo-location';
 
@@ -39,8 +39,6 @@ class GameForm extends React.Component {
       .then((pos)=>{
         firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).get()
           .then((doc) => {
-            pos.coords.longitude -= .01;
-            pos.coords.latitude -= .01;
             if(doc.exists){
               firebase.firestore().collection('games').add({
                 intensity: this.state.intensity,
@@ -102,6 +100,7 @@ class GameForm extends React.Component {
         <Headline style={{color:colors.white, marginTop:height*.015, height:height*.05, marginBottom:height*.015}}>
           Create Game
         </Headline>
+        <IconButton color={colors.orange} icon="close" size={15} style={{position:'absolute',top:0,right:0}} onPress={this.props.closeModal}/>
         <Menu
           visible={this.state.sportVisible}
           onDismiss={() => {this.setState({sportVisible:false})}}
@@ -115,8 +114,10 @@ class GameForm extends React.Component {
           }
         >
           <Menu.Item onPress={() => {this.setState({sport:"basketball",sportVisible:false})}} title="Basketball" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-          <Menu.Item onPress={() => {this.setState({sport:"football",sportVisible:false})}} title="Football" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
+          <Menu.Item onPress={() => {this.setState({sport:"soccer",sportVisible:false})}} title="Soccer" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
           <Menu.Item onPress={() => {this.setState({sport:"spikeball",sportVisible:false})}} title="Spikeball" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
+          <Menu.Item onPress={() => {this.setState({sport:"football",sportVisible:false})}} title="Football" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
+          <Menu.Item onPress={() => {this.setState({sport:"volleyball",sportVisible:false})}} title="Volleyball" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
         </Menu>
         <Menu
           visible={this.state.intensityVisible}
@@ -146,9 +147,43 @@ class GameForm extends React.Component {
               </Block>
           }
         >
-          <Menu.Item onPress={() => {this.setState({teamSize:2,tsVisible:false})}} title="2" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-          <Menu.Item onPress={() => {this.setState({teamSize:3,tsVisible:false})}} title="3" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-          <Menu.Item onPress={() => {this.setState({teamSize:4,tsVisible:false})}} title="4" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
+          {
+            this.state.sport == 'basketball'
+            ? [
+              <Menu.Item onPress={() => {this.setState({teamSize:2,tsVisible:false})}} title="2" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:3,tsVisible:false})}} title="3" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:4,tsVisible:false})}} title="4" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:5,tsVisible:false})}} title="5" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+            ]
+            : this.state.sport == 'soccer'
+            ? [
+              <Menu.Item onPress={() => {this.setState({teamSize:6,tsVisible:false})}} title="6" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:7,tsVisible:false})}} title="7" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:8,tsVisible:false})}} title="8" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:9,tsVisible:false})}} title="9" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:10,tsVisible:false})}} title="10" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:11,tsVisible:false})}} title="11" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+
+            ]
+            : this.state.sport == 'spikeball'
+            ? [
+              <Menu.Item onPress={() => {this.setState({teamSize:2,tsVisible:false})}} title="2" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+            ]
+            : this.state.sport == 'football'
+            ? [
+              <Menu.Item onPress={() => {this.setState({teamSize:3,tsVisible:false})}} title="3" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:4,tsVisible:false})}} title="4" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:5,tsVisible:false})}} title="5" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:6,tsVisible:false})}} title="6" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+            ]
+            : this.state.sport == 'volleyball'
+            ? [
+              <Menu.Item onPress={() => {this.setState({teamSize:3,tsVisible:false})}} title="3" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:4,tsVisible:false})}} title="4" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+              <Menu.Item onPress={() => {this.setState({teamSize:6,tsVisible:false})}} title="6" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
+            ]
+            : <Menu.Item title="Choose a Sport" disabled={true} theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
+          }
         </Menu>
         <Button
           disabled={this.state.sport == null || this.state.intensity == null || this.state.teamSize == null}

@@ -8,7 +8,7 @@ import TeamMember from './TeamMember';
 
 import {getDistance} from 'geolib';
 
-import {Headline, withTheme,Subheading,Button} from 'react-native-paper';
+import {Headline, withTheme,Subheading,Button, Text} from 'react-native-paper';
 
 import moment from 'moment';
 
@@ -24,28 +24,53 @@ class LobbyModal extends React.Component {
     const colors = this.props.theme.colors;
     let marker = this.props.marker;
     var homeTeam = [];
-    for(let i = 0; i < marker.teamSize; i++){
+    homeTeam.push(
+      <Text style={{color:colors.white,textAlign:'center',marginBottom:5}}>
+        # of Players: {marker.teams.home.length}
+      </Text>
+    )
+    for(let i = 0; i < (marker.teamSize > 4 ? 4 : marker.teamSize); i++){
       if(marker.teams.home.length > i){
-        homeTeam.push(<TeamMember key={Math.ceil(Math.random()*1000)} user={marker.teams.home[i]} />);
+        homeTeam.push(<TeamMember key={Math.ceil(Math.random()*1000)} user={marker.teams.home[i]} navToUserProfile={this.props.navToUserProfile} closeModal={this.props.closeModal}/>);
       } else {
         homeTeam.push(<TeamMember key={Math.ceil(Math.random()*1000)} user={null} />);
       }
     }
+    if(marker.teamSize > 4){
+      homeTeam.push(
+        <Block center middle style={[styles.container]}>
+          <Text style={{color:colors.grey}}>{marker.teamSize - 4 - (marker.teams.home.length - 4 > 0 ? marker.teams.home.length - 4 : 0)} More Spots...</Text>
+        </Block>
+      )
+    }
     var awayTeam = [];
-    for(let i = 0; i < marker.teamSize; i++){
+    awayTeam.push(
+      <Text style={{color:colors.white,textAlign:'center',marginBottom:5}}>
+        # of Players: {marker.teams.away.length}
+      </Text>
+    )
+    for(let i = 0; i < (marker.teamSize > 4 ? 4 : marker.teamSize); i++){
       if(marker.teams.away.length > i){
-        awayTeam.push(<TeamMember key={Math.ceil(Math.random()*1000)} user={marker.teams.away[i]} />);
+        awayTeam.push(<TeamMember key={Math.ceil(Math.random()*1000)} user={marker.teams.away[i]} navToUserProfile={this.props.navToUserProfile} closeModal={this.props.closeModal}/>);
       } else {
         awayTeam.push(<TeamMember key={Math.ceil(Math.random()*1000)} user={null} />);
       }
     }
+    if(marker.teamSize > 4){
+      awayTeam.push(
+        <Block center middle style={[styles.container]}>
+          <Text style={{color:colors.grey}}>{marker.teamSize - 4 - (marker.teams.away.length - 4 > 0 ? marker.teams.away.length - 4 : 0)} More Spots...</Text>
+        </Block>
+      )
+    }
     return (
-      <Block flex column style={[styles.modalContainer,{marginTop:height*(1-(.290+.075*marker.teamSize)),backgroundColor:colors.dBlue,borderTopWidth:2,borderTopColor:colors.orange}]}>
-        <Headline style={{color:colors.white,textAlign:"center",marginTop:height*.025,height:height*.05}}>{`${marker.intensity} ${marker.sport[0].toUpperCase() + marker.sport.substring(1)}`}</Headline>
-        <Subheading style={{color:colors.grey,textAlign:"center",height:height*.03,marginBottom:height*.01}}>{`Owner: @${marker.ownerUsername}`}</Subheading>
-        <Subheading style={{color:colors.grey,textAlign:"center",height:height*.03,marginBottom:height*.03}}>{`Created ${moment.unix(parseInt(marker.time.seconds)).fromNow()}`}</Subheading>
-        <Block flex row>
-          <Block flex column>
+      <Block column style={[styles.modalContainer,{backgroundColor:colors.dBlue,borderTopWidth:2,borderTopColor:colors.orange}]}>
+        <Headline style={{color:colors.white,textAlign:"center",marginTop:height*.025}}>{`${marker.intensity} ${marker.sport[0].toUpperCase() + marker.sport.substring(1)}`}</Headline>
+        <Subheading style={{color:colors.grey,textAlign:"center"}}>{`Owner: @${marker.ownerUsername}`}</Subheading>
+        <Subheading style={{color:colors.grey,textAlign:"center"}}>{`Created ${moment.unix(parseInt(marker.time.seconds)).fromNow()}`}</Subheading>
+        <Subheading style={{color:colors.grey,textAlign:"center",marginBottom:height*.03}}>{`Team Size: ${marker.teamSize}`}</Subheading>
+        <Block row>
+          <Block column>
             {homeTeam}
             <Button 
               mode="contained" 
@@ -58,7 +83,7 @@ class LobbyModal extends React.Component {
               Join Team
             </Button>
           </Block>
-          <Block flex column>
+          <Block column>
             {awayTeam}
             <Button 
               mode="contained" 
@@ -80,12 +105,17 @@ class LobbyModal extends React.Component {
 const styles = StyleSheet.create({
   modalContainer: {
     width:width,
-    marginTop:height*.5
+    zIndex:100
   },
   disabled: {
     opacity: .3, 
     backgroundColor:'#E68A54'
   },
+  container: {
+    width:width*.45,
+    marginBottom:height*.025,
+    padding:5
+  }
 })
 
 export default withTheme(LobbyModal);

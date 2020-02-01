@@ -1,7 +1,8 @@
 import React from 'react';
 import {
   StyleSheet,
-  Dimensions
+  Dimensions,
+  TouchableOpacity
 } from 'react-native';
 import {
   Block,
@@ -47,13 +48,15 @@ class TeamMember extends React.Component{
         );
       }
       return (
-        <Block row center middle style={[styles.container,{borderColor:colors.orange}]}>
-          <Block flex column>
-            <Text style={{color:colors.white}}>{this.state.user.name}</Text>
-            <Text style={{color:colors.white}}>@{this.state.user.username}</Text>
+        <TouchableOpacity onPress={() => {this.props.closeModal();this.props.navToUserProfile(this.props.user.id)}}>
+          <Block row center middle style={[styles.container,{borderColor:colors.orange}]}>
+            <Block flex column>
+              <Text style={{color:colors.white}}>{this.state.user.name}</Text>
+              <Text style={{color:colors.white}}>@{this.state.user.username}</Text>
+            </Block>
+            <Text style={{color:colors.white}}>{this.state.user.record}</Text>
           </Block>
-          <Text style={{color:colors.white}}>{this.state.user.record}</Text>
-        </Block>
+        </TouchableOpacity>
       );
     } else {
       return (
@@ -71,7 +74,7 @@ const styles = StyleSheet.create({
     borderWidth:1,
     width:width*.45,
     marginBottom:height*.025,
-    height:height*.05,
+    height:height*.06,
     padding:5
   }
 })
