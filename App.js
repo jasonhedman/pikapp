@@ -18,12 +18,6 @@ const {height,width} = Dimensions.get('window')
 
 const theme = {
   ...DefaultTheme,
-  fonts: {
-      regular: 'raleway',
-      // medium: 'Roboto',
-      // light: 'Roboto Light',
-      // thin: 'Roboto Thin',
-  },
   colors: {
     ...DefaultTheme.colors,
     dBlue: '#121D28',
@@ -124,6 +118,12 @@ export default class App extends React.Component {
         />
       );
     } else {
+      theme.fonts = {
+          regular: "raleway",
+          // medium: 'Roboto',
+          // light: 'Roboto Light',
+          // thin: 'Roboto Thin'
+      }
       return (
         <PaperProvider theme={theme}>
           <View style={styles.container}>
@@ -137,18 +137,9 @@ export default class App extends React.Component {
 
 async function loadResourcesAsync() {
   await Promise.all([
-    Asset.loadAsync([
-      require('./assets/images/robot-dev.png'),
-      require('./assets/images/robot-prod.png'),
-    ]),
     Font.loadAsync({
-      // This is the font that we are using for our tab bar
-      ...Ionicons.font,
-      // We include SpaceMono because we use it in HomeScreen.js. Feel free to
-      // remove this if you are not using it in your app
-      'space-mono': require('./assets/fonts/Lato-Light.ttf'),
-      'open-sans-regular': require('./assets/fonts/OpenSans-Regular.ttf'),
-      'raleway': require('./assets/fonts/Raleway-Regular.ttf')
+      // ...Ionicons.font,
+      "raleway": require('./assets/fonts/Raleway-Regular.ttf'),
     }),
     Permissions.askAsync(Permissions.LOCATION),
     Permissions.askAsync(Permissions.CAMERA_ROLL),
