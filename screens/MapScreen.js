@@ -79,6 +79,10 @@ class MapScreen extends React.Component {
                     Location.watchPositionAsync({},(pos) => {
                       this.setState({userPos: pos.coords, complete:true});
                     })
+                    // console.log(pos.coords);
+                    firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
+                      location:pos.coords
+                    })
                   });
                 })
             } else {

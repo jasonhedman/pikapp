@@ -48,6 +48,7 @@ class Profile extends React.Component {
       .then((doc) => {
         if(doc.exists){
           let lastThree = [];
+          console.log(doc.data().gameHistory)
           for(let i = doc.data().gameHistory.length - 1; i >= (doc.data().gameHistory.length >= 3?doc.data().gameHistory.length-3:0);i--){
             firebase.firestore().collection("games").doc(doc.data().gameHistory[i].id).get()
               .then((game) => {

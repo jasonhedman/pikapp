@@ -81,12 +81,12 @@ class EmailAndPassword extends React.Component {
         <Block center middle style={{height,width}}>
           <KeyboardAvoidingView enabled behavior="position">
             <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
-              <Block style={{height:height*.075}} middle>
+              <Block style={styles.headerBlock} middle>
                 <Headline style={{color:this.props.theme.colors.white}}>
                   Sign Up
                 </Headline>
               </Block>
-              <Block width={width * 0.8} height={height*.075} style={{ marginBottom: height*.025 }}>
+              <Block width={width * 0.8} style={styles.inputBlock}>
                 <TextInput
                   value={this.state.email}
                   theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -119,7 +119,7 @@ class EmailAndPassword extends React.Component {
                   : null
                 }
               </Block>
-              <Block width={width * 0.8} height={height*.075} style={{ marginBottom: height*.025 }}>
+              <Block width={width * 0.8} style={styles.inputBlock}>
                 <TextInput
                   value={this.state.password}
                   theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -146,7 +146,7 @@ class EmailAndPassword extends React.Component {
                   : null
                 }
               </Block>
-              <Block width={width * 0.8} height={height*.075} style={{ marginBottom: height*.05 }}>
+              <Block width={width * 0.8} style={styles.inputBlock}>
                 <TextInput
                   value={this.state.passwordConfirm}
                   theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -169,7 +169,7 @@ class EmailAndPassword extends React.Component {
                   : null
                 }
               </Block>
-              <Block row width={"100%"}>
+              <Block row style={styles.buttonBlock}>
                 <Button
                   mode="contained"
                   disabled={!this.state.password.length >= 8 || !this.state.email.includes("@") || this.state.emailTaken}
@@ -202,18 +202,27 @@ const styles = StyleSheet.create({
     width: width * 0.9,
     borderRadius: 8,
     borderWidth: 2,
-    padding:width*.05,
+    padding:16,
   },
   createButton: {
     marginBottom:height*.025,
-    height: height * .05,
     width: width * 0.5,
     alignItems: "center",
     justifyContent: "center"
   },
   input: {
-    height: height*.075,
     justifyContent:"center"
+  },
+  inputBlock:{
+    marginBottom:12,
+  },
+  buttonBlock:{
+    width:"100%",
+    marginTop:16
+  },
+  headerBlock:{
+    marginTop:16,
+    marginBottom:16
   }
 });
 

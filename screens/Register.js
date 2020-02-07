@@ -150,9 +150,11 @@ class Register extends React.Component {
         <MultiStep 
           onFinish={() => {this.onSignUp()}}
           steps={[
+            {name: "StepThree", component: <AgeAndIntensity setState={this.setDob}/>},
             {name: 'StepOne', component: <EmailAndPassword setState={this.setEmailAndPassword}/>},
+            
             {name: 'StepTwo', component: <NameAndUsername setState={this.setNameAndUsername} pickImage={this._pickImage}/>},
-            {name: "StepThree", component: <AgeAndIntensity setState={this.setDob}/>}
+            
           ]} 
         />
         <View style={{bottom: height*.025, position: 'absolute', zIndex: 999}}>
