@@ -40,7 +40,7 @@ class AgeAndIntensity extends React.Component {
     }
   }
 
-  setDate = (dob) => {
+  setDate = (event,dob) => {
     this.setState({dob});
   }
 
@@ -64,7 +64,7 @@ class AgeAndIntensity extends React.Component {
                       value={this.state.dob}
                       onChange={this.setDate}
                       textColor={colors.white}
-                      style={{backgroundColor:colors.dBlue,textColor:colors.white}}
+                      style={{backgroundColor:colors.iosBackground,textColor:colors.white}}
                   />
                 </Block>
               </Modal>
@@ -138,9 +138,6 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingTop: 13,
     paddingBottom: 30
-  },
-  inputBlock:{
-    marginBottom:12,
   },
   buttonBlock:{
     width:"100%",

@@ -85,7 +85,7 @@ class NameAndUsername extends React.Component {
         <Block center middle style={{height,width}}>
           <KeyboardAvoidingView enabled behavior="position">
             <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
-              <Block style={{height:height*.075}} middle>
+              <Block style={styles.headerBlock} middle>
                 <Headline style={{color:this.props.theme.colors.white}}>
                   Sign Up
                 </Headline>
@@ -111,7 +111,7 @@ class NameAndUsername extends React.Component {
                 )
               }
               </Block>
-              <Block width={width * 0.8} height={height*.075} style={{ marginBottom: height*.025 }}>
+              <Block style={styles.inputBlock}>
                 <TextInput
                   value={this.state.name}
                   theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -137,7 +137,7 @@ class NameAndUsername extends React.Component {
                   : null
                 }
               </Block>
-              <Block width={width * 0.8} height={height*.075} style={{ marginBottom: height*.05 }}>
+              <Block style={styles.inputBlock}>
                 <TextInput
                   value={this.state.username}
                   theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -170,7 +170,7 @@ class NameAndUsername extends React.Component {
                   : null
                 }
               </Block>
-              <Block row width={'100%'}>
+              <Block row style={styles.buttonBlock}>
                 <Button 
                   onPress={() => {
                     this.props.saveState(1,this.state);
@@ -207,49 +207,28 @@ const styles = StyleSheet.create({
     width: width * 0.9,
     borderRadius: 8,
     borderWidth: 2,
-    padding:width*.05,
-  },
-  socialConnect: {
-    backgroundColor: argonTheme.COLORS.WHITE,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#8898AA"
-  },
-  socialButtons: {
-    width: 120,
-    height: 40,
-    backgroundColor: "#fff",
-    shadowColor: argonTheme.COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1
-  },
-  socialTextButtons: {
-    color: argonTheme.COLORS.PRIMARY,
-    fontWeight: "800",
-    fontSize: 14
-  },
-  inputIcons: {
-    marginRight: 12
-  },
-  passwordCheck: {
-    paddingLeft: 15,
-    paddingTop: 13,
-    paddingBottom: 30
+    padding:16,
   },
   createButton: {
     marginBottom:height*.025,
-    height: height * .05,
     width: width * 0.5,
     alignItems: "center",
     justifyContent: "center"
   },
   input: {
-    height: height*.075,
     justifyContent:"center"
+  },
+  inputBlock:{
+    width:"100%",
+    marginBottom:12,
+  },
+  buttonBlock:{
+    width:"100%",
+    marginTop:16
+  },
+  headerBlock:{
+    marginTop:16,
+    marginBottom:16
   }
 });
 

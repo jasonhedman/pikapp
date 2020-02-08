@@ -6,6 +6,7 @@ import { Platform, StatusBar, StyleSheet, View, SafeAreaView, Dimensions } from 
 import { Ionicons } from '@expo/vector-icons';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
+import { Appearance, AppearanceProvider, useColorScheme } from 'react-native-appearance';
 
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import * as Permissions from 'expo-permissions';
@@ -44,19 +45,6 @@ export default class App extends React.Component {
     this.state = {
       isLoadingComplete: false
     }
-  }
-
-  componentWillMount(){
-    const firebaseConfig = {
-      apiKey: "AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE",
-      authDomain: "pickapp-4dcc0.firebaseapp.com",
-      databaseURL: "https://pickapp-4dcc0.firebaseio.com",
-      projectId: "pickapp-4dcc0",
-      storageBucket: "gs://pickapp-4dcc0.appspot.com/",
-      messagingSenderId: "322765285697",
-      appId: "1:322765285697:web:ecd162e09c8d5a3f"
-    };
-    firebase.initializeApp(firebaseConfig);
   }
 
   // componentDidMount(){
@@ -108,6 +96,11 @@ export default class App extends React.Component {
   // }
   
   render(){
+    if(Appearance.getColorScheme() == 'light'){
+      theme.colors.iosBackground = "#fff";
+    } else if(Appearance.getColorScheme() == 'dark'){
+      theme.colors.iosBackground = theme.colors.dBlue;
+    }
     if (!this.state.isLoadingComplete) {
       return (
         <AppLoading
@@ -125,17 +118,29 @@ export default class App extends React.Component {
           // thin: 'Roboto Thin'
       }
       return (
-        <PaperProvider theme={theme}>
-          <View style={styles.container}>
-            <AppNavigator />
-          </View>
-        </PaperProvider>
+        <AppearanceProvider>
+          <PaperProvider theme={theme}>
+            <View style={styles.container}>
+              <AppNavigator />
+            </View>
+          </PaperProvider>
+        </AppearanceProvider>
       );
     }
   }
 }
 
 async function loadResourcesAsync() {
+  const firebaseConfig = {
+    apiKey: "AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE",
+    authDomain: "pickapp-4dcc0.firebaseapp.com",
+    databaseURL: "https://pickapp-4dcc0.firebaseio.com",
+    projectId: "pickapp-4dcc0",
+    storageBucket: "gs://pickapp-4dcc0.appspot.com/",
+    messagingSenderId: "322765285697",
+    appId: "1:322765285697:web:ecd162e09c8d5a3f"
+  };
+  firebase.initializeApp(firebaseConfig);
   await Promise.all([
     Font.loadAsync({
       // ...Ionicons.font,
@@ -143,7 +148,7 @@ async function loadResourcesAsync() {
     }),
     Permissions.askAsync(Permissions.LOCATION),
     Permissions.askAsync(Permissions.CAMERA_ROLL),
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL),
   ]);
 }
 

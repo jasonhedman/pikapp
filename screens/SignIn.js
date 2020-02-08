@@ -66,67 +66,65 @@ class Register extends React.Component {
 
     colors = this.props.theme.colors;
     return (
-      <>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <Block flex middle>
-            <View
-              style={{ width, height, zIndex: 1, backgroundColor:colors.dBlue }}
-            >
-                <KeyboardAvoidingView
-                  style={{ flex: 1 }}
-                  behavior="padding"
-                  enabled
-                >
-                  <Block flex middle>
-                    <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
-                        <Block style={{marginTop:height*.025,height:height*.075}} middle>
-                          <Headline style={{color:this.props.theme.colors.white}}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Block flex middle>
+          <View
+            style={{ width, height, zIndex: 1, backgroundColor:colors.dBlue }}
+          >
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior="padding"
+                enabled
+              >
+                <Block flex middle>
+                  <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
+                      <Block style={styles.headerBlock} middle>
+                        <Headline style={{color:this.props.theme.colors.white}}>
+                          Sign In
+                        </Headline>
+                      </Block>                          
+                      <Block style={styles.inputBlock}>
+                        <TextInput
+                          theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                          style={[styles.input]}
+                          mode={'outlined'}
+                          placeholder="Email"
+                          onChangeText={this.onEmailChange}
+                        />
+                      </Block>
+                      <Block style={styles.inputBlock}>
+                        <TextInput
+                          theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                          style={styles.input}
+                          mode={'outlined'}
+                          secureTextEntry={true}
+                          placeholder="Password"
+                          onChangeText={this.onPasswordChange}
+                        />
+                      </Block>
+                      <Block middle center style={styles.buttonBlock}>
+                        <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSignIn} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                             Sign In
-                          </Headline>
-                        </Block>                          
-                        <Block width={width * 0.8} height={height*.075} style={{ marginBottom: height*.025 }}>
-                          <TextInput
-                            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                            style={[styles.input]}
-                            mode={'outlined'}
-                            placeholder="Email"
-                            onChangeText={this.onEmailChange}
-                          />
-                        </Block>
-                        <Block width={width * 0.8} height={height*.075} style={{ marginBottom: height*.05 }}>
-                          <TextInput
-                            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                            style={styles.input}
-                            mode={'outlined'}
-                            secureTextEntry={true}
-                            placeholder="Password"
-                            onChangeText={this.onPasswordChange}
-                          />
-                        </Block>
-                        <Block middle center style={{height:height*.05,marginBottom:.025*height}}>
-                          <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSignIn} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                              Sign In
-                          </Button>
-                          <HelperText type="error" visible={this.state.error} theme={{colors:{error:colors.orange}}}>Incorrect Email or Password</HelperText>
-                          <TouchableOpacity onPress={() => this.props.navigation.navigate("ForgotPassword")}><Text style={{color:colors.grey}}>Forgot Password?</Text></TouchableOpacity>
-                        </Block>
-                    </Block>
+                        </Button>
+                        <HelperText type="error" visible={this.state.error} theme={{colors:{error:colors.orange}}}>Incorrect Email or Password</HelperText>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate("ForgotPassword")}><Text style={{color:colors.grey}}>Forgot Password?</Text></TouchableOpacity>
+                      </Block>
                   </Block>
-                </KeyboardAvoidingView>
-              <View style={{bottom: height*.025, position: 'absolute', zIndex: 999}}>
-                <Block center middle height={height*.1} width={width} style={{}}>
-                  <Caption style={{color:colors.grey}}>
-                    If do not already have an account
-                  </Caption>
-                  <Button mode="text" onPress={this.toSignUp} dark={true} style={styles.createButton} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}}>
-                      Sign Up
-                  </Button>
                 </Block>
-              </View>
+              </KeyboardAvoidingView>
+            <View style={{bottom: 32, position: 'absolute', zIndex: 999}}>
+              <Block center middle width={width} style={{}}>
+                <Caption style={{color:colors.grey}}>
+                  If do not already have an account
+                </Caption>
+                <Button mode="text" onPress={this.toSignUp} dark={true} style={styles.createButton} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}}>
+                    Sign Up
+                </Button>
+              </Block>
             </View>
-          </Block>
-        </TouchableWithoutFeedback>
-      </>
+          </View>
+        </Block>
+      </TouchableWithoutFeedback>
     );
   }
 }
@@ -136,25 +134,27 @@ const styles = StyleSheet.create({
     width: width * 0.9,
     borderRadius: 8,
     borderWidth: 2,
-    shadowColor: argonTheme.COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1,
-    overflow: "hidden",
-    padding:10,
+    padding:16,
   },
   createButton: {
-    height: height * .05,
+    padding:4,
     alignItems: "center",
     justifyContent: "center"
   },
   input: {
-    height: height*.075,
     justifyContent:"center"
+  },
+  inputBlock:{
+    width:"100%",
+    marginBottom:12,
+  },
+  buttonBlock:{
+    marginTop:8,
+    width:"100%",
+  },
+  headerBlock:{
+    marginTop:16,
+    marginBottom:16
   }
 });
 

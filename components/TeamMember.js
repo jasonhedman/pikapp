@@ -34,9 +34,9 @@ class TeamMember extends React.Component{
     }
   }
 
-  componentWillUnmount(){
-    this._isMounted = false;
-  }
+  // componentWillUnmount(){
+  //   this._isMounted = false;
+  // }
 
   render(){
     const colors = this.props.theme.colors;

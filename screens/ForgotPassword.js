@@ -3,11 +3,13 @@ import {
   StyleSheet,
   Dimensions,
   Keyboard,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  View
 } from "react-native";
 import { Block } from "galio-framework";
 
-import {Caption,Button,TextInput,Headline,withTheme,Portal,Dialog,HelperText,Modal, Subheading} from 'react-native-paper';
+import {Button,TextInput,Headline,withTheme,HelperText} from 'react-native-paper';
 
 
 import * as firebase from 'firebase';
@@ -42,62 +44,96 @@ class Register extends React.Component {
   render() {
     colors = this.props.theme.colors;
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <Block flex center middle style={{width,backgroundColor:colors.dBlue}}>
-            <Block center middle style={{width:width*.9,padding: 10, paddingBottom: height*.025,borderWidth:2, borderRadius:8, borderColor:colors.orange}}>
-              {
-                this.state.submitted
-                ? (
-                  <>
-                    <Headline style={{color:colors.white,textAlign:'center',marginBottom:height*.025}}>Check your email to reset your password.</Headline>
-                    <Button mode="contained" dark={true} style={styles.createButton} onPress={() => {this.props.navigation.navigate("SignIn")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                      Back
-                    </Button>
-                  </>
-                )
-                : (
-                  <>
-                    <Block middle style={{marginRight:"auto"}}>
-                      <Button icon='navigate-before' onPress={() => this.props.navigation.navigate('SignIn')} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto'}}>
-                          
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Block flex middle>
+          <View
+            style={{ width, height, zIndex: 1, backgroundColor:colors.dBlue }}
+          >
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior="padding"
+              enabled
+            >
+            <Block flex middle>
+              <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
+                {
+                  this.state.submitted
+                  ? (
+                    <>
+                      <Headline style={{color:colors.white,textAlign:'center',marginBottom:height*.025}}>Check your email to reset your password.</Headline>
+                      <Button mode="contained" dark={true} style={styles.backButton} onPress={() => {this.props.navigation.navigate("SignIn")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                        Back
                       </Button>
-                    </Block>
-                    <Headline style={{color:colors.white,textAlign:'center',marginBottom:height*.025}}>Forgot Password</Headline>
-                    <TextInput
-                        theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                        style={[styles.input]}
-                        mode={'outlined'}
-                        placeholder="Email"
-                        onChangeText={this.onModalEmailChange}
-                    />
-                    <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                        Reset Password
-                    </Button>
-                    <HelperText type="error" visible={this.state.error} theme={{colors:{error:colors.orange}}}>This email is not associated with an account.</HelperText>
-                  </>
-                )
-              }
-            </Block>
-          </Block>
-        </TouchableWithoutFeedback>
+                    </>
+                  )
+                  : (
+                    <>
+                      <Block middle style={{marginRight:"auto"}}>
+                        <Button icon='navigate-before' style={styles.backButton} onPress={() => this.props.navigation.navigate('SignIn')} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                            Back
+                        </Button>
+                      </Block>
+                      <Block style={styles.headerBlock}>
+                        <Headline style={{color:colors.white,textAlign:'center'}}>Forgot Password</Headline>
+                      </Block>
+                      <Block style={styles.inputBlock}>
+                        <TextInput
+                            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                            style={styles.input}
+                            mode={'outlined'}
+                            placeholder="Email"
+                            onChangeText={this.onModalEmailChange}
+                        />
+                      </Block>
+                      <Block middle center style={styles.buttonBlock}>
+                        <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                            Reset Password
+                        </Button>
+                        <HelperText type="error" visible={this.state.error} theme={{colors:{error:colors.orange}}}>This email is not associated with an account.</HelperText>
+                      </Block>
+                    </>
+                  )
+                }
+                </Block>
+              </Block>
+            </KeyboardAvoidingView>
+          </View>
+        </Block>
+      </TouchableWithoutFeedback>
         
     );
   }
 }
 
 const styles = StyleSheet.create({
+  registerContainer: {
+    width: width * 0.9,
+    borderRadius: 8,
+    borderWidth: 2,
+    padding:16,
+  },
   createButton: {
-    flex:0,
-    height: height * .05,
+    padding:4,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   input: {
-    marginTop:0,
-    width:width*.8,
-    height: height*.075,
-    justifyContent:"center",
-    marginBottom:height*.035
+    justifyContent:"center"
+  },
+  inputBlock:{
+    width:"100%",
+    marginBottom:16,
+  },
+  buttonBlock:{
+    marginTop:8,
+    width:"100%",
+  },
+  headerBlock:{
+    marginBottom:16
+  },
+  backButton:{
+    marginLeft:-16,
+    marginTop:-8
   }
 });
 

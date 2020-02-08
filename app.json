@@ -29,6 +29,7 @@
       "config": {
         "googleMapsApiKey": "AIzaSyCEaambuIwMhUYHk64yrVPbhbrMPNDn6Hg"
       },
+      "userInterfaceStyle": "dark",
       "infoPlist": {
         "NSLocationAlwaysUsageDescription": "Used to place a game marker when a user creates a game, display the users location on the map screen for the user, and check if a user is within range of a game they would like to join.",
         "NSLocationWhenInUseUsageDescription": "Used to place a game marker when a user creates a game, display the users location on the map screen for the user, and check if a user is within range of a game they would like to join.",

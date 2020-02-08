@@ -3,22 +3,15 @@ import {
   StyleSheet,
   Dimensions,
   KeyboardAvoidingView,
-  View,
   TouchableWithoutFeedback,
   Keyboard
 } from "react-native";
 import { Block } from "galio-framework";
-
-import {Button,TextInput,Headline,withTheme,Portal,Dialog,Caption,HelperText} from 'react-native-paper';
-
+import {Button,TextInput,Headline,withTheme,HelperText} from 'react-native-paper';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 
-import { argonTheme } from "../constants";
-
-
 const { width, height } = Dimensions.get("screen");
-
 class EmailAndPassword extends React.Component {
   constructor(props){
     super(props);
@@ -86,7 +79,7 @@ class EmailAndPassword extends React.Component {
                   Sign Up
                 </Headline>
               </Block>
-              <Block width={width * 0.8} style={styles.inputBlock}>
+              <Block width={width * 0.8} style={styles.inputBlock}>radsxz
                 <TextInput
                   value={this.state.email}
                   theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -119,7 +112,7 @@ class EmailAndPassword extends React.Component {
                   : null
                 }
               </Block>
-              <Block width={width * 0.8} style={styles.inputBlock}>
+              <Block style={styles.inputBlock}>
                 <TextInput
                   value={this.state.password}
                   theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -146,7 +139,7 @@ class EmailAndPassword extends React.Component {
                   : null
                 }
               </Block>
-              <Block width={width * 0.8} style={styles.inputBlock}>
+              <Block style={styles.inputBlock}>
                 <TextInput
                   value={this.state.passwordConfirm}
                   theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -214,6 +207,7 @@ const styles = StyleSheet.create({
     justifyContent:"center"
   },
   inputBlock:{
+    width:"100%",
     marginBottom:12,
   },
   buttonBlock:{
