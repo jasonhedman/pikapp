@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack' 
 import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs";
 
 import TabBarIcon from '../components/TabBarIcon';
@@ -19,7 +20,7 @@ import UserList from '../screens/UserList';
 import {withTheme} from 'react-native-paper';
 
 const config = {
-  header:null
+  headerShown:false
 };
 
 const GameStack = createStackNavigator(
@@ -27,19 +28,19 @@ const GameStack = createStackNavigator(
     Lobby: {
       screen: GameLobby,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     UserProfile: {
       screen: UserProfile,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     UserList: {
       screen: UserList,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
   },
@@ -67,19 +68,19 @@ const MapStack = createStackNavigator(
     MapScreen: {
       screen: MapScreen,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     UserProfile: {
       screen: UserProfile,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     UserList: {
       screen: UserList,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
   },
@@ -101,19 +102,19 @@ const SocialStack = createStackNavigator(
     SocialScreen: {
       screen: SearchPlayers,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     UserProfile: {
       screen: UserProfile,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     UserList: {
       screen: UserList,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     
@@ -137,31 +138,31 @@ const ProfileStack = createStackNavigator(
     Profile: {
       screen: Profile,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     ChangePassword: {
       screen: ChangePassword,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     ChangeEmail: {
       screen: ChangeEmail,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     UserProfile: {
       screen: UserProfile,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
     UserList: {
       screen: UserList,
       navigationOptions: {
-        header:null
+        headerShown:false
       }
     },
   },

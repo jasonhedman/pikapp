@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import SlideModal from 'react-native-modal';
 import {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import MapView from 'react-native-maps-clustering'
+import MapView from 'react-native-map-clustering'
 import GameForm from '../components/GameForm';
 import LobbyModal from '../components/LobbyModal';
 import * as firebase from 'firebase';
@@ -238,7 +238,7 @@ class MapScreen extends React.Component {
                   onRegionChangeComplete={(region) => {
                     this.setState({region});
                   }}
-                  ref={mapView => this.mapView = mapView}
+                  mapRef={mapView => this.mapView = mapView}
                   customMapStyle={mapStyles}
                   provider={PROVIDER_GOOGLE}
                   style={{flex: 1}}
@@ -269,7 +269,7 @@ class MapScreen extends React.Component {
               this.state.lobbyModalVisible
               ? null
               : <FAB
-                icon="add"
+                icon="plus"
                 label="Create Game"
                 onPress={() => {this.setGameModalVisible(true)}}
                 style={[styles.fab,{backgroundColor:colors.orange,color:colors.white},this.state.user.currentGame != null ? styles.disabled:null]}

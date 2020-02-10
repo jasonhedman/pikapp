@@ -105,6 +105,7 @@ class EmailAndPassword extends React.Component {
                       type="error"
                       visible={!this.state.email.includes('@') || this.state.emailTaken}
                       theme={{colors:{error:colors.orange}}}
+                      style={!this.state.email.includes('@') || this.state.emailTaken ? {} :{display:"none"}}
                     >
                       {!this.state.email.includes('@')  ? "Please enter a valid email." : this.state.emailTaken ? "This email is already in use. Please try again." : null}
                     </HelperText>
@@ -132,6 +133,7 @@ class EmailAndPassword extends React.Component {
                       type="error"
                       visible={!(this.state.password.length >= 8)}
                       theme={{colors:{error:colors.orange}}}
+                      style={!(this.state.password.length >= 8) ? {} :{display:"none"}}
                     >
                       Your password must have at least 8 characters.
                     </HelperText>
@@ -155,6 +157,7 @@ class EmailAndPassword extends React.Component {
                       type="error"
                       visible={this.state.matchError}
                       theme={{colors:{error:colors.orange}}}
+                      style={this.state.matchError ? {} :{display:"none"}}
                     >
                       Passwords must match
                     </HelperText>
@@ -198,7 +201,6 @@ const styles = StyleSheet.create({
     padding:16,
   },
   createButton: {
-    marginBottom:height*.025,
     width: width * 0.5,
     alignItems: "center",
     justifyContent: "center"

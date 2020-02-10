@@ -100,14 +100,14 @@ class GameForm extends React.Component {
         <Headline style={{color:colors.white, marginTop:height*.015, height:height*.05, marginBottom:height*.015}}>
           Create Game
         </Headline>
-        <IconButton color={colors.orange} icon="close" size={15} style={{position:'absolute',top:0,right:0}} onPress={this.props.closeModal}/>
+        <IconButton color={colors.orange} icon="close" size={15} style={{position:'absolute',top:0,right:20}} onPress={this.props.closeModal}/>
         <Menu
           visible={this.state.sportVisible}
           onDismiss={() => {this.setState({sportVisible:false})}}
           style={{marginLeft:(width*.8-120)/2,marginTop:height*.05}}
           anchor={
               <Block height={height*.05} width={width*.8} style={{ marginBottom: height*.025 }}>
-                  <Button style={{height:height*.05,display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="arrow-drop-down" mode="text" onPress={() => {this.setState({sportVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
+                  <Button style={{height:height*.05,display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="arrow-down-drop-circle-outline" mode="text" onPress={() => {this.setState({sportVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
                       {this.state.sport != null ? this.state.sport : "Sport"}
                   </Button>
               </Block>
@@ -125,7 +125,7 @@ class GameForm extends React.Component {
           style={{marginLeft:(width*.8-120)/2,marginTop:height*.05}}
           anchor={
               <Block height={height*.05} width={width*.8} style={{ marginBottom: height*.025 }}>
-                  <Button style={{height:height*.05,display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="arrow-drop-down" mode="text" onPress={() => {this.setState({intensityVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
+                  <Button style={{height:height*.05,display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="arrow-down-drop-circle-outline" mode="text" onPress={() => {this.setState({intensityVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
                       {this.state.intensity != null ? this.state.intensity : "Intensity"}
                   </Button>
               </Block>
@@ -141,7 +141,7 @@ class GameForm extends React.Component {
           style={{marginLeft:(width*.8-120)/2,marginTop:height*.05}}
           anchor={
               <Block height={height*.05} width={width*.8} style={{ marginBottom: height*.025 }}>
-                  <Button style={{height:height*.05,display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="arrow-drop-down" mode="text" onPress={() => {this.setState({tsVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
+                  <Button style={{height:height*.05,display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="arrow-down-drop-circle-outline" mode="text" onPress={() => {this.setState({tsVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
                       {this.state.teamSize != null ? this.state.teamSize : "Team Size"}
                   </Button>
               </Block>

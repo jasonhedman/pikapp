@@ -8,19 +8,14 @@ import {
   Keyboard
 } from "react-native";
 import { Block} from "galio-framework";
-
 import {Button,TextInput,Headline,withTheme,IconButton,Avatar,TouchableRipple,HelperText,Menu} from 'react-native-paper';
-
-
 import * as firebase from 'firebase';
 import 'firebase/firestore';
-
 import SlideModal from 'react-native-modal';
-
 const { width, height } = Dimensions.get("screen");
-
 import * as Permissions from 'expo-permissions';
-import {ImagePicker} from 'expo';
+import * as ImagePicker from 'expo-image-picker';
+import ProfilePic from './ProfilePic';
 
 class EditProfile extends React.Component {
   constructor(props){
@@ -133,12 +128,12 @@ class EditProfile extends React.Component {
             transparent={true}
             isVisible={this.state.visible}
             onBackdropPress={() => this.setState({visible:false})}
-            style={{width,marginTop:height*.75,marginLeft:0,padding:0}}
+            style={{}}
             backdropColor={colors.dBlue}
             coverScreen={true}
           >
-            <Block flex center middle style={{width,backgroundColor:colors.dBlue,borderTopWidth:2,borderTopColor:colors.orange}}>
-              <Block middle center style={{height:height*.05,marginBottom:.015*height}}>
+            <Block center middle style={{width,backgroundColor:colors.dBlue,borderTopWidth:2,borderTopColor:colors.orange,marginTop:'auto', paddingBottom:32, paddingTop:16}}>
+              <Block middle center style={styles.buttonBlock}>
                 <Button mode="contained" dark={true} style={[styles.createButton]} onPress={this.pickImage} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                     Choose New Image
                 </Button>
@@ -146,11 +141,12 @@ class EditProfile extends React.Component {
                   type="error"
                   visible={this.state.showErr}
                   theme={{colors:{error:colors.orange}}}
+                  style={this.state.showErr ? {} :{display:"none"}}
                 >
                   Grant access to your camera roll first.
                 </HelperText>
               </Block>
-              <Block middle center style={{height:height*.05}}>
+              <Block middle center style={styles.buttonBlock}>
                 <Button mode="text" dark={true} style={styles.createButton} onPress={this.removeImage} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                     Delete Image
                 </Button>
@@ -159,36 +155,21 @@ class EditProfile extends React.Component {
           </SlideModal>
           <TouchableWithoutFeedback style={{height,width}} onPress={Keyboard.dismiss}>
               <Block flex style={{backgroundColor:colors.dBlue,height,width}} center middle>
-                  
-                  <Block column middle center style={{height:height*.53,width:width*.9,borderWidth:2,borderRadius:8,borderColor:colors.orange}}>
-                      <Button icon='navigate-before' onPress={() => this.props.close()} mode={'text'} theme={{colors:{primary:colors.orange}}} style={{marginTop:height*.01,marginRight:'auto'}}>
-                        Back
-                      </Button>
-                      <Headline style={{color:colors.white,marginBottom:height*.02}}>
-                          Edit Profile
-                      </Headline>
-                      <Block center middle style={{width:height*.075,height:height*.075,borderRadius:"50%",borderWidth:2,borderColor:this.props.theme.colors.orange,marginBottom:height*.015}}>
-                          {
-                              this.state.image != null
-                              ? (
-                                  <TouchableRipple onPress={() => this.setState({visible:true})}>
-                                      <Avatar.Image
-                                          source={{uri:this.state.image}}
-                                          size={height*.075-4}
-                                      />
-                                  </TouchableRipple>
-                              )
-                              : (
-                                  <IconButton
-                                      icon="add-a-photo"
-                                      onPress={() => this.setState({visible:true})}
-                                      color={this.props.theme.colors.white}
-                                      style={{margin:0}}
-                                  />
-                              )
-                          }
+                  <Block column middle center style={[styles.registerContainer, {borderColor:colors.orange}]}>
+                      <Block center style={styles.headerBlock}>
+                        <Button onPress={() => this.props.close()} mode={'text'} compact={true} icon={'keyboard-backspace'} theme={{colors:{primary:colors.orange}}} style={{position:'absolute', left:-8,top:0, padding:0}}>
+                        </Button>
+                        <Headline style={{color:this.props.theme.colors.white}}>
+                            Edit Profile
+                        </Headline>
                       </Block>
-                      <Block width={width * 0.8} height={height*.075} style={{ marginBottom: height*.025 }}>
+                      <TouchableRipple 
+                        onPress={() => this.setState({visible:true})}
+                        style={{marginBottom:12}}
+                      >
+                        <ProfilePic size={75} proPicUrl={this.state.image} />
+                      </TouchableRipple>
+                      <Block style={styles.inputBlock}>
                           <TextInput
                           value={this.state.name}
                           theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -203,18 +184,19 @@ class EditProfile extends React.Component {
                           {
                           this.state.nameBlur
                           ? (
-                              <HelperText
+                            <HelperText
                               type="error"
                               visible={!this.state.name.length > 0}
                               theme={{colors:{error:colors.orange}}}
-                              >
+                              style={!this.state.name.length > 0 ? {} :{display:"none"}}
+                            >
                               Please enter your name.
-                              </HelperText>
+                            </HelperText>
                           )
                           : null
                           }
                       </Block>
-                      <Block width={width * 0.8} height={height*.075} style={{ marginBottom: height*.05 }}>
+                      <Block style={styles.inputBlock}>
                           <TextInput
                           value={this.state.username}
                           theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -236,19 +218,28 @@ class EditProfile extends React.Component {
                           {
                           this.state.usernameBlur
                           ? (
-                              <HelperText
+                            <HelperText
                               type="error"
                               visible={!this.state.username.length > 0 || this.state.usernameTaken}
                               theme={{colors:{error:colors.orange}}}
-                              >
+                              style={!this.state.username.length > 0 || this.state.usernameTaken ? {} :{display:"none"}}
+                            >
                               {this.state.username.length <= 0 ? "Please enter a username." : this.state.usernameTaken ? "This username is taken. Please try another." : null}
-                              </HelperText>
+                            </HelperText>
                           )
                           : null
                           }
                       </Block>
-                      <Block middle center style={{height:height*.05,marginBottom:.025*height}}>
-                        <Button disabled={this.state.usernameTaken} mode="contained" dark={true} style={[styles.createButton, this.state.usernameTaken ? {opacity: .3, backgroundColor:colors.orange} : null]} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                      <Block middle center style={styles.buttonBlock}>
+                        <Button 
+                          disabled={this.state.usernameTaken} 
+                          mode="contained" 
+                          dark={true} 
+                          style={[styles.createButton, this.state.usernameTaken ? {opacity: .3, backgroundColor:colors.orange} : null]} 
+                          onPress={this.onSubmit} 
+                          theme={{colors:{primary:colors.orange},
+                          fonts:{medium:this.props.theme.fonts.regular}}}
+                        >
                             Save Changes
                         </Button>
                       </Block>
@@ -261,14 +252,37 @@ class EditProfile extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  createButton: {
-    alignItems: "center",
-    justifyContent: "center"
-  },
   disabled:{
     opacity: .3, 
     backgroundColor:'#E68A54'
-  }
+  },
+  registerContainer: {
+    width: width * 0.9,
+    borderRadius: 8,
+    borderWidth: 2,
+    padding:16,
+  },
+  createButton: {
+    padding:4,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  input: {
+    justifyContent:"center"
+  },
+  inputBlock:{
+    width:"100%",
+    marginBottom:12,
+  },
+  buttonBlock:{
+    width:"100%",
+    marginTop:8
+  },
+  headerBlock:{
+    width:"100%",
+    marginTop:16,
+    marginBottom:16
+  },
 });
 
 async function uploadImageAsync(uri, id) {

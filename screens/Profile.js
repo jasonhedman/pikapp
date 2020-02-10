@@ -13,6 +13,7 @@ import GameResult from "../components/GameResult";
 import TeamMember from "../components/TeamMember";
 import SportsTabs from "../components/SportsTabs";
 import EditProfile from "../components/EditProfile";
+import ProfilePic from "../components/ProfilePic";
 
 import SlideModal from 'react-native-modal';
 
@@ -179,14 +180,14 @@ class Profile extends React.Component {
             coverScreen={false}
 
           >
-            <Block center middle style={{width,backgroundColor:colors.dBlue,borderTopWidth:2,borderTopColor:colors.orange, alignItems:'center',flex:0, padding:10}}>
+            <Block center middle style={{width,backgroundColor:colors.dBlue,borderTopWidth:2,borderTopColor:colors.orange, alignItems:'center',flex:0, padding:16}}>
                 <Button mode="contained" dark={true} style={[styles.button]} onPress={this.toChangePassword} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                   Change Password
                 </Button>
                 <Button mode="contained" dark={true} style={[styles.button]} onPress={this.toChangeEmail} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                   Change Email
                 </Button>
-                <Button mode="text" dark={true} style={[styles.button,{borderWidth:.5,borderRadius:8, borderColor:colors.orange}]} onPress={this.signOut} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                <Button mode="text" dark={true} style={[styles.button,{borderWidth:.5,borderRadius:8, borderColor:colors.orange,marginBottom:0}]} onPress={this.signOut} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                   Sign Out
                 </Button>
             </Block>
@@ -207,21 +208,7 @@ class Profile extends React.Component {
                   <Headline style={styles.header}>{this.state.user.name}</Headline>
                   <Subheading style={styles.header}>{`@${this.state.user.username}`}</Subheading>
                   <Block row style={{alignItems:'center',marginTop:height*.015,marginBottom:height*.015}}>
-                    <Block center middle style={{width:height*.1,height:height*.1,borderRadius:height*.1/2,borderWidth:2,borderColor:this.props.theme.colors.orange,marginBottom:height*.015}}>
-                      {
-                        this.state.proPicUrl != null
-                        ? <Avatar.Image
-                            theme={{colors:{primary:colors.dBlue}}}
-                            source={{uri:this.state.proPicUrl}}
-                            size={height*.1-4}
-                          />
-                        : <Avatar.Image
-                            theme={{colors:{primary:colors.dBlue}}}
-                            source={defaultUser}
-                            size={height*.1-4}
-                          />
-                      }
-                    </Block>
+                    <ProfilePic size={75} proPicUrl={this.state.proPicUrl}/>
                     <Block column flex style={{paddingRight:30,paddingLeft:30}}>
                       <Block row flex style={{justifyContent:'space-around'}}>
                         <TouchableOpacity onPress={() => this.navToUserList(this.state.user.followers, "Followers")}>
@@ -318,7 +305,13 @@ const styles = StyleSheet.create({
     color: "white"
   },
   button: {
-    marginBottom: height*.025,
+    marginBottom: 12,
+    justifyContent:"center",
+    alignItems:"center"
+  },
+  modalButton: {
+    marginBottom: 12,
+    padding:4,
     justifyContent:"center",
     alignItems:"center"
   },

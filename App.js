@@ -2,7 +2,7 @@ import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View, SafeAreaView, Dimensions } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
@@ -17,7 +17,7 @@ import { user } from 'firebase-functions/lib/providers/auth';
 
 const {height,width} = Dimensions.get('window')
 
-const theme = {
+let theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
@@ -29,6 +29,7 @@ const theme = {
     lBlue: "#263644",
     white: "#FFFFFF",
     primary: '#121D28',
+    background: '#121D28',
   }
 };
 
@@ -111,12 +112,12 @@ export default class App extends React.Component {
         />
       );
     } else {
-      theme.fonts = {
-          regular: "raleway",
-          // medium: 'Roboto',
-          // light: 'Roboto Light',
-          // thin: 'Roboto Thin'
-      }
+      theme.fonts.regular = {
+        fontFamily: 'raleway'
+      };
+      theme.fonts.medium = {
+        fontFamily: 'raleway'
+      };
       return (
         <AppearanceProvider>
           <PaperProvider theme={theme}>
@@ -143,7 +144,7 @@ async function loadResourcesAsync() {
   firebase.initializeApp(firebaseConfig);
   await Promise.all([
     Font.loadAsync({
-      // ...Ionicons.font,
+      ...Ionicons.font,
       "raleway": require('./assets/fonts/Raleway-Regular.ttf'),
     }),
     Permissions.askAsync(Permissions.LOCATION),

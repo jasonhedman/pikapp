@@ -103,7 +103,7 @@ class NameAndUsername extends React.Component {
                 )
                 : (
                     <IconButton
-                        icon="add-a-photo"
+                        icon="camera"
                         onPress={this.pickImage}
                         color={this.props.theme.colors.white}
                         style={{margin:0}}
@@ -130,6 +130,7 @@ class NameAndUsername extends React.Component {
                       type="error"
                       visible={!this.state.name.length > 0}
                       theme={{colors:{error:colors.orange}}}
+                      style={!this.state.name.length > 0 ? {} :{display:"none"}}
                     >
                       Please enter your name.
                     </HelperText>
@@ -163,6 +164,7 @@ class NameAndUsername extends React.Component {
                       type="error"
                       visible={!this.state.username.length > 0 || this.state.usernameTaken}
                       theme={{colors:{error:colors.orange}}}
+                      style={!this.state.username.length > 0 || this.state.usernameTaken ? {} :{display:"none"}}
                     >
                       {this.state.username.length <= 0 ? "Please enter a username." : this.state.usernameTaken ? "This username is taken. Please try another." : null}
                     </HelperText>

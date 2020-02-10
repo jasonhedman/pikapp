@@ -68,12 +68,8 @@ class Register extends React.Component {
                   )
                   : (
                     <>
-                      <Block middle style={{marginRight:"auto"}}>
-                        <Button icon='navigate-before' style={styles.backButton} onPress={() => this.props.navigation.navigate('SignIn')} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                            Back
-                        </Button>
-                      </Block>
                       <Block style={styles.headerBlock}>
+                        <Button onPress={() => this.props.navigation.navigate('SignIn')} mode={'text'} compact={true} icon={'keyboard-backspace'} theme={{colors:{primary:colors.orange}}} style={{position:'absolute', left:-8,top:0, padding:0,zIndex:100}}></Button>
                         <Headline style={{color:colors.white,textAlign:'center'}}>Forgot Password</Headline>
                       </Block>
                       <Block style={styles.inputBlock}>
@@ -129,6 +125,7 @@ const styles = StyleSheet.create({
     width:"100%",
   },
   headerBlock:{
+    width:"100%",
     marginBottom:16
   },
   backButton:{

@@ -83,7 +83,7 @@ class AgeAndIntensity extends React.Component {
                     </Block>
                     <Block center>
                         <Block width={width*.8}  style={{ marginBottom: 12 }}>
-                            <Button style={{display:"flex",justifyContent:"center",alignItems:"center",borderColor:"#FFF"}} icon="arrow-drop-down" dark={true} mode="text" onPress={() => {this.setState({dobModalVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
+                            <Button style={{display:"flex",justifyContent:"center",alignItems:"center",borderColor:"#FFF"}} icon="arrow-down-drop-circle" dark={true} mode="text" onPress={() => {this.setState({dobModalVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
                                 {this.state.dob.toDateString() != new Date().toDateString() ? this.state.dob.toDateString() : "Select Your Date of Birth"}
                             </Button>
                             {
@@ -93,7 +93,7 @@ class AgeAndIntensity extends React.Component {
                                   type="error"
                                   visible={moment().diff(moment(this.state.dob.getTime()),'years',false) < 13}
                                   theme={{colors:{error:colors.orange}}}
-                                  style={{textAlign:'center'}}
+                                  style={moment().diff(moment(this.state.dob.getTime()),'years',false) < 13 ? {textAlign:'center'} :{display:"none",textAlign:'center'}}
                                 >
                                   You must be 13 to use PikApp
                                 </HelperText>
