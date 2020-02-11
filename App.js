@@ -1,12 +1,11 @@
 import { AppLoading } from 'expo';
-import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
-import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View, Dimensions } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
-import { Appearance, AppearanceProvider, useColorScheme } from 'react-native-appearance';
+import { Appearance, AppearanceProvider } from 'react-native-appearance';
 
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import * as Permissions from 'expo-permissions';

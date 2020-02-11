@@ -60,8 +60,10 @@ class Register extends React.Component {
                   this.state.submitted
                   ? (
                     <>
-                      <Headline style={{color:colors.white,textAlign:'center',marginBottom:height*.025}}>Check your email to reset your password.</Headline>
-                      <Button mode="contained" dark={true} style={styles.backButton} onPress={() => {this.props.navigation.navigate("SignIn")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                      <Block style={styles.headerBlock}>
+                        <Headline style={{color:colors.white,textAlign:'center',marginBottom:height*.025}}>Check your email to reset your password.</Headline>
+                      </Block>
+                      <Button mode="contained" dark={true} style={styles.createButton} onPress={() => {this.props.navigation.navigate("SignIn")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                         Back
                       </Button>
                     </>
@@ -69,7 +71,7 @@ class Register extends React.Component {
                   : (
                     <>
                       <Block style={styles.headerBlock}>
-                        <Button onPress={() => this.props.navigation.navigate('SignIn')} mode={'text'} compact={true} icon={'keyboard-backspace'} theme={{colors:{primary:colors.orange}}} style={{position:'absolute', left:-8,top:0, padding:0,zIndex:100}}></Button>
+                        <Button icon='keyboard-backspace' compact={true} style={styles.backButton} onPress={() => this.props.navigation.navigate('SignIn')} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}></Button>
                         <Headline style={{color:colors.white,textAlign:'center'}}>Forgot Password</Headline>
                       </Block>
                       <Block style={styles.inputBlock}>
@@ -85,7 +87,7 @@ class Register extends React.Component {
                         <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                             Reset Password
                         </Button>
-                        <HelperText type="error" visible={this.state.error} theme={{colors:{error:colors.orange}}}>This email is not associated with an account.</HelperText>
+                        <HelperText type="error" style={this.state.error ? {} : {display:"none"}} visible={this.state.error} theme={{colors:{error:colors.orange}}}>This email is not associated with an account.</HelperText>
                       </Block>
                     </>
                   )
@@ -126,11 +128,13 @@ const styles = StyleSheet.create({
   },
   headerBlock:{
     width:"100%",
+    marginTop:16,
     marginBottom:16
   },
   backButton:{
-    marginLeft:-16,
-    marginTop:-8
+    position:"absolute",
+    left:0,
+
   }
 });
 
