@@ -2,13 +2,11 @@ import React from "react";
 import {
   StyleSheet,
   Dimensions,
-  Keyboard,
-  TouchableWithoutFeedback,
-  KeyboardAvoidingView
 } from "react-native";
 import { Block } from "galio-framework";
 import Form from '../components/Form';
-import {Caption,Button,TextInput,Headline,withTheme,Portal,Dialog,HelperText,Text, Subheading} from 'react-native-paper';
+import ButtonBlock from '../components/ButtonBlock';
+import {Button,TextInput,Headline,withTheme,HelperText} from 'react-native-paper';
 
 
 import * as firebase from 'firebase';
@@ -36,7 +34,7 @@ class ChangeEmail extends React.Component {
     });
   }
 
-  onCurrentPasswordChange = (currentPassword) => {
+  onCurrentEmailChange = (currentPassword) => {
     this.setState({currentPassword});
   }
 
@@ -94,9 +92,7 @@ class ChangeEmail extends React.Component {
             ? (
             <>
                 <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025}}>Your email has been changed.</Headline>
-                <Button mode="contained" dark={true} style={{}} onPress={() => {this.props.navigation.navigate("Profile")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                    Back
-                </Button>
+                <ButtonBlock text='Back' onPress={() => this.props.navigation.navigate("Profile")}></ButtonBlock>
             </>
             )
             : (
@@ -111,8 +107,8 @@ class ChangeEmail extends React.Component {
                     theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
                     style={[styles.input]}
                     mode={'outlined'}
-                    placeholder="Current Password"
-                    onChangeText={this.onCurrentPasswordChange}
+                    placeholder="Current Email"
+                    onChangeText={this.onCurrentEmailChange}
                   />
                 </Block>
                 <Block style={styles.inputBlock}>
@@ -127,26 +123,25 @@ class ChangeEmail extends React.Component {
                     }}
                   />
                 </Block>
-                <Block style={styles.buttonBlock}>
-                  <Button mode="contained" disabled={this.state.emailTaken} dark={true} style={[styles.createButton, this.state.emailTaken ? {opacity:.3,backgroundColor:colors.orange}:null]} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                    Change Email
-                  </Button>
-                  {
-                    this.state.emailBlur
-                    ? <HelperText type="error" visible={this.state.emailTaken} theme={{colors:{error:colors.orange}}}>Email already in use</HelperText>
-                    : null
-                  }
-                  {
-                    this.state.passwordError
-                    ? <HelperText type="error" visible={this.state.passwordError} theme={{colors:{error:colors.orange}}}>Password is incorrect</HelperText>
-                    : null
-                  }
-                  {
-                    this.state.emailInvalid
-                    ? <HelperText type="error" visible={this.state.emailInvalid} theme={{colors:{error:colors.orange}}}>Email is invalid</HelperText>
-                    : null
-                  }
-                </Block>
+                <ButtonBlock text='Change Email' onPress={this.onSubmit} disabled={this.state.emailTaken} disabledStyles={{opacity:.3,backgroundColor:colors.orange}}>
+                    <>
+                    {
+                      this.state.emailBlur
+                      ? <HelperText type="error" visible={this.state.emailTaken} theme={{colors:{error:colors.orange}}}>Email already in use</HelperText>
+                      : null
+                    }
+                    {
+                      this.state.passwordError
+                      ? <HelperText type="error" visible={this.state.passwordError} theme={{colors:{error:colors.orange}}}>Password is incorrect</HelperText>
+                      : null
+                    }
+                    {
+                      this.state.emailInvalid
+                      ? <HelperText type="error" visible={this.state.emailInvalid} theme={{colors:{error:colors.orange}}}>Email is invalid</HelperText>
+                      : null
+                    }
+                    </>
+                </ButtonBlock>
             </>
             )
         }
@@ -167,9 +162,6 @@ const styles = StyleSheet.create({
   inputBlock:{
     width:"100%",
     marginBottom:12,
-  },
-  buttonBlock:{
-    marginTop:8
   },
   headerBlock:{
     width:'100%',

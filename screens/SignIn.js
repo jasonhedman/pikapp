@@ -3,19 +3,13 @@ import {
   StyleSheet,
   Dimensions,
   View,
-  TouchableWithoutFeedback,
-  Keyboard,
-  KeyboardAvoidingView,
   TouchableOpacity
 } from "react-native";
 import { Block} from "galio-framework";
-
 import {Caption,Button,TextInput,Headline,withTheme,HelperText,Text} from 'react-native-paper';
 import Form from '../components/Form';
-
-import { Images, argonTheme } from "../constants";
-
 import * as firebase from 'firebase';
+import ButtonBlock from '../components/ButtonBlock';
 
 const { width, height } = Dimensions.get("screen");
 
@@ -93,13 +87,17 @@ class Register extends React.Component {
               onChangeText={this.onPasswordChange}
             />
           </Block>
-          <Block middle center style={styles.buttonBlock}>
+          <ButtonBlock onPress={this.onSignIn} text='Sign In'>
+            <>
+              <HelperText type="error" visible={this.state.error} style={ this.state.error ? {} : {display:'none'}} theme={{colors:{error:colors.orange}}}>Incorrect Email or Password</HelperText>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("ForgotPassword")}><Text style={{color:colors.grey}}>Forgot Password?</Text></TouchableOpacity>
+            </>
+          </ButtonBlock>
+          {/* <Block middle center style={styles.buttonBlock}>
             <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSignIn} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                 Sign In
             </Button>
-            <HelperText type="error" visible={this.state.error} style={ this.state.error ? {} : {display:'none'}} theme={{colors:{error:colors.orange}}}>Incorrect Email or Password</HelperText>
-            <TouchableOpacity onPress={() => this.props.navigation.navigate("ForgotPassword")}><Text style={{color:colors.grey}}>Forgot Password?</Text></TouchableOpacity>
-          </Block>
+          </Block> */}
         </Form>
           <View style={{bottom: 32, position: 'absolute', zIndex: 999}}>
             <Block center middle width={width} style={{}}>

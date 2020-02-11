@@ -11,6 +11,9 @@ import { Block } from "galio-framework";
 
 import {Button,TextInput,Headline,withTheme,HelperText} from 'react-native-paper';
 import Form from '../components/Form';
+import HeaderBlock from '../components/HeaderBlock';
+import ButtonBlock from '../components/ButtonBlock';
+
 
 import * as firebase from 'firebase';
 
@@ -49,20 +52,13 @@ class Register extends React.Component {
           this.state.submitted
           ? (
             <>
-              <Block style={styles.headerBlock}>
-                <Headline style={{color:colors.white,textAlign:'center',marginBottom:height*.025}}>Check your email to reset your password.</Headline>
-              </Block>
-              <Button mode="contained" dark={true} style={styles.createButton} onPress={() => {this.props.navigation.navigate("SignIn")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                Back
-              </Button>
+              <HeaderBlock text='Check Your Email to Reset Your Password' backButton={false}/>
+              <ButtonBlock onPress={() => this.props.navigation.navigate("SignIn")} text='Back'></ButtonBlock>
             </>
           )
           : (
             <>
-              <Block style={styles.headerBlock}>
-                <Button icon='keyboard-backspace' compact={true} style={styles.backButton} onPress={() => this.props.navigation.navigate('SignIn')} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}></Button>
-                <Headline style={{color:colors.white,textAlign:'center'}}>Forgot Password</Headline>
-              </Block>
+              <HeaderBlock text='Forgot Password' backButton={true} backPress={() => this.props.navigation.navigate('SignIn')} />
               <Block style={styles.inputBlock}>
                 <TextInput
                     theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
@@ -72,12 +68,9 @@ class Register extends React.Component {
                     onChangeText={this.onModalEmailChange}
                 />
               </Block>
-              <Block middle center style={styles.buttonBlock}>
-                <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                    Reset Password
-                </Button>
+              <ButtonBlock text='Reset Password' onPress={this.onSubmit}>
                 <HelperText type="error" style={this.state.error ? {} : {display:"none"}} visible={this.state.error} theme={{colors:{error:colors.orange}}}>This email is not associated with an account.</HelperText>
-              </Block>
+              </ButtonBlock>
             </>
           )
         }
@@ -104,10 +97,6 @@ const styles = StyleSheet.create({
   inputBlock:{
     width:"100%",
     marginBottom:16,
-  },
-  buttonBlock:{
-    marginTop:8,
-    width:"100%",
   },
   headerBlock:{
     width:"100%",

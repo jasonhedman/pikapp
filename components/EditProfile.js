@@ -8,7 +8,7 @@ import {
   Keyboard
 } from "react-native";
 import { Block} from "galio-framework";
-import {Button,TextInput,Headline,withTheme,IconButton,Avatar,TouchableRipple,HelperText,Menu} from 'react-native-paper';
+import {Button,TextInput,Headline,withTheme,IconButton,TouchableRipple,HelperText} from 'react-native-paper';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 import SlideModal from 'react-native-modal';
@@ -17,6 +17,7 @@ import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import ProfilePic from './ProfilePic';
 import Form from './Form';
+import ButtonBlock from './ButtonBlock';
 
 class EditProfile extends React.Component {
   constructor(props){
@@ -44,17 +45,21 @@ class EditProfile extends React.Component {
   }
 
   pickImage = async () => {
-    if(this.state.crPermission){
+    let permission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+    if(permission.status != 'granted'){
+      permission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    }
+    if(permission.status == 'granted'){
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
         aspect: [4, 3],
       });
       if (!result.cancelled) {
-        this.setState({ image: result.uri,visible:false,showErr:false });
+        this.setState({ image: result.uri });
       }
     } else {
-      this.setState({showErr:true});
+      alert('You cannot upload a profile picture without first allowing access to your camera roll.')
     }
     
   };
@@ -134,10 +139,7 @@ class EditProfile extends React.Component {
             coverScreen={true}
           >
             <Block center middle style={{width,backgroundColor:colors.dBlue,borderTopWidth:2,borderTopColor:colors.orange,marginTop:'auto', paddingBottom:32, paddingTop:16}}>
-              <Block middle center style={styles.buttonBlock}>
-                <Button mode="contained" dark={true} style={[styles.createButton]} onPress={this.pickImage} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                    Choose New Image
-                </Button>
+              <ButtonBlock text='Choose New Image' onPress={this.pickImage}>
                 <HelperText
                   type="error"
                   visible={this.state.showErr}
@@ -146,7 +148,7 @@ class EditProfile extends React.Component {
                 >
                   Grant access to your camera roll first.
                 </HelperText>
-              </Block>
+              </ButtonBlock>
               <Block middle center style={styles.buttonBlock}>
                 <Button mode="text" dark={true} style={styles.createButton} onPress={this.removeImage} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                     Delete Image
@@ -166,7 +168,19 @@ class EditProfile extends React.Component {
               onPress={() => this.setState({visible:true})}
               style={{marginBottom:12}}
             >
-              <ProfilePic size={75} proPicUrl={this.state.image} />
+              <>
+                <ProfilePic size={80} proPicUrl={this.state.image} />
+                {
+                  this.state.image == null
+                  ? <IconButton
+                    size={20}
+                    color={colors.white}
+                    icon='plus'
+                    style={{position:'absolute',left:-10,top:-10,backgroundColor:colors.orange}}
+                  />
+                  : null
+                }
+              </>
             </TouchableRipple>
             <Block style={styles.inputBlock}>
                 <TextInput
@@ -229,19 +243,7 @@ class EditProfile extends React.Component {
                 : null
                 }
             </Block>
-            <Block middle center style={styles.buttonBlock}>
-              <Button 
-                disabled={this.state.usernameTaken} 
-                mode="contained" 
-                dark={true} 
-                style={[styles.createButton, this.state.usernameTaken ? {opacity: .3, backgroundColor:colors.orange} : null]} 
-                onPress={this.onSubmit} 
-                theme={{colors:{primary:colors.orange},
-                fonts:{medium:this.props.theme.fonts.regular}}}
-              >
-                  Save Changes
-              </Button>
-            </Block>
+            <ButtonBlock text='Save Changes' disabled={this.state.usernameTaken} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} onPress={this.onSubmit}></ButtonBlock>
           </Form>
         </>
       );

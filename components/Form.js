@@ -13,7 +13,7 @@ import { withTheme } from 'react-native-paper';
 const { width, height } = Dimensions.get("screen");
 
 
-class NameAndUsername extends React.Component {
+class Form extends React.Component {
   constructor(props){
     super(props);
   }
@@ -40,28 +40,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 2,
     padding:16,
-  },
-  createButton: {
-    marginBottom:height*.025,
-    width: width * 0.5,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  input: {
-    justifyContent:"center"
-  },
-  inputBlock:{
-    width:"100%",
-    marginBottom:12,
-  },
-  buttonBlock:{
-    width:"100%",
-    marginTop:16
-  },
-  headerBlock:{
-    marginTop:16,
-    marginBottom:16
   }
 });
 
-export default withTheme(NameAndUsername);
+export default withTheme(Form);
