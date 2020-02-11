@@ -10,6 +10,7 @@ import { Block } from "galio-framework";
 import {Button,TextInput,Headline,withTheme,HelperText} from 'react-native-paper';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
+import Form from './Form'
 
 const { width, height } = Dimensions.get("screen");
 class EmailAndPassword extends React.Component {
@@ -41,7 +42,7 @@ class EmailAndPassword extends React.Component {
   componentDidMount(){
     let prev = this.props.getState()[0];
     if(prev != undefined){
-      this.setState({email:prev.email,password:prev.password});
+      this.setState({email:prev.email,password:prev.password,passwordConfirm:prev.passwordConfirm});
     }
   }
 
@@ -70,138 +71,126 @@ class EmailAndPassword extends React.Component {
   render() {
     colors = this.props.theme.colors;
     return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{height,width}}>
-        <Block center middle style={{height,width}}>
-          <KeyboardAvoidingView enabled behavior="position">
-            <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
-              <Block style={styles.headerBlock} middle>
-                <Headline style={{color:this.props.theme.colors.white}}>
-                  Sign Up
-                </Headline>
-              </Block>
-              <Block width={width * 0.8} style={styles.inputBlock}>radsxz
-                <TextInput
-                  value={this.state.email}
-                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                  style={[styles.input]}
-                  mode={'outlined'}
-                  placeholder="Email"
-                  onChangeText={(val) => {
-                    this.onEmailChange(val.toLowerCase(), () => {
-                      if(this.state.emailBlur){
-                        this.checkEmail()
-                      }
-                    })
-                  }}
-                  onBlur={() => {
-                    this.checkEmail()
-                    this.setState({emailBlur:true});
-                  }}
-                />
-                {
-                  this.state.emailBlur
-                  ? (
-                    <HelperText
-                      type="error"
-                      visible={!this.state.email.includes('@') || this.state.emailTaken}
-                      theme={{colors:{error:colors.orange}}}
-                      style={!this.state.email.includes('@') || this.state.emailTaken ? {} :{display:"none"}}
-                    >
-                      {!this.state.email.includes('@')  ? "Please enter a valid email." : this.state.emailTaken ? "This email is already in use. Please try again." : null}
-                    </HelperText>
-                  )
-                  : null
-                }
-              </Block>
-              <Block style={styles.inputBlock}>
-                <TextInput
-                  value={this.state.password}
-                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                  style={styles.input}
-                  mode={'outlined'}
-                  secureTextEntry={true}
-                  placeholder="Password"
-                  onChangeText={this.onPasswordChange}
-                  onBlur={() => {
-                    this.setState({passwordBlur:true});
-                  }}
-                />
-                {
-                  this.state.passwordBlur
-                  ? (
-                    <HelperText
-                      type="error"
-                      visible={!(this.state.password.length >= 8)}
-                      theme={{colors:{error:colors.orange}}}
-                      style={!(this.state.password.length >= 8) ? {} :{display:"none"}}
-                    >
-                      Your password must have at least 8 characters.
-                    </HelperText>
-                  )
-                  : null
-                }
-              </Block>
-              <Block style={styles.inputBlock}>
-                <TextInput
-                  value={this.state.passwordConfirm}
-                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                  style={styles.input}
-                  mode={'outlined'}
-                  secureTextEntry={true}
-                  placeholder="Confirm Password"
-                  onChangeText={this.onPasswordConfirmChange}
-                />
-                { this.state.matchError
-                  ? (
-                    <HelperText
-                      type="error"
-                      visible={this.state.matchError}
-                      theme={{colors:{error:colors.orange}}}
-                      style={this.state.matchError ? {} :{display:"none"}}
-                    >
-                      Passwords must match
-                    </HelperText>
-                  )
-                  : null
-                }
-              </Block>
-              <Block row style={styles.buttonBlock}>
-                <Button
-                  mode="contained"
-                  disabled={!this.state.password.length >= 8 || !this.state.email.includes("@") || this.state.emailTaken}
-                  onPress={() => {
-                      if(this.state.password == this.state.passwordConfirm){
-                        this.props.saveState(0,this.state);
-                        this.props.setState(this.state.email,this.state.password);
-                        this.props.nextFn();
-                      } else {
-                        this.setState({matchError:true});
-                      }
-                      
-                    }
-                  }
-                  style={[{marginLeft:"auto"}, this.state.password.length < 8 || !this.state.email.includes("@") || this.state.emailTaken ? {opacity: .3, backgroundColor:colors.orange} : null]} 
-                  theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                    Next
-                </Button>
-              </Block>
-            </Block>
-          </KeyboardAvoidingView>
+      <Form>
+        <Block style={styles.headerBlock} middle>
+          <Headline style={{color:this.props.theme.colors.white}}>
+            Sign Up
+          </Headline>
         </Block>
-      </TouchableWithoutFeedback>
+        <Block style={styles.inputBlock}>
+          <TextInput
+            value={this.state.email}
+            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+            style={[styles.input]}
+            mode={'outlined'}
+            placeholder="Email"
+            onChangeText={(val) => {
+              this.onEmailChange(val.toLowerCase(), () => {
+                if(this.state.emailBlur){
+                  this.checkEmail()
+                }
+              })
+            }}
+            onBlur={() => {
+              this.checkEmail()
+              this.setState({emailBlur:true});
+            }}
+          />
+          {
+            this.state.emailBlur
+            ? (
+              <HelperText
+                type="error"
+                visible={!this.state.email.includes('@') || this.state.emailTaken}
+                theme={{colors:{error:colors.orange}}}
+                style={!this.state.email.includes('@') || this.state.emailTaken ? {} :{display:"none"}}
+              >
+                {!this.state.email.includes('@')  ? "Please enter a valid email." : this.state.emailTaken ? "This email is already in use. Please try again." : null}
+              </HelperText>
+            )
+            : null
+          }
+        </Block>
+        <Block style={styles.inputBlock}>
+          <TextInput
+            value={this.state.password}
+            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+            style={styles.input}
+            mode={'outlined'}
+            secureTextEntry={true}
+            placeholder="Password"
+            onChangeText={this.onPasswordChange}
+            onBlur={() => {
+              this.setState({passwordBlur:true});
+            }}
+          />
+          {
+            this.state.passwordBlur
+            ? (
+              <HelperText
+                type="error"
+                visible={!(this.state.password.length >= 8)}
+                theme={{colors:{error:colors.orange}}}
+                style={!(this.state.password.length >= 8) ? {} :{display:"none"}}
+              >
+                Your password must have at least 8 characters.
+              </HelperText>
+            )
+            : null
+          }
+        </Block>
+        <Block style={styles.inputBlock}>
+          <TextInput
+            value={this.state.passwordConfirm}
+            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+            style={styles.input}
+            mode={'outlined'}
+            secureTextEntry={true}
+            placeholder="Confirm Password"
+            onChangeText={this.onPasswordConfirmChange}
+          />
+          { this.state.matchError
+            ? (
+              <HelperText
+                type="error"
+                visible={this.state.matchError}
+                theme={{colors:{error:colors.orange}}}
+                style={this.state.matchError ? {} :{display:"none"}}
+              >
+                Passwords must match
+              </HelperText>
+            )
+            : null
+          }
+        </Block>
+        <Block row style={styles.buttonBlock}>
+          <Button
+            mode="contained"
+            disabled={!this.state.password.length >= 8 || !this.state.email.includes("@") || this.state.emailTaken}
+            onPress={() => {
+                if(this.state.password == this.state.passwordConfirm){
+                  this.props.saveState(0,this.state);
+                  this.props.setState(this.state.email,this.state.password);
+                  this.props.nextFn();
+                } else {
+                  this.setState({matchError:true});
+                }
+                
+              }
+            }
+            style={[{marginLeft:"auto"}, this.state.password.length < 8 || !this.state.email.includes("@") || this.state.emailTaken ? {opacity: .3, backgroundColor:colors.orange} : null]} 
+            theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+              Next
+          </Button>
+        </Block>
+      </Form>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  registerContainer: {
-    width: width * 0.9,
-    borderRadius: 8,
-    borderWidth: 2,
-    padding:16,
-  },
   createButton: {
-    width: width * 0.5,
+    padding:4,
     alignItems: "center",
     justifyContent: "center"
   },

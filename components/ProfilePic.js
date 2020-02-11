@@ -14,18 +14,18 @@ class ProfilePic extends React.Component{
     render(){
         colors = this.props.theme.colors;
         return (
-            <Block center middle style={{width:this.props.size,height:this.props.size,borderRadius:'50%',borderWidth:2,borderColor:this.props.theme.colors.orange}}>
+            <Block center middle style={{borderRadius:'50%',borderWidth:3,borderColor:this.props.theme.colors.orange,padding:0,backgroundColor:colors.orange}}>
                 {
                 this.props.proPicUrl != null
                 ? <Avatar.Image
                     theme={{colors:{primary:colors.dBlue}}}
                     source={{uri:this.props.proPicUrl}}
-                    size={this.props.size-4}
+                    size={this.props.size}
                 />
                 : <Avatar.Image
                     theme={{colors:{primary:colors.dBlue}}}
                     source={defaultUser}
-                    size={this.props.size-4}
+                    size={this.props.size}
                     />
                 }
             </Block>
@@ -33,6 +33,5 @@ class ProfilePic extends React.Component{
         
     }
 }
-const styles = StyleSheet.creae
 
 export default withTheme(ProfilePic);

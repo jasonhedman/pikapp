@@ -20,7 +20,6 @@ class LobbyModal extends React.Component {
   }
 
   render(){
-    console.log();
     const colors = this.props.theme.colors;
     let marker = this.props.marker;
     var homeTeam = [];

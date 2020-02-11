@@ -39,37 +39,34 @@ class Register extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.getPermissionAsync();
+  // componentDidMount() {
+  //   this.getPermissionAsync();
     
-  }
+  // }
 
 
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  }
+  // getPermissionAsync = async () => {
+  //   if (Constants.platform.ios) {
+  //     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+  //     if (status !== 'granted') {
+  //       alert('Sorry, we need camera roll permissions to make this work!');
+  //     }
+  //   }
+  // }
 
   setNameAndUsername = (name,username,image) => {
     this.setState({name,username,image});
   }
 
-  setEmailAndPassword = (email,password) => {
-    this.setState({email,password});
+  setEmailAndPassword = (email,password,passwordConfirm) => {
+    this.setState({email,password,passwordConfirm});
   }
 
   setDob = (dob,func) => {
     this.setState({dob},func);
   }
 
-  onSignUp = () => {
-    console.log(this.state);
-    console.log("fhljsdfhksjd");
-    
+  onSignUp = () => {    
     firebase.auth().createUserWithEmailAndPassword(this.state.email,this.state.password)
       .then((cred) => {
         firebase.firestore().collection('users').doc(cred.user.uid).set({
@@ -150,9 +147,9 @@ class Register extends React.Component {
         <MultiStep 
           onFinish={() => {this.onSignUp()}}
           steps={[
+            {name: 'StepOne', component: <EmailAndPassword setState={this.setEmailAndPassword}/>},
             {name: 'StepTwo', component: <NameAndUsername setState={this.setNameAndUsername} pickImage={this._pickImage}/>},
             {name: "StepThree", component: <AgeAndIntensity setState={this.setDob}/>},
-            {name: 'StepOne', component: <EmailAndPassword setState={this.setEmailAndPassword}/>},
             
           ]} 
         />

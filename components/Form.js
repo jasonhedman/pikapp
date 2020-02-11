@@ -21,8 +21,8 @@ class NameAndUsername extends React.Component {
   render() {
     let colors = this.props.theme.colors;
     return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{height,width}}>
-        <Block center middle style={{height,width}}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{height,width,}}>
+        <Block center middle style={{height,width,backgroundColor:colors.dBlue}}>
           <KeyboardAvoidingView enabled behavior="position">
             <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
               {this.props.children}

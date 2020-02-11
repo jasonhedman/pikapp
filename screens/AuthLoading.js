@@ -57,7 +57,6 @@ export default class AuthLoading extends React.Component{
     let token = await Notifications.getExpoPushTokenAsync();
     firebase.firestore().collection('users').where('pushToken', '==', token).get()
       .then((users) => {
-        console.log('passed');
         users.forEach((user) => {
           if(user.id != uid){
             firebase.firestore().collection('users').doc(user.id).update({

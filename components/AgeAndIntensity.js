@@ -83,7 +83,7 @@ class AgeAndIntensity extends React.Component {
                     </Block>
                     <Block center>
                         <Block width={width*.8}  style={{ marginBottom: 12 }}>
-                            <Button style={{display:"flex",justifyContent:"center",alignItems:"center",borderColor:"#FFF"}} icon="arrow-down-drop-circle" dark={true} mode="text" onPress={() => {this.setState({dobModalVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
+                            <Button style={{display:"flex",justifyContent:"center",alignItems:"center",borderColor:"#FFF"}} icon="menu-down" dark={true} mode="text" onPress={() => {this.setState({dobModalVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
                                 {this.state.dob.toDateString() != new Date().toDateString() ? this.state.dob.toDateString() : "Select Your Date of Birth"}
                             </Button>
                             {

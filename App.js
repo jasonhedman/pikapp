@@ -147,7 +147,6 @@ async function loadResourcesAsync() {
       "raleway": require('./assets/fonts/Raleway-Regular.ttf'),
     }),
     Permissions.askAsync(Permissions.LOCATION),
-    Permissions.askAsync(Permissions.CAMERA_ROLL),
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL),
   ]);
 }

@@ -10,7 +10,7 @@ import {
 import { Block } from "galio-framework";
 
 import {Button,TextInput,Headline,withTheme,HelperText} from 'react-native-paper';
-
+import Form from '../components/Form';
 
 import * as firebase from 'firebase';
 
@@ -44,61 +44,44 @@ class Register extends React.Component {
   render() {
     colors = this.props.theme.colors;
     return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <Block flex middle>
-          <View
-            style={{ width, height, zIndex: 1, backgroundColor:colors.dBlue }}
-          >
-            <KeyboardAvoidingView
-              style={{ flex: 1 }}
-              behavior="padding"
-              enabled
-            >
-            <Block flex middle>
-              <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
-                {
-                  this.state.submitted
-                  ? (
-                    <>
-                      <Block style={styles.headerBlock}>
-                        <Headline style={{color:colors.white,textAlign:'center',marginBottom:height*.025}}>Check your email to reset your password.</Headline>
-                      </Block>
-                      <Button mode="contained" dark={true} style={styles.createButton} onPress={() => {this.props.navigation.navigate("SignIn")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                        Back
-                      </Button>
-                    </>
-                  )
-                  : (
-                    <>
-                      <Block style={styles.headerBlock}>
-                        <Button icon='keyboard-backspace' compact={true} style={styles.backButton} onPress={() => this.props.navigation.navigate('SignIn')} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}></Button>
-                        <Headline style={{color:colors.white,textAlign:'center'}}>Forgot Password</Headline>
-                      </Block>
-                      <Block style={styles.inputBlock}>
-                        <TextInput
-                            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                            style={styles.input}
-                            mode={'outlined'}
-                            placeholder="Email"
-                            onChangeText={this.onModalEmailChange}
-                        />
-                      </Block>
-                      <Block middle center style={styles.buttonBlock}>
-                        <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                            Reset Password
-                        </Button>
-                        <HelperText type="error" style={this.state.error ? {} : {display:"none"}} visible={this.state.error} theme={{colors:{error:colors.orange}}}>This email is not associated with an account.</HelperText>
-                      </Block>
-                    </>
-                  )
-                }
-                </Block>
+      <Form>
+        {
+          this.state.submitted
+          ? (
+            <>
+              <Block style={styles.headerBlock}>
+                <Headline style={{color:colors.white,textAlign:'center',marginBottom:height*.025}}>Check your email to reset your password.</Headline>
               </Block>
-            </KeyboardAvoidingView>
-          </View>
-        </Block>
-      </TouchableWithoutFeedback>
-        
+              <Button mode="contained" dark={true} style={styles.createButton} onPress={() => {this.props.navigation.navigate("SignIn")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                Back
+              </Button>
+            </>
+          )
+          : (
+            <>
+              <Block style={styles.headerBlock}>
+                <Button icon='keyboard-backspace' compact={true} style={styles.backButton} onPress={() => this.props.navigation.navigate('SignIn')} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}></Button>
+                <Headline style={{color:colors.white,textAlign:'center'}}>Forgot Password</Headline>
+              </Block>
+              <Block style={styles.inputBlock}>
+                <TextInput
+                    theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                    style={styles.input}
+                    mode={'outlined'}
+                    placeholder="Email"
+                    onChangeText={this.onModalEmailChange}
+                />
+              </Block>
+              <Block middle center style={styles.buttonBlock}>
+                <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                    Reset Password
+                </Button>
+                <HelperText type="error" style={this.state.error ? {} : {display:"none"}} visible={this.state.error} theme={{colors:{error:colors.orange}}}>This email is not associated with an account.</HelperText>
+              </Block>
+            </>
+          )
+        }
+      </Form>
     );
   }
 }

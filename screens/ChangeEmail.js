@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import { Block } from "galio-framework";
-
+import Form from '../components/Form';
 import {Caption,Button,TextInput,Headline,withTheme,Portal,Dialog,HelperText,Text, Subheading} from 'react-native-paper';
 
 
@@ -88,93 +88,93 @@ class ChangeEmail extends React.Component {
   render() {
     colors = this.props.theme.colors;
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <Block flex center middle style={{width,backgroundColor:colors.dBlue}}>
-            <KeyboardAvoidingView
-                style={{flex:1,justifyContent:'center', alignItems:'center'}}
-                enabled
-                behavior="padding"
-            >
-                    <Block center middle style={{width:width*.9,padding: 10, paddingBottom: height*.025,borderWidth:2, borderRadius:8, borderColor:colors.orange}}>
-                    {
-                        this.state.submitted
-                        ? (
-                        <>
-                            <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025}}>Your email has been changed.</Headline>
-                            <Button mode="contained" dark={true} style={{}} onPress={() => {this.props.navigation.navigate("Profile")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                                Back
-                            </Button>
-                        </>
-                        )
-                        : (
-                        <>
-                            <Block middle style={{marginRight:"auto"}}>
-                            <Button icon='navigate-before' onPress={() => this.props.navigation.navigate('Profile')} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto'}}>
-                                
-                            </Button>
-                            </Block>
-                            <Headline style={{color:colors.white,textAlign:'center',marginBottom:height*.025}}>Change Email</Headline>
-                            <TextInput
-                                secureTextEntry={true}
-                                theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                                style={[styles.input]}
-                                mode={'outlined'}
-                                placeholder="Current Password"
-                                onChangeText={this.onCurrentPasswordChange}
-                            />
-                            <TextInput
-                                theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                                style={[styles.input]}
-                                mode={'outlined'}
-                                placeholder="New Email"
-                                onChangeText={this.onEmailChange}
-                                onBlur={() => {
-                                    this.setState({emailBlur:true}, this.checkEmail);
-                                }}
-                            />
-                            <Button mode="contained" disabled={this.state.emailTaken} dark={true} style={[styles.createButton, this.state.emailTaken ? {opacity:.3,backgroundColor:colors.orange}:null]} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                                Change Email
-                            </Button>
-                            {
-                                this.state.emailBlur
-                                ? <HelperText type="error" visible={this.state.emailTaken} theme={{colors:{error:colors.orange}}}>Email already in use</HelperText>
-                                : null
-                            }
-                            {
-                                this.state.passwordError
-                                ? <HelperText type="error" visible={this.state.passwordError} theme={{colors:{error:colors.orange}}}>Password is incorrect</HelperText>
-                                : null
-                            }
-                            {
-                                this.state.emailInvalid
-                                ? <HelperText type="error" visible={this.state.emailInvalid} theme={{colors:{error:colors.orange}}}>Email is invalid</HelperText>
-                                : null
-                            }
-                        </>
-                        )
-                    }
-                    </Block>
-            </KeyboardAvoidingView>
-          </Block>
-        </TouchableWithoutFeedback>
-        
+        <Form>
+          {
+            this.state.submitted
+            ? (
+            <>
+                <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025}}>Your email has been changed.</Headline>
+                <Button mode="contained" dark={true} style={{}} onPress={() => {this.props.navigation.navigate("Profile")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                    Back
+                </Button>
+            </>
+            )
+            : (
+            <>
+                <Block style={styles.headerBlock} middle>
+                  <Button onPress={() => this.props.navigation.navigate('Profile')} mode={'text'} compact={true} icon={'keyboard-backspace'} theme={{colors:{primary:colors.orange}}} style={{position:'absolute', left:-8, padding:0}}></Button>
+                  <Headline style={{color:this.props.theme.colors.white}}>Change Email</Headline>
+                </Block>
+                <Block style={styles.inputBlock}>
+                  <TextInput
+                    secureTextEntry={true}
+                    theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                    style={[styles.input]}
+                    mode={'outlined'}
+                    placeholder="Current Password"
+                    onChangeText={this.onCurrentPasswordChange}
+                  />
+                </Block>
+                <Block style={styles.inputBlock}>
+                  <TextInput
+                    theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                    style={[styles.input]}
+                    mode={'outlined'}
+                    placeholder="New Email"
+                    onChangeText={this.onEmailChange}
+                    onBlur={() => {
+                        this.setState({emailBlur:true}, this.checkEmail);
+                    }}
+                  />
+                </Block>
+                <Block style={styles.buttonBlock}>
+                  <Button mode="contained" disabled={this.state.emailTaken} dark={true} style={[styles.createButton, this.state.emailTaken ? {opacity:.3,backgroundColor:colors.orange}:null]} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                    Change Email
+                  </Button>
+                  {
+                    this.state.emailBlur
+                    ? <HelperText type="error" visible={this.state.emailTaken} theme={{colors:{error:colors.orange}}}>Email already in use</HelperText>
+                    : null
+                  }
+                  {
+                    this.state.passwordError
+                    ? <HelperText type="error" visible={this.state.passwordError} theme={{colors:{error:colors.orange}}}>Password is incorrect</HelperText>
+                    : null
+                  }
+                  {
+                    this.state.emailInvalid
+                    ? <HelperText type="error" visible={this.state.emailInvalid} theme={{colors:{error:colors.orange}}}>Email is invalid</HelperText>
+                    : null
+                  }
+                </Block>
+            </>
+            )
+        }
+      </Form>
     );
   }
 }
 
 const styles = StyleSheet.create({
   createButton: {
-    flex:0,
-    height: height * .05,
     alignItems: "center",
     justifyContent: "center",
+    padding:4
   },
   input: {
-    marginTop:0,
-    width:width*.8,
-    height: height*.075,
-    justifyContent:"center",
-    marginBottom:height*.02
+    justifyContent:"center"
+  },
+  inputBlock:{
+    width:"100%",
+    marginBottom:12,
+  },
+  buttonBlock:{
+    marginTop:8
+  },
+  headerBlock:{
+    width:'100%',
+    marginTop:16,
+    marginBottom:16
   }
 });
 

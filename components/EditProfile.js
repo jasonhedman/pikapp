@@ -16,6 +16,7 @@ const { width, height } = Dimensions.get("screen");
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import ProfilePic from './ProfilePic';
+import Form from './Form';
 
 class EditProfile extends React.Component {
   constructor(props){
@@ -153,99 +154,95 @@ class EditProfile extends React.Component {
               </Block>
             </Block>
           </SlideModal>
-          <TouchableWithoutFeedback style={{height,width}} onPress={Keyboard.dismiss}>
-              <Block flex style={{backgroundColor:colors.dBlue,height,width}} center middle>
-                  <Block column middle center style={[styles.registerContainer, {borderColor:colors.orange}]}>
-                      <Block center style={styles.headerBlock}>
-                        <Button onPress={() => this.props.close()} mode={'text'} compact={true} icon={'keyboard-backspace'} theme={{colors:{primary:colors.orange}}} style={{position:'absolute', left:-8,top:0, padding:0}}>
-                        </Button>
-                        <Headline style={{color:this.props.theme.colors.white}}>
-                            Edit Profile
-                        </Headline>
-                      </Block>
-                      <TouchableRipple 
-                        onPress={() => this.setState({visible:true})}
-                        style={{marginBottom:12}}
-                      >
-                        <ProfilePic size={75} proPicUrl={this.state.image} />
-                      </TouchableRipple>
-                      <Block style={styles.inputBlock}>
-                          <TextInput
-                          value={this.state.name}
-                          theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                          style={[styles.input]}
-                          mode={'outlined'}
-                          placeholder="Name"
-                          onChangeText={this.onNameChange}
-                          onBlur={() => {
-                              this.setState({nameBlur:true});
-                          }}
-                          />
-                          {
-                          this.state.nameBlur
-                          ? (
-                            <HelperText
-                              type="error"
-                              visible={!this.state.name.length > 0}
-                              theme={{colors:{error:colors.orange}}}
-                              style={!this.state.name.length > 0 ? {} :{display:"none"}}
-                            >
-                              Please enter your name.
-                            </HelperText>
-                          )
-                          : null
-                          }
-                      </Block>
-                      <Block style={styles.inputBlock}>
-                          <TextInput
-                          value={this.state.username}
-                          theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                          style={styles.input}
-                          mode={'outlined'}
-                          placeholder="Username"
-                          onChangeText={(val) => {
-                              this.onUsernameChange(val.toLowerCase(), () => {
-                              if(this.state.usernameBlur){
-                                  this.checkUsername()
-                              }
-                              });
-                          }}
-                          onBlur={() => {
-                              this.checkUsername();
-                              this.setState({usernameBlur:true});
-                          }}
-                          />
-                          {
-                          this.state.usernameBlur
-                          ? (
-                            <HelperText
-                              type="error"
-                              visible={!this.state.username.length > 0 || this.state.usernameTaken}
-                              theme={{colors:{error:colors.orange}}}
-                              style={!this.state.username.length > 0 || this.state.usernameTaken ? {} :{display:"none"}}
-                            >
-                              {this.state.username.length <= 0 ? "Please enter a username." : this.state.usernameTaken ? "This username is taken. Please try another." : null}
-                            </HelperText>
-                          )
-                          : null
-                          }
-                      </Block>
-                      <Block middle center style={styles.buttonBlock}>
-                        <Button 
-                          disabled={this.state.usernameTaken} 
-                          mode="contained" 
-                          dark={true} 
-                          style={[styles.createButton, this.state.usernameTaken ? {opacity: .3, backgroundColor:colors.orange} : null]} 
-                          onPress={this.onSubmit} 
-                          theme={{colors:{primary:colors.orange},
-                          fonts:{medium:this.props.theme.fonts.regular}}}
-                        >
-                            Save Changes
-                        </Button>
-                      </Block>
-                  </Block>
-              </Block>
-          </TouchableWithoutFeedback>
+          <Form>
+            <Block center style={styles.headerBlock}>
+              <Button onPress={() => this.props.close()} mode={'text'} compact={true} icon={'keyboard-backspace'} theme={{colors:{primary:colors.orange}}} style={{position:'absolute', left:-8,top:0, padding:0}}>
+              </Button>
+              <Headline style={{color:this.props.theme.colors.white}}>
+                  Edit Profile
+              </Headline>
+            </Block>
+            <TouchableRipple 
+              onPress={() => this.setState({visible:true})}
+              style={{marginBottom:12}}
+            >
+              <ProfilePic size={75} proPicUrl={this.state.image} />
+            </TouchableRipple>
+            <Block style={styles.inputBlock}>
+                <TextInput
+                value={this.state.name}
+                theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                style={[styles.input]}
+                mode={'outlined'}
+                placeholder="Name"
+                onChangeText={this.onNameChange}
+                onBlur={() => {
+                    this.setState({nameBlur:true});
+                }}
+                />
+                {
+                this.state.nameBlur
+                ? (
+                  <HelperText
+                    type="error"
+                    visible={!this.state.name.length > 0}
+                    theme={{colors:{error:colors.orange}}}
+                    style={!this.state.name.length > 0 ? {} :{display:"none"}}
+                  >
+                    Please enter your name.
+                  </HelperText>
+                )
+                : null
+                }
+            </Block>
+            <Block style={styles.inputBlock}>
+                <TextInput
+                value={this.state.username}
+                theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                style={styles.input}
+                mode={'outlined'}
+                placeholder="Username"
+                onChangeText={(val) => {
+                    this.onUsernameChange(val.toLowerCase(), () => {
+                    if(this.state.usernameBlur){
+                        this.checkUsername()
+                    }
+                    });
+                }}
+                onBlur={() => {
+                    this.checkUsername();
+                    this.setState({usernameBlur:true});
+                }}
+                />
+                {
+                this.state.usernameBlur
+                ? (
+                  <HelperText
+                    type="error"
+                    visible={!this.state.username.length > 0 || this.state.usernameTaken}
+                    theme={{colors:{error:colors.orange}}}
+                    style={!this.state.username.length > 0 || this.state.usernameTaken ? {} :{display:"none"}}
+                  >
+                    {this.state.username.length <= 0 ? "Please enter a username." : this.state.usernameTaken ? "This username is taken. Please try another." : null}
+                  </HelperText>
+                )
+                : null
+                }
+            </Block>
+            <Block middle center style={styles.buttonBlock}>
+              <Button 
+                disabled={this.state.usernameTaken} 
+                mode="contained" 
+                dark={true} 
+                style={[styles.createButton, this.state.usernameTaken ? {opacity: .3, backgroundColor:colors.orange} : null]} 
+                onPress={this.onSubmit} 
+                theme={{colors:{primary:colors.orange},
+                fonts:{medium:this.props.theme.fonts.regular}}}
+              >
+                  Save Changes
+              </Button>
+            </Block>
+          </Form>
         </>
       );
     }

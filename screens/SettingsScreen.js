@@ -17,7 +17,6 @@ export default function SettingsScreen() {
      var isAnonymous = user.isAnonymous;
      var uid = user.uid;
      var providerData = user.providerData;
-     console.log(email);
    } else {
      // User is signed out.
      // ...

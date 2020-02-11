@@ -97,7 +97,7 @@ class Register extends React.Component {
             <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSignIn} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                 Sign In
             </Button>
-            <HelperText type="error" visible={this.state.error} theme={{colors:{error:colors.orange}}}>Incorrect Email or Password</HelperText>
+            <HelperText type="error" visible={this.state.error} style={ this.state.error ? {} : {display:'none'}} theme={{colors:{error:colors.orange}}}>Incorrect Email or Password</HelperText>
             <TouchableOpacity onPress={() => this.props.navigation.navigate("ForgotPassword")}><Text style={{color:colors.grey}}>Forgot Password?</Text></TouchableOpacity>
           </Block>
         </Form>
@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
   createButton: {
     padding:4,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    marginBottom:8
   },
   input: {
     justifyContent:"center"

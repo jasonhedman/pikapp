@@ -2,23 +2,16 @@ import React from "react";
 import {
   StyleSheet,
   Dimensions,
-  KeyboardAvoidingView,
-  View,
-  TouchableWithoutFeedback,
-  Keyboard
 } from "react-native";
 import { Block} from "galio-framework";
-
-import {Button,TextInput,Headline,withTheme,IconButton,Avatar,TouchableRipple,HelperText} from 'react-native-paper';
-
-import {argonTheme } from "../constants";
-
+import {Button,TextInput,Headline,withTheme,IconButton,TouchableRipple,HelperText} from 'react-native-paper';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
-
+import Form from './Form';
+import ProfilePic from './ProfilePic';
 const { width, height } = Dimensions.get("screen");
-
-import {ImagePicker} from 'expo';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
 
 class NameAndUsername extends React.Component {
   constructor(props){
@@ -42,15 +35,23 @@ class NameAndUsername extends React.Component {
   }
 
   pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-    });
-    if (!result.cancelled) {
-      this.setState({ image: result.uri });
+    let permission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+    if(permission.status != 'granted'){
+      permission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     }
-
+    if(permission.status == 'granted'){
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+      });
+      if (!result.cancelled) {
+        this.setState({ image: result.uri });
+      }
+    } else {
+      alert('You cannot upload a profile picture without first allowing access to your camera roll.')
+    }
+    
   };
 
   componentDidMount(){
@@ -81,125 +82,114 @@ class NameAndUsername extends React.Component {
   render() {
     let colors = this.props.theme.colors;
     return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{height,width}}>
-        <Block center middle style={{height,width}}>
-          <KeyboardAvoidingView enabled behavior="position">
-            <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
-              <Block style={styles.headerBlock} middle>
-                <Headline style={{color:this.props.theme.colors.white}}>
-                  Sign Up
-                </Headline>
-              </Block>
-              <Block center middle style={{width:height*.075,height:height*.075,borderRadius:"50%",borderWidth:2,borderColor:this.props.theme.colors.orange,marginBottom:height*.015}}>
-              {
-                this.state.image != null
-                ? (
-                    <TouchableRipple onPress={this.pickImage}>
-                        <Avatar.Image
-                            source={{uri:this.state.image}}
-                            size={height*.075-4}
-                        />
-                    </TouchableRipple>
-                )
-                : (
-                    <IconButton
-                        icon="camera"
-                        onPress={this.pickImage}
-                        color={this.props.theme.colors.white}
-                        style={{margin:0}}
-                    />
-                )
-              }
-              </Block>
-              <Block style={styles.inputBlock}>
-                <TextInput
-                  value={this.state.name}
-                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                  style={[styles.input]}
-                  mode={'outlined'}
-                  placeholder="Name"
-                  onChangeText={this.onNameChange}
-                  onBlur={() => {
-                    this.setState({nameBlur:true});
-                  }}
-                />
-                {
-                  this.state.nameBlur
-                  ? (
-                    <HelperText
-                      type="error"
-                      visible={!this.state.name.length > 0}
-                      theme={{colors:{error:colors.orange}}}
-                      style={!this.state.name.length > 0 ? {} :{display:"none"}}
-                    >
-                      Please enter your name.
-                    </HelperText>
-                  )
-                  : null
-                }
-              </Block>
-              <Block style={styles.inputBlock}>
-                <TextInput
-                  value={this.state.username}
-                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                  style={styles.input}
-                  mode={'outlined'}
-                  placeholder="Username"
-                  onChangeText={(val) => {
-                    this.onUsernameChange(val.toLowerCase(), () => {
-                      if(this.state.usernameBlur){
-                        this.checkUsername()
-                      }
-                    });
-                  }}
-                  onBlur={() => {
-                    this.checkUsername();
-                    this.setState({usernameBlur:true});
-                  }}
-                />
-                {
-                  this.state.usernameBlur
-                  ? (
-                    <HelperText
-                      type="error"
-                      visible={!this.state.username.length > 0 || this.state.usernameTaken}
-                      theme={{colors:{error:colors.orange}}}
-                      style={!this.state.username.length > 0 || this.state.usernameTaken ? {} :{display:"none"}}
-                    >
-                      {this.state.username.length <= 0 ? "Please enter a username." : this.state.usernameTaken ? "This username is taken. Please try another." : null}
-                    </HelperText>
-                  )
-                  : null
-                }
-              </Block>
-              <Block row style={styles.buttonBlock}>
-                <Button 
-                  onPress={() => {
-                    this.props.saveState(1,this.state);
-                    this.props.setState(this.state.name,this.state.username,this.state.image);
-                    this.props.prevFn();
-                  }} 
-                  theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}
-                >
-                  Back
-                </Button>
-                <Button
-                  disabled={this.state.name.length == 0 || this.state.username.length == 0 || this.state.usernameTaken}
-                  mode="contained"
-                  onPress={() => {
-                    this.props.saveState(1,this.state);
-                    this.props.setState(this.state.name,this.state.username,this.state.image);
-                    this.props.nextFn();
-                  }} 
-                  style={[{marginLeft:"auto"}, this.state.name.length == 0 || this.state.username.length == 0 || this.state.usernameTaken ? {opacity: .3, backgroundColor:colors.orange} : null]} 
-                  theme={{colors:{primary:colors.orange,disabled:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
-                    Next
-                </Button>
-              </Block>
-            </Block>
-          </KeyboardAvoidingView>
+      <Form>
+        <Block style={styles.headerBlock} middle>
+          <Headline style={{color:this.props.theme.colors.white}}>
+            Sign Up
+          </Headline>
         </Block>
-      </TouchableWithoutFeedback>
+        <TouchableRipple onPress={this.pickImage} style={{marginBottom:12}}>
+          <>
+            <ProfilePic proPicUrl={this.state.image} size={80} />
+            {
+              this.state.image == null
+              ? <IconButton
+                size={20}
+                color={colors.white}
+                icon='plus'
+                style={{position:'absolute',left:-10,top:-10,backgroundColor:colors.orange}}
+              />
+              : null
+            }
+          </>
+        </TouchableRipple>
+        <Block style={styles.inputBlock}>
+          <TextInput
+            value={this.state.name}
+            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+            style={[styles.input]}
+            mode={'outlined'}
+            placeholder="Name"
+            onChangeText={this.onNameChange}
+            onBlur={() => {
+              this.setState({nameBlur:true});
+            }}
+          />
+          {
+            this.state.nameBlur
+            ? (
+              <HelperText
+                type="error"
+                visible={!this.state.name.length > 0}
+                theme={{colors:{error:colors.orange}}}
+                style={!this.state.name.length > 0 ? {} :{display:"none"}}
+              >
+                Please enter your name.
+              </HelperText>
+            )
+            : null
+          }
+        </Block>
+        <Block style={styles.inputBlock}>
+          <TextInput
+            value={this.state.username}
+            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+            style={styles.input}
+            mode={'outlined'}
+            placeholder="Username"
+            onChangeText={(val) => {
+              this.onUsernameChange(val.toLowerCase(), () => {
+                if(this.state.usernameBlur){
+                  this.checkUsername()
+                }
+              });
+            }}
+            onBlur={() => {
+              this.checkUsername();
+              this.setState({usernameBlur:true});
+            }}
+          />
+          {
+            this.state.usernameBlur
+            ? (
+              <HelperText
+                type="error"
+                visible={!this.state.username.length > 0 || this.state.usernameTaken}
+                theme={{colors:{error:colors.orange}}}
+                style={!this.state.username.length > 0 || this.state.usernameTaken ? {} :{display:"none"}}
+              >
+                {this.state.username.length <= 0 ? "Please enter a username." : this.state.usernameTaken ? "This username is taken. Please try another." : null}
+              </HelperText>
+            )
+            : null
+          }
+        </Block>
+        <Block row style={styles.buttonBlock}>
+          <Button 
+            onPress={() => {
+              this.props.saveState(1,this.state);
+              this.props.setState(this.state.name,this.state.username,this.state.image);
+              this.props.prevFn();
+            }} 
+            theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}
+            compact={true}
+          >
+            Back
+          </Button>
+          <Button
+            disabled={this.state.name.length == 0 || this.state.username.length == 0 || this.state.usernameTaken}
+            mode="contained"
+            onPress={() => {
+              this.props.saveState(1,this.state);
+              this.props.setState(this.state.name,this.state.username,this.state.image);
+              this.props.nextFn();
+            }} 
+            style={[{marginLeft:"auto"}, this.state.name.length == 0 || this.state.username.length == 0 || this.state.usernameTaken ? {opacity: .3, backgroundColor:colors.orange} : null]} 
+            theme={{colors:{primary:colors.orange,disabled:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
+              Next
+          </Button>
+        </Block>
+      </Form>
     );
   }
 }

@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import { Block } from "galio-framework";
-
+import Form from '../components/Form';
 import {Caption,Button,TextInput,Headline,withTheme,Portal,Dialog,HelperText,Text, Subheading} from 'react-native-paper';
 
 
@@ -68,93 +68,81 @@ class ChangePassword extends React.Component {
   render() {
     colors = this.props.theme.colors;
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{height,width}}>
-          <Block flex center middle style={{width,backgroundColor:colors.dBlue}}>
-            <KeyboardAvoidingView
-                enabled
-                behavior="padding"
-            >
-              <Block flex middle>
-                <Block column center middle style={[styles.registerContainer, {borderColor:colors.orange}]}>
-                  {
-                      this.state.submitted
-                      ? (
-                      <>
-                          <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025}}>Your password has been changed.</Headline>
-                          <Button mode="contained" dark={true} style={{}} onPress={() => {this.props.navigation.navigate("Profile")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                              Back
-                          </Button>
-                      </>
-                      )
-                      : (
-                      <>
-                        <Block style={styles.headerBlock}>
-                          <Button onPress={() => this.props.navigation.navigate('Profile')} mode={'text'} compact={true} icon={'keyboard-backspace'} theme={{colors:{primary:colors.orange}}} style={{position:'absolute', left:-8,top:0, padding:0,zIndex:100}}>
-                          </Button>
-                          <Headline style={{color:colors.white,textAlign:'center'}}>Change Password</Headline>
-                        </Block>
-                        <Block style={styles.inputBlock}>
-                          <TextInput
-                            secureTextEntry={true}
-                            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                            style={[styles.input]}
-                            mode={'outlined'}
-                            placeholder="Current Password"
-                            onChangeText={this.onCurrentPasswordChange}
-                          />
-                        </Block>
-                        <Block style={styles.inputBlock}>
-                          <TextInput
-                            secureTextEntry={true}
-                            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                            style={[styles.input]}
-                            mode={'outlined'}
-                            placeholder="New Password"
-                            onChangeText={this.onPasswordChange}
-                            onBlur={() => {
-                                this.setState({passwordBlur:true})
-                            }}
-                          />
-                        </Block>
-                        <Block style={styles.inputBlock}>
-                          <TextInput
-                            secureTextEntry={true}
-                            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                            style={[styles.input]}
-                            mode={'outlined'}
-                            placeholder="Confirm Password"
-                            onChangeText={this.onConfirmPasswordChange}
-                          />
-                        </Block>
-                        <Block style={styles.buttonBlock}>
-                          <Button mode="contained" disabled={this.state.passwordBlur && this.state.password.length < 8} dark={true} style={[styles.createButton, this.state.passwordBlur && this.state.password.length < 8 ? {opacity:.3,backgroundColor:colors.orange}:null]} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                            Change Password
-                          </Button>
-                          {
-                            this.state.passwordError
-                            ? <HelperText type="error" visible={this.state.passwordError} theme={{colors:{error:colors.orange}}}>Incorrect current password</HelperText>
-                            : null
-                          }
-                          {
-                            this.state.passwordBlur && this.state.password.length < 8
-                            ? <HelperText type="error" visible={this.state.password.length < 8} theme={{colors:{error:colors.orange}}}>Password must be more than 8 characters</HelperText>
-                            : null
-                          }
-                          {
-                            this.state.matchError
-                            ? <HelperText type="error" visible={this.state.matchError} theme={{colors:{error:colors.orange}}}>Passwords do not match</HelperText>
-                            : null
-                          }
-                        </Block>
-                      </>
-                      )
-                  }
-                </Block>
+      <Form>
+        {
+            this.state.submitted
+            ? (
+            <>
+                <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025}}>Your password has been changed.</Headline>
+                <Button mode="contained" dark={true} style={{}} onPress={() => {this.props.navigation.navigate("Profile")}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                    Back
+                </Button>
+            </>
+            )
+            : (
+            <>
+              <Block style={styles.headerBlock}>
+                <Button onPress={() => this.props.navigation.navigate('Profile')} mode={'text'} compact={true} icon={'keyboard-backspace'} theme={{colors:{primary:colors.orange}}} style={{position:'absolute', left:-8,top:0, padding:0,zIndex:100}}>
+                </Button>
+                <Headline style={{color:colors.white,textAlign:'center'}}>Change Password</Headline>
               </Block>
-            </KeyboardAvoidingView>
-          </Block>
-        </TouchableWithoutFeedback>
-        
+              <Block style={styles.inputBlock}>
+                <TextInput
+                  secureTextEntry={true}
+                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                  style={[styles.input]}
+                  mode={'outlined'}
+                  placeholder="Current Password"
+                  onChangeText={this.onCurrentPasswordChange}
+                />
+              </Block>
+              <Block style={styles.inputBlock}>
+                <TextInput
+                  secureTextEntry={true}
+                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                  style={[styles.input]}
+                  mode={'outlined'}
+                  placeholder="New Password"
+                  onChangeText={this.onPasswordChange}
+                  onBlur={() => {
+                      this.setState({passwordBlur:true})
+                  }}
+                />
+              </Block>
+              <Block style={styles.inputBlock}>
+                <TextInput
+                  secureTextEntry={true}
+                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
+                  style={[styles.input]}
+                  mode={'outlined'}
+                  placeholder="Confirm Password"
+                  onChangeText={this.onConfirmPasswordChange}
+                />
+              </Block>
+              <Block style={styles.buttonBlock}>
+                <Button mode="contained" disabled={this.state.passwordBlur && this.state.password.length < 8} dark={true} style={[styles.createButton, this.state.passwordBlur && this.state.password.length < 8 ? {opacity:.3,backgroundColor:colors.orange}:null]} onPress={this.onSubmit} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                  Change Password
+                </Button>
+                {
+                  this.state.passwordError
+                  ? <HelperText type="error" visible={this.state.passwordError} theme={{colors:{error:colors.orange}}}>Incorrect current password</HelperText>
+                  : null
+                }
+                {
+                  this.state.passwordBlur && this.state.password.length < 8
+                  ? <HelperText type="error" visible={this.state.password.length < 8} theme={{colors:{error:colors.orange}}}>Password must be more than 8 characters</HelperText>
+                  : null
+                }
+                {
+                  this.state.matchError
+                  ? <HelperText type="error" visible={this.state.matchError} theme={{colors:{error:colors.orange}}}>Passwords do not match</HelperText>
+                  : null
+                }
+              </Block>
+            </>
+            )
+          }
+      </Form>
     );
   }
 }
