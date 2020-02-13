@@ -8,7 +8,7 @@ import {
   Keyboard
 } from "react-native";
 import { Block} from "galio-framework";
-import {Button,TextInput,Headline,withTheme,IconButton,TouchableRipple,HelperText} from 'react-native-paper';
+import {Button,TextInput,withTheme,IconButton,TouchableRipple} from 'react-native-paper';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 import SlideModal from 'react-native-modal';
@@ -18,6 +18,10 @@ import * as ImagePicker from 'expo-image-picker';
 import ProfilePic from './ProfilePic';
 import Form from './Form';
 import ButtonBlock from './ButtonBlock';
+import HeaderBlock from './HeaderBlock';
+import InputBlock from './InputBlock';
+import HelperText from './HelperText';
+
 
 class EditProfile extends React.Component {
   constructor(props){
@@ -56,7 +60,7 @@ class EditProfile extends React.Component {
         aspect: [4, 3],
       });
       if (!result.cancelled) {
-        this.setState({ image: result.uri });
+        this.setState({ image: result.uri,visible:false });
       }
     } else {
       alert('You cannot upload a profile picture without first allowing access to your camera roll.')
@@ -157,92 +161,40 @@ class EditProfile extends React.Component {
             </Block>
           </SlideModal>
           <Form>
-            <Block center style={styles.headerBlock}>
-              <Button onPress={() => this.props.close()} mode={'text'} compact={true} icon={'keyboard-backspace'} theme={{colors:{primary:colors.orange}}} style={{position:'absolute', left:-8,top:0, padding:0}}>
-              </Button>
-              <Headline style={{color:this.props.theme.colors.white}}>
-                  Edit Profile
-              </Headline>
-            </Block>
+            <HeaderBlock text='Edit Profile' backButton={true} backPress={() => this.props.close()} />
             <TouchableRipple 
               onPress={() => this.setState({visible:true})}
               style={{marginBottom:12}}
             >
               <>
-                <ProfilePic size={80} proPicUrl={this.state.image} />
-                {
-                  this.state.image == null
-                  ? <IconButton
-                    size={20}
-                    color={colors.white}
-                    icon='plus'
-                    style={{position:'absolute',left:-10,top:-10,backgroundColor:colors.orange}}
-                  />
-                  : null
-                }
+                <ProfilePic size={80} proPicUrl={this.state.image} addEnabled={true} />
               </>
             </TouchableRipple>
-            <Block style={styles.inputBlock}>
-                <TextInput
-                value={this.state.name}
-                theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                style={[styles.input]}
-                mode={'outlined'}
-                placeholder="Name"
-                onChangeText={this.onNameChange}
-                onBlur={() => {
-                    this.setState({nameBlur:true});
-                }}
-                />
-                {
-                this.state.nameBlur
-                ? (
-                  <HelperText
-                    type="error"
-                    visible={!this.state.name.length > 0}
-                    theme={{colors:{error:colors.orange}}}
-                    style={!this.state.name.length > 0 ? {} :{display:"none"}}
-                  >
-                    Please enter your name.
-                  </HelperText>
-                )
-                : null
-                }
-            </Block>
-            <Block style={styles.inputBlock}>
-                <TextInput
-                value={this.state.username}
-                theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                style={styles.input}
-                mode={'outlined'}
-                placeholder="Username"
-                onChangeText={(val) => {
-                    this.onUsernameChange(val.toLowerCase(), () => {
-                    if(this.state.usernameBlur){
-                        this.checkUsername()
-                    }
-                    });
-                }}
-                onBlur={() => {
-                    this.checkUsername();
-                    this.setState({usernameBlur:true});
-                }}
-                />
-                {
-                this.state.usernameBlur
-                ? (
-                  <HelperText
-                    type="error"
-                    visible={!this.state.username.length > 0 || this.state.usernameTaken}
-                    theme={{colors:{error:colors.orange}}}
-                    style={!this.state.username.length > 0 || this.state.usernameTaken ? {} :{display:"none"}}
-                  >
-                    {this.state.username.length <= 0 ? "Please enter a username." : this.state.usernameTaken ? "This username is taken. Please try another." : null}
-                  </HelperText>
-                )
-                : null
-                }
-            </Block>
+            <InputBlock 
+              value={this.state.name}
+              placeholder="Name" 
+              onChange={this.onNameChange}
+              onBlur={() => this.setState({nameBlur:true})}
+            >
+              <HelperText visible={!this.state.name.length > 0 && this.state.nameBlur} text='Please enter your name.' />
+            </InputBlock>
+            <InputBlock 
+              value={this.state.username}
+              placeholder="Username" 
+              onChange={(val) => {
+                this.onUsernameChange(val.toLowerCase(), () => {
+                  if(this.state.usernameBlur){
+                      this.checkUsername()
+                  }
+                });
+              }}
+              onBlur={() => {
+                this.checkUsername();
+                this.setState({usernameBlur:true});
+              }}
+            >
+              <HelperText visible={(!this.state.username.length > 0 || this.state.usernameTaken)&&this.state.usernameBlur} text={this.state.username.length <= 0 ? "Please enter a username." : this.state.usernameTaken ? "This username is taken. Please try another." : null} />
+            </InputBlock>
             <ButtonBlock text='Save Changes' disabled={this.state.usernameTaken} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} onPress={this.onSubmit}></ButtonBlock>
           </Form>
         </>
@@ -251,36 +203,14 @@ class EditProfile extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  disabled:{
-    opacity: .3, 
-    backgroundColor:'#E68A54'
-  },
-  registerContainer: {
-    width: width * 0.9,
-    borderRadius: 8,
-    borderWidth: 2,
-    padding:16,
-  },
   createButton: {
     padding:4,
     alignItems: "center",
     justifyContent: "center"
   },
-  input: {
-    justifyContent:"center"
-  },
-  inputBlock:{
-    width:"100%",
-    marginBottom:12,
-  },
   buttonBlock:{
     width:"100%",
     marginTop:8
-  },
-  headerBlock:{
-    width:"100%",
-    marginTop:16,
-    marginBottom:16
   },
 });
 
@@ -307,6 +237,5 @@ async function uploadImageAsync(uri, id) {
     blob.close();
   }
 }
-
 
 export default withTheme(EditProfile);

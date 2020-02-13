@@ -1,6 +1,5 @@
 import React from "react";
-import {StyleSheet} from 'react-native';
-import { withTheme, Avatar } from "react-native-paper";
+import { withTheme, Avatar, IconButton } from "react-native-paper";
 import {Block} from 'galio-framework';
 
 const defaultUser = require("../assets/images/defaultUser.jpg")
@@ -22,11 +21,22 @@ class ProfilePic extends React.Component{
                     source={{uri:this.props.proPicUrl}}
                     size={this.props.size}
                 />
-                : <Avatar.Image
-                    theme={{colors:{primary:colors.dBlue}}}
-                    source={defaultUser}
-                    size={this.props.size}
+                : <><Avatar.Image
+                        theme={{colors:{primary:colors.dBlue}}}
+                        source={defaultUser}
+                        size={this.props.size}
                     />
+                    {
+                        this.props.addEnabled
+                        ? <IconButton
+                        size={20}
+                        color={colors.white}
+                        icon='plus'
+                        style={{position:'absolute',left:-10,top:-10,backgroundColor:colors.orange}}
+                        />
+                        : null
+                    }
+                    </>
                 }
             </Block>
         );

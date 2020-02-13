@@ -2,16 +2,16 @@ import React from "react";
 import {
   StyleSheet,
   Dimensions,
-  Keyboard,
-  TouchableWithoutFeedback,
-  KeyboardAvoidingView
 } from "react-native";
 import { Block } from "galio-framework";
 import Form from '../components/Form';
 import ButtonBlock from '../components/ButtonBlock';
 import HeaderBlock from '../components/HeaderBlock';
+import InputBlock from '../components/InputBlock';
+import HelperText from '../components/HelperText';
 
-import {Caption,Button,TextInput,Headline,withTheme,Portal,Dialog,HelperText,Text, Subheading} from 'react-native-paper';
+
+import {TextInput,withTheme} from 'react-native-paper';
 
 
 import * as firebase from 'firebase';
@@ -22,6 +22,7 @@ class ChangePassword extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+        lengthError:true,
         currentPassword:'',
         password:"",
         confirmPassword:"",
@@ -33,7 +34,11 @@ class ChangePassword extends React.Component {
   }
 
   onPasswordChange = (password) => {
-    this.setState({password});
+    this.setState({password}, () => {
+      if(password.length >= 8){
+        this.setState({lengthError:false})
+      }
+    });
   }
 
   onConfirmPasswordChange = (confirmPassword) => {
@@ -50,17 +55,22 @@ class ChangePassword extends React.Component {
     let credential = firebase.auth.EmailAuthProvider.credential(user.email,this.state.currentPassword)
     firebase.auth().currentUser.reauthenticateWithCredential(credential)
         .then(() => {
-            if(this.state.password == this.state.confirmPassword){
+            this.setState({passwordError:false}, () => {
+              if(this.state.password == this.state.confirmPassword){
+                if(this.state.password.length < 8) {
+                  this.setState({lengthError:true})
+                }
                 firebase.auth().currentUser.updatePassword(this.state.password)
-                    .then(() => {
-                        this.setState({submitted:true})
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    })
-            } else {
-                this.setState({matchError:true})
-            }
+                  .then(() => {
+                      this.setState({submitted:true})
+                  })
+                  .catch((err) => {
+                      console.log(err);
+                  })
+              } else {
+                  this.setState({matchError:true});
+              }
+            });
         })
         .catch((err) => {
             this.setState({passwordError:true});
@@ -76,63 +86,39 @@ class ChangePassword extends React.Component {
             this.state.submitted
             ? (
             <>
-                <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025}}>Your password has been changed.</Headline>
-                <ButtonBlock text='Back' onPress={() => this.props.navigation.navigate("Profile")}></ButtonBlock>
+                <HeaderBlock text='Your Password Has Been Changed.' backButton={false}/>
+                <ButtonBlock onPress={() => this.props.navigation.navigate("Profile")} text='Back'></ButtonBlock>
             </>
             )
             : (
             <>
               <HeaderBlock text='Change Password' backButton={true} backPress={() => this.props.navigation.navigate('Profile')} />
-              <Block style={styles.inputBlock}>
-                <TextInput
-                  secureTextEntry={true}
-                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                  style={[styles.input]}
-                  mode={'outlined'}
-                  placeholder="Current Password"
-                  onChangeText={this.onCurrentPasswordChange}
-                />
-              </Block>
-              <Block style={styles.inputBlock}>
-                <TextInput
-                  secureTextEntry={true}
-                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                  style={[styles.input]}
-                  mode={'outlined'}
-                  placeholder="New Password"
-                  onChangeText={this.onPasswordChange}
-                  onBlur={() => {
-                      this.setState({passwordBlur:true})
-                  }}
-                />
-              </Block>
-              <Block style={styles.inputBlock}>
-                <TextInput
-                  secureTextEntry={true}
-                  theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-                  style={[styles.input]}
-                  mode={'outlined'}
-                  placeholder="Confirm Password"
-                  onChangeText={this.onConfirmPasswordChange}
-                />
-              </Block>
-              <ButtonBlock text='Change Password' onPress={this.onSubmit} disabled={this.state.passwordBlur && this.state.password.length < 8} disabledStyles={{opacity:.3,backgroundColor:colors.orange}}>
+              <InputBlock 
+                value={this.state.currentPassword}
+                placeholder="Current Password" 
+                onChange={this.onCurrentPasswordChange}
+                secureTextEntry={true}
+              />
+              <InputBlock 
+                value={this.state.password}
+                placeholder="New Password" 
+                onChange={this.onPasswordChange}
+                secureTextEntry={true}
+                onBlur={() => {
+                  this.setState({passwordBlur:true})
+                }}
+              />
+              <InputBlock 
+                value={this.state.confirmPassword}
+                placeholder="Confirm New Password" 
+                onChange={this.onConfirmPasswordChange}
+                secureTextEntry={true}
+              />
+              <ButtonBlock text='Change Password' onPress={this.onSubmit} disabled={(this.state.passwordBlur && this.state.password.length < 8) || this.state.lengthError} disabledStyles={{opacity:.3,backgroundColor:colors.orange}}>
                 <>
-                  {
-                    this.state.passwordError
-                    ? <HelperText type="error" visible={this.state.passwordError} theme={{colors:{error:colors.orange}}}>Incorrect current password</HelperText>
-                    : null
-                  }
-                  {
-                    this.state.passwordBlur && this.state.password.length < 8
-                    ? <HelperText type="error" visible={this.state.password.length < 8} theme={{colors:{error:colors.orange}}}>Password must be more than 8 characters</HelperText>
-                    : null
-                  }
-                  {
-                    this.state.matchError
-                    ? <HelperText type="error" visible={this.state.matchError} theme={{colors:{error:colors.orange}}}>Passwords do not match</HelperText>
-                    : null
-                  }
+                  <HelperText visible={this.state.passwordError} text='Incorrect current password.' />
+                  <HelperText visible={this.state.passwordBlur && this.state.password.length < 8} text='Password must be more than 8 characters.' />
+                  <HelperText visible={this.state.matchError} text='Passwords do not match.' />
                 </>
               </ButtonBlock>
             </>
@@ -142,34 +128,5 @@ class ChangePassword extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  registerContainer: {
-    width: width * 0.9,
-    borderRadius: 8,
-    borderWidth: 2,
-    padding:16,
-  },
-  createButton: {
-    padding:4,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  input: {
-    justifyContent:"center"
-  },
-  inputBlock:{
-    width:"100%",
-    marginBottom:12,
-  },
-  buttonBlock:{
-    marginTop:8
-  },
-  headerBlock:{
-    width:"100%",
-    marginTop:16,
-    marginBottom:16
-  },
-});
 
 export default withTheme(ChangePassword);

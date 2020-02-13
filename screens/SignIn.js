@@ -6,10 +6,14 @@ import {
   TouchableOpacity
 } from "react-native";
 import { Block} from "galio-framework";
-import {Caption,Button,TextInput,Headline,withTheme,HelperText,Text} from 'react-native-paper';
+import {Caption,Button,TextInput,withTheme,Text} from 'react-native-paper';
 import Form from '../components/Form';
 import * as firebase from 'firebase';
 import ButtonBlock from '../components/ButtonBlock';
+import HeaderBlock from '../components/HeaderBlock';
+import InputBlock from '../components/InputBlock';
+import HelperText from '../components/HelperText';
+
 
 const { width, height } = Dimensions.get("screen");
 
@@ -63,33 +67,21 @@ class Register extends React.Component {
     return (
       <View style={{height,width}}>
         <Form>
-          <Block style={styles.headerBlock} middle>
-            <Headline style={{color:this.props.theme.colors.white}}>
-              Sign In
-            </Headline>
-          </Block>                          
-          <Block style={styles.inputBlock}>
-            <TextInput
-              theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-              style={[styles.input]}
-              mode={'outlined'}
-              placeholder="Email"
-              onChangeText={this.onEmailChange}
-            />
-          </Block>
-          <Block style={styles.inputBlock}>
-            <TextInput
-              theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-              style={styles.input}
-              mode={'outlined'}
-              secureTextEntry={true}
-              placeholder="Password"
-              onChangeText={this.onPasswordChange}
-            />
-          </Block>
+          <HeaderBlock text='Sign In' />
+          <InputBlock
+            value={this.state.email}
+            placeholder="Email" 
+            onChange={this.onEmailChange}
+          />
+          <InputBlock 
+            value={this.state.password}
+            placeholder="Password" 
+            onChange={this.onPasswordChange}
+            secureTextEntry={true}
+          />
           <ButtonBlock onPress={this.onSignIn} text='Sign In'>
             <>
-              <HelperText type="error" visible={this.state.error} style={ this.state.error ? {} : {display:'none'}} theme={{colors:{error:colors.orange}}}>Incorrect Email or Password</HelperText>
+              <HelperText visible={this.state.error} text='Incorrect Email or Password.' styles={{marginBottom:8}} />
               <TouchableOpacity onPress={() => this.props.navigation.navigate("ForgotPassword")}><Text style={{color:colors.grey}}>Forgot Password?</Text></TouchableOpacity>
             </>
           </ButtonBlock>

@@ -2,15 +2,15 @@ import React from "react";
 import {
   StyleSheet,
   Dimensions,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Keyboard
 } from "react-native";
 import { Block } from "galio-framework";
-import {Button,TextInput,Headline,withTheme,HelperText} from 'react-native-paper';
+import {Button,TextInput,withTheme} from 'react-native-paper';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 import Form from './Form'
+import HeaderBlock from './HeaderBlock';
+import InputBlock from './InputBlock';
+import HelperText from './HelperText';
 
 const { width, height } = Dimensions.get("screen");
 class EmailAndPassword extends React.Component {
@@ -24,7 +24,8 @@ class EmailAndPassword extends React.Component {
       passwordBlur:false,
       emailTaken:false,
       passwordConfirm:"",
-      matchError:false,
+      passwordConfirmBlur:false,
+      matchError:false
     }
   }
 
@@ -36,7 +37,13 @@ class EmailAndPassword extends React.Component {
     this.setState({password});
   }
   onPasswordConfirmChange = (passwordConfirm) => {
-    this.setState({passwordConfirm});
+    this.setState({passwordConfirm}, () => {
+      if(this.state.password != this.state.passwordConfirm){
+        this.setState({matchError:true});
+      } else {
+        this.setState({matchError:false});
+      }
+    });
   }
 
   componentDidMount(){
@@ -72,97 +79,46 @@ class EmailAndPassword extends React.Component {
     colors = this.props.theme.colors;
     return (
       <Form>
-        <Block style={styles.headerBlock} middle>
-          <Headline style={{color:this.props.theme.colors.white}}>
-            Sign Up
-          </Headline>
-        </Block>
-        <Block style={styles.inputBlock}>
-          <TextInput
-            value={this.state.email}
-            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-            style={[styles.input]}
-            mode={'outlined'}
-            placeholder="Email"
-            onChangeText={(val) => {
-              this.onEmailChange(val.toLowerCase(), () => {
-                if(this.state.emailBlur){
-                  this.checkEmail()
-                }
-              })
-            }}
-            onBlur={() => {
-              this.checkEmail()
-              this.setState({emailBlur:true});
-            }}
-          />
-          {
-            this.state.emailBlur
-            ? (
-              <HelperText
-                type="error"
-                visible={!this.state.email.includes('@') || this.state.emailTaken}
-                theme={{colors:{error:colors.orange}}}
-                style={!this.state.email.includes('@') || this.state.emailTaken ? {} :{display:"none"}}
-              >
-                {!this.state.email.includes('@')  ? "Please enter a valid email." : this.state.emailTaken ? "This email is already in use. Please try again." : null}
-              </HelperText>
-            )
-            : null
-          }
-        </Block>
-        <Block style={styles.inputBlock}>
-          <TextInput
-            value={this.state.password}
-            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-            style={styles.input}
-            mode={'outlined'}
-            secureTextEntry={true}
-            placeholder="Password"
-            onChangeText={this.onPasswordChange}
-            onBlur={() => {
-              this.setState({passwordBlur:true});
-            }}
-          />
-          {
-            this.state.passwordBlur
-            ? (
-              <HelperText
-                type="error"
-                visible={!(this.state.password.length >= 8)}
-                theme={{colors:{error:colors.orange}}}
-                style={!(this.state.password.length >= 8) ? {} :{display:"none"}}
-              >
-                Your password must have at least 8 characters.
-              </HelperText>
-            )
-            : null
-          }
-        </Block>
-        <Block style={styles.inputBlock}>
-          <TextInput
-            value={this.state.passwordConfirm}
-            theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
-            style={styles.input}
-            mode={'outlined'}
-            secureTextEntry={true}
-            placeholder="Confirm Password"
-            onChangeText={this.onPasswordConfirmChange}
-          />
-          { this.state.matchError
-            ? (
-              <HelperText
-                type="error"
-                visible={this.state.matchError}
-                theme={{colors:{error:colors.orange}}}
-                style={this.state.matchError ? {} :{display:"none"}}
-              >
-                Passwords must match
-              </HelperText>
-            )
-            : null
-          }
-        </Block>
+        <HeaderBlock text='Sign Up' />
+        <InputBlock 
+          value={this.state.email}
+          placeholder="Email" 
+          onChange={(val) => {
+            this.onEmailChange(val.toLowerCase(), () => {
+              if(this.state.emailBlur){
+                this.checkEmail()
+              }
+            })
+          }}
+          onBlur={() => {
+            this.checkEmail()
+            this.setState({emailBlur:true});
+          }}
+        >
+          <HelperText visible={(!this.state.email.includes('@') || this.state.emailTaken)&&this.state.emailBlur} text={!this.state.email.includes('@')  ? "Please enter a valid email." : this.state.emailTaken ? "This email is already in use. Please try again." : null} />
+        </InputBlock>
+        <InputBlock 
+          value={this.state.password}
+          placeholder="Password" 
+          onChange={this.onPasswordChange}
+          onBlur={() => {
+            this.setState({passwordBlur:true});
+          }}
+          secureTextEntry={true}
+        >
+          <HelperText visible={(!(this.state.password.length >= 8))&&this.state.passwordBlur} text={'Your password must have at least 8 characters.'} />
+        </InputBlock>
+        <InputBlock 
+          value={this.state.passwordConfirm}
+          placeholder="Confirm Password" 
+          onChange={this.onPasswordConfirmChange}
+          onBlur={() => {
+            this.setState({passwordConfirmBlur:true});
+          }}
+          secureTextEntry={true}
+        >
+          <HelperText visible={this.state.matchError && this.state.passwordConfirmBlur} text={'Passwords must match.'} />
+        </InputBlock>
         <Block row style={styles.buttonBlock}>
           <Button
             mode="contained"

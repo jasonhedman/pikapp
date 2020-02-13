@@ -6,9 +6,13 @@ import {
   View,
 } from "react-native";
 import { Block } from "galio-framework";
-import {Button,Headline,withTheme,HelperText} from 'react-native-paper';
+import {Button,withTheme} from 'react-native-paper';
 import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
+
+import HeaderBlock from './HeaderBlock';
+import HelperText from './HelperText';
+
 
 const moment = require('moment');
 
@@ -76,11 +80,7 @@ class AgeAndIntensity extends React.Component {
               <Block flex middle>
                 <Block style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
                   <Block>
-                    <Block style={styles.headerBlock} middle>
-                      <Headline style={{color:this.props.theme.colors.white}}>
-                        Sign Up
-                      </Headline>
-                    </Block>
+                    <HeaderBlock text='Sign Up' backButton={false} />
                     <Block center>
                         <Block width={width*.8}  style={{ marginBottom: 12 }}>
                             <Button style={{display:"flex",justifyContent:"center",alignItems:"center",borderColor:"#FFF"}} icon="menu-down" dark={true} mode="text" onPress={() => {this.setState({dobModalVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
@@ -90,10 +90,8 @@ class AgeAndIntensity extends React.Component {
                               moment().diff(moment(this.state.dob.getTime()),'years',false) < 13 && this.state.dobChosen
                               ? (
                                 <HelperText
-                                  type="error"
                                   visible={moment().diff(moment(this.state.dob.getTime()),'years',false) < 13}
-                                  theme={{colors:{error:colors.orange}}}
-                                  style={moment().diff(moment(this.state.dob.getTime()),'years',false) < 13 ? {textAlign:'center'} :{display:"none",textAlign:'center'}}
+                                  styles={{textAlign:'center'}}
                                 >
                                   You must be 13 to use PikApp
                                 </HelperText>
