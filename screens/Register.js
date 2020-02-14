@@ -150,20 +150,16 @@ class Register extends React.Component {
             {name: 'StepOne', component: <EmailAndPassword setState={this.setEmailAndPassword}/>},
             {name: 'StepTwo', component: <NameAndUsername setState={this.setNameAndUsername} pickImage={this._pickImage}/>},
             {name: "StepThree", component: <AgeAndIntensity setState={this.setDob}/>},
-            
           ]} 
         />
-        <View style={{bottom: height*.025, position: 'absolute', zIndex: 999}}>
-          <Block center middle height={height*.1} width={width} style={{}}>
+        <View style={{bottom: 32, position: 'absolute', zIndex: 999}}>
+          <Block center middle width={width} style={{}}>
             <Caption style={{color:colors.grey}}>
               If you already have an account
             </Caption>
             <Button mode="text" onPress={this.toSignIn} dark={true} style={styles.createButton} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}}>
                 Sign In
             </Button>
-          </Block>
-          <Block middle>
-            
           </Block>
         </View>
       </View>
@@ -172,57 +168,11 @@ class Register extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  registerContainer: {
-    width: width * 0.9,
-    height: height * 0.5,
-    borderRadius: 8,
-    borderWidth: 2,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1,
-    overflow: "hidden"
-  },
-  socialConnect: {
-    backgroundColor: "#FFF",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#8898AA"
-  },
-  socialButtons: {
-    width: 120,
-    height: 40,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1
-  },
-  inputIcons: {
-    marginRight: 12
-  },
-  passwordCheck: {
-    paddingLeft: 15,
-    paddingTop: 13,
-    paddingBottom: 30
-  },
   createButton: {
-    marginBottom:height*.025,
-    height: height * .05,
-    width: width * 0.5,
+    padding:4,
     alignItems: "center",
-    justifyContent: "center"
-  },
-  input: {
-    height: height*.075,
-    justifyContent:"center"
+    justifyContent: "center",
+    marginBottom:8
   }
 });
 

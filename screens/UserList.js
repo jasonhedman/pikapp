@@ -51,7 +51,7 @@ class UserList extends React.Component {
                     <Block column center flex style={{backgroundColor:colors.dBlue,width}}>
                         <Block flex width={width*.9}>
                             <Block column style={{justifyContent:'flex-end',marginTop:height*.1,}}>
-                                <Button icon='navigate-before' onPress={() => this.props.navigation.goBack()} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto'}}>
+                                <Button icon='keyboard-backspace' onPress={() => this.props.navigation.goBack()} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto'}}>
                                     Back
                                 </Button>
                             </Block>

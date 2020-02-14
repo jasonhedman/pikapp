@@ -8,11 +8,21 @@ import { Block} from "galio-framework";
 import { argonTheme } from "../constants";
 
 import {withTheme,Headline,Button,Menu,IconButton} from 'react-native-paper';
-
 import * as Location from 'expo-location';
-
+import HeaderBlock from './HeaderBlock';
+import MenuBlock from './MenuBlock';
+import ButtonBlock from './ButtonBlock';
+import Form from './Form';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
+
+const teamSizes = {
+  basketball: [2,3,4,5],
+  spikeball: [2],
+  volleyball: [3,4,6],
+  football: [3,4,5,6],
+  soccer: [6,7,8,9,10,11]
+}
 const { width, height } = Dimensions.get("screen");
 
 class GameForm extends React.Component {
@@ -31,6 +41,14 @@ class GameForm extends React.Component {
       .then((user) => {
         this.setState({user:user.data()})
       })
+  }
+
+  onSportMenuClick = (sport) => {
+    this.setState({sport:sport,sportVisible:false})
+  }
+
+  onIntensityMenuClick = (intensity) => {
+    this.setState({intensity:intensity,intensityVisible:false})
   }
 
 
@@ -96,104 +114,47 @@ class GameForm extends React.Component {
   render() {
     const colors = this.props.theme.colors;
     return (
-      <Block middle center styles={[styles.registerContainer]}>
-        <Headline style={{color:colors.white, marginTop:height*.015, height:height*.05, marginBottom:height*.015}}>
-          Create Game
-        </Headline>
-        <IconButton color={colors.orange} icon="close" size={15} style={{position:'absolute',top:0,right:20}} onPress={this.props.closeModal}/>
-        <Menu
+      <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
+        <HeaderBlock text='Create Game' backButton={true} backPress={this.props.closeModal} />
+        <MenuBlock
           visible={this.state.sportVisible}
-          onDismiss={() => {this.setState({sportVisible:false})}}
-          style={{marginLeft:(width*.8-120)/2,marginTop:height*.05}}
-          anchor={
-              <Block height={height*.05} width={width*.8} style={{ marginBottom: height*.025 }}>
-                  <Button style={{height:height*.05,display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="arrow-down-drop-circle-outline" mode="text" onPress={() => {this.setState({sportVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
-                      {this.state.sport != null ? this.state.sport : "Sport"}
-                  </Button>
-              </Block>
-          }
-        >
-          <Menu.Item onPress={() => {this.setState({sport:"basketball",sportVisible:false})}} title="Basketball" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-          <Menu.Item onPress={() => {this.setState({sport:"soccer",sportVisible:false})}} title="Soccer" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-          <Menu.Item onPress={() => {this.setState({sport:"spikeball",sportVisible:false})}} title="Spikeball" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-          <Menu.Item onPress={() => {this.setState({sport:"football",sportVisible:false})}} title="Football" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-          <Menu.Item onPress={() => {this.setState({sport:"volleyball",sportVisible:false})}} title="Volleyball" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-        </Menu>
-        <Menu
+          onDismiss={() => this.setState({sportVisible:false})}
+          value={this.state.sport}
+          title='Sport'
+          items={['Basketball', 'Soccer', 'Spikeball', 'Football', 'Volleyball']}
+          onAnchorPress={() => this.setState({sportVisible:true})}
+          onMenuItemPress={this.onSportMenuClick}
+        />
+        <MenuBlock
           visible={this.state.intensityVisible}
-          onDismiss={() => {this.setState({intensityVisible:false})}}
-          style={{marginLeft:(width*.8-120)/2,marginTop:height*.05}}
-          anchor={
-              <Block height={height*.05} width={width*.8} style={{ marginBottom: height*.025 }}>
-                  <Button style={{height:height*.05,display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="arrow-down-drop-circle-outline" mode="text" onPress={() => {this.setState({intensityVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
-                      {this.state.intensity != null ? this.state.intensity : "Intensity"}
-                  </Button>
-              </Block>
-          }
-        >
-          <Menu.Item onPress={() => {this.setState({intensity:"Casual",intensityVisible:false})}} title="Casual" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-          <Menu.Item onPress={() => {this.setState({intensity:"Intermediate",intensityVisible:false})}} title="Intermediate" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-          <Menu.Item onPress={() => {this.setState({intensity:"Competitive",intensityVisible:false})}} title="Competitive" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
-        </Menu>
+          onDismiss={() => this.setState({intensityVisible:false})}
+          value={this.state.intensity}
+          title='Intensity'
+          items={['Casual', 'Intermediate', 'Competitive']}
+          onAnchorPress={() => this.setState({intensityVisible:true})}
+          onMenuItemPress={this.onIntensityMenuClick}
+        />
         <Menu
           visible={this.state.tsVisible}
           onDismiss={() => {this.setState({tsVisible:false})}}
-          style={{marginLeft:(width*.8-120)/2,marginTop:height*.05}}
+          style={{}}
           anchor={
-              <Block height={height*.05} width={width*.8} style={{ marginBottom: height*.025 }}>
-                  <Button style={{height:height*.05,display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="arrow-down-drop-circle-outline" mode="text" onPress={() => {this.setState({tsVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
+            <Block style={{ marginBottom: 12 }}>
+              <Button style={{display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="menu-down" mode="text" onPress={() => {this.setState({tsVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
                       {this.state.teamSize != null ? this.state.teamSize : "Team Size"}
-                  </Button>
-              </Block>
+              </Button>
+            </Block>
           }
         >
           {
-            this.state.sport == 'basketball'
-            ? [
-              <Menu.Item onPress={() => {this.setState({teamSize:2,tsVisible:false})}} title="2" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:3,tsVisible:false})}} title="3" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:4,tsVisible:false})}} title="4" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:5,tsVisible:false})}} title="5" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-            ]
-            : this.state.sport == 'soccer'
-            ? [
-              <Menu.Item onPress={() => {this.setState({teamSize:6,tsVisible:false})}} title="6" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:7,tsVisible:false})}} title="7" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:8,tsVisible:false})}} title="8" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:9,tsVisible:false})}} title="9" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:10,tsVisible:false})}} title="10" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:11,tsVisible:false})}} title="11" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-
-            ]
-            : this.state.sport == 'spikeball'
-            ? [
-              <Menu.Item onPress={() => {this.setState({teamSize:2,tsVisible:false})}} title="2" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-            ]
-            : this.state.sport == 'football'
-            ? [
-              <Menu.Item onPress={() => {this.setState({teamSize:3,tsVisible:false})}} title="3" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:4,tsVisible:false})}} title="4" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:5,tsVisible:false})}} title="5" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:6,tsVisible:false})}} title="6" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-            ]
-            : this.state.sport == 'volleyball'
-            ? [
-              <Menu.Item onPress={() => {this.setState({teamSize:3,tsVisible:false})}} title="3" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:4,tsVisible:false})}} title="4" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-              <Menu.Item onPress={() => {this.setState({teamSize:6,tsVisible:false})}} title="6" theme={{colors:{text:colors.dBlue}}} style={{width:120}} />,
-            ]
-            : <Menu.Item title="Choose a Sport" disabled={true} theme={{colors:{text:colors.dBlue}}} style={{width:120}} />
+            this.state.sport != null
+            ? teamSizes[this.state.sport].map((item, index) => {
+              return <Menu.Item onPress={() => {this.setState({teamSize:item,tsVisible:false})}} title={''+item} key={index} />
+            }) 
+            : <Menu.Item title="Choose a Sport" disabled={true} theme={{colors:{text:colors.dBlue}}}  />
           }
         </Menu>
-        <Button
-          disabled={this.state.sport == null || this.state.intensity == null || this.state.teamSize == null}
-          onPress={this.onCreate}
-          mode="contained"
-          theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} dark={true} 
-          style={[{}, this.state.sport == null || this.state.intensity == null || this.state.teamSize == null ? {opacity: .3, backgroundColor:colors.orange} : null]} 
-        >
-          Create Game
-        </Button>
+        <ButtonBlock text='Create Game' onPress={this.onCreate} disabled={this.state.sport == null || this.state.intensity == null || this.state.teamSize == null} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} />
       </Block>
     );
   }
@@ -201,18 +162,10 @@ class GameForm extends React.Component {
 
 const styles = StyleSheet.create({
   registerContainer: {
-    width: width * 0.8,
-    height: height * 0.4,
+    width: width * 0.9,
     borderRadius: 8,
-    shadowColor: argonTheme.COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1,
-    overflow: "hidden"
+    borderWidth: 2,
+    padding:16,
   }
 });
 

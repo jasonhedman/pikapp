@@ -17,6 +17,7 @@ import {withTheme,Text,Avatar} from 'react-native-paper';
 const { width, height } = Dimensions.get("screen");
 
 const defaultUser = require("../assets/images/defaultUser.jpg")
+import ProfilePic from './ProfilePic';
 
 
 class LobbyMember extends React.Component{
@@ -55,18 +56,8 @@ class LobbyMember extends React.Component{
           }}
         >
             <Block row middle center style={styles.container}>
-              {
-                this.state.proPicUrl != null
-                ? <Avatar.Image
-                    source={{ uri: this.state.proPicUrl }}
-                    size={height*.045}
-                  />
-                : <Avatar.Image
-                    source={defaultUser}
-                    size={height*.045}
-                  />
-              }
-              <Block flex column style={{marginLeft:height*.01}}>
+              <ProfilePic size={40} addEnabled={false} proPicUrl={this.state.proPicUrl} />
+              <Block flex column style={{marginLeft:12}}>
                 <Text style={{color:"#FFF"}}>{this.state.user.name}</Text>
                 <Text style={{color:"#FFF"}}>@{this.state.user.username}</Text>
                 <Text style={{color:"#FFF"}}>{`Age: ${moment().diff(moment.unix(parseInt(this.props.user.dob.seconds)),'years',false)}`}</Text>
@@ -90,33 +81,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     borderColor: '#E68A54',
-    padding:5,
-    paddingRight:height*.01,
-    // height: height* .085,
-    marginBottom: height*.01,
-    width: width*.8
+    padding:8,
+    marginBottom: 8,
+    width:'100%',
   },
   containerAvailable: {
     borderWidth: 1,
     borderRadius: 8,
     borderColor: '#FFF',
-    padding:15,
-    paddingRight:height*.01,
-    //height: height* .075,
-    marginBottom: height*.01,
-    width: width*.8
-  },
-  avatarContainer: {
-    position: "relative",
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 0
-  },
-  nameText: {
-    fontSize: 10
+    padding:16,
+    marginBottom: 8,
+    width:'100%',
   }
 })
 export default withTheme(LobbyMember);

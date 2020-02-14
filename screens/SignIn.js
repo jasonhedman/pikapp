@@ -85,11 +85,6 @@ class Register extends React.Component {
               <TouchableOpacity onPress={() => this.props.navigation.navigate("ForgotPassword")}><Text style={{color:colors.grey}}>Forgot Password?</Text></TouchableOpacity>
             </>
           </ButtonBlock>
-          {/* <Block middle center style={styles.buttonBlock}>
-            <Button mode="contained" dark={true} style={styles.createButton} onPress={this.onSignIn} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                Sign In
-            </Button>
-          </Block> */}
         </Form>
           <View style={{bottom: 32, position: 'absolute', zIndex: 999}}>
             <Block center middle width={width} style={{}}>
@@ -107,32 +102,11 @@ class Register extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  registerContainer: {
-    width: width * 0.9,
-    borderRadius: 8,
-    borderWidth: 2,
-    padding:16,
-  },
   createButton: {
     padding:4,
     alignItems: "center",
     justifyContent: "center",
     marginBottom:8
-  },
-  input: {
-    justifyContent:"center"
-  },
-  inputBlock:{
-    width:"100%",
-    marginBottom:12,
-  },
-  buttonBlock:{
-    marginTop:8,
-    width:"100%",
-  },
-  headerBlock:{
-    marginTop:16,
-    marginBottom:16
   }
 });
 

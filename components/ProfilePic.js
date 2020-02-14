@@ -13,7 +13,7 @@ class ProfilePic extends React.Component{
     render(){
         colors = this.props.theme.colors;
         return (
-            <Block center middle style={{borderRadius:'50%',borderWidth:3,borderColor:this.props.theme.colors.orange,padding:0,backgroundColor:colors.orange}}>
+            <Block center middle style={{borderRadius:'50%',borderWidth:2,borderColor:this.props.theme.colors.orange,padding:0,backgroundColor:colors.orange}}>
                 {
                 this.props.proPicUrl != null
                 ? <Avatar.Image

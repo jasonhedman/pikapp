@@ -24,6 +24,13 @@ import footballMarker from '../assets/images/fball_map.png';
 import soccerMarker from '../assets/images/soccer_map.png';
 import volleyballMarker from '../assets/images/vball_map.png';
 
+const sportMarkers = {
+  basketball: basketballMarker,
+  spikeball: spikeballMarker,
+  football: footballMarker,
+  soccer: soccerMarker,
+  volleyball: volleyballMarker
+}
 
 const { width, height } = Dimensions.get("screen");
 
@@ -59,74 +66,65 @@ class MapScreen extends React.Component {
   }
 
    componentDidMount(){
-     firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).get()
-      .then((user) => {
-        this.setState({user:user.data()});
-      })
-      .then(() => {
-        Location.hasServicesEnabledAsync()
-          .then((locationEnabled) => {
-            if(locationEnabled == true){
-              Location.getCurrentPositionAsync()
-                .then((pos) => {
-                  let region = {
-                    latitude: pos.coords.latitude,
-                    longitude: pos.coords.longitude,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                  }
-                  this.setState({region, userLoc:pos.coords,locationEnabled:true}, () => {
-                    Location.watchPositionAsync({},(pos) => {
-                      this.setState({userPos: pos.coords, complete:true});
-                    })
-                    firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
-                      location:pos.coords
-                    })
-                  });
-                })
-            } else {
-              this.setState({locationEnabled:false,complete:true}, () => {
-                Location.requestPermissionsAsync()
-                  .then((permission) => {
-                    if(permission.status == "granted"){
-                      this.setState({locationEnabled:true})
-                    }
-                  })
-              })
+    firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot((user) => {
+      this.setState({user:user.data()});
+    })
+    Location.hasServicesEnabledAsync()
+    .then((locationEnabled) => {
+      if(locationEnabled == true){
+        Location.getCurrentPositionAsync()
+          .then((pos) => {
+            let region = {
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
             }
-          })
-      })
-      .then(() => {
-        firebase.firestore().collection('games').where("gameState", "==", "created").get()
-         .then((docsC) => {
-           let markers = {}
-           docsC.forEach((doc) => {
-             markers[doc.id] = doc.data()
-             markers[doc.id].id = doc.id;
-           })
-           firebase.firestore().collection('games').where("gameState", "==", "inProgress").get()
-             .then((docsIp) => {
-               docsIp.forEach((doc) => {
-                 markers[doc.id] = doc.data()
-                 markers[doc.id].id = doc.id;
-                })
+            this.setState({region, userLoc:pos.coords,locationEnabled:true}, () => {
+              Location.watchPositionAsync({},(pos) => {
+                this.setState({userPos: pos.coords, complete:true});
               })
-         })
-       firebase.firestore().collection('games')
-         .onSnapshot((docs) => {
-           let markers = {};
-           docs.forEach((doc) => {
-             if(doc.data().gameState == "created" || doc.data().gameState == "inProgress"){
-               markers[doc.id] = doc.data();
-               markers[doc.id].id = doc.id;
-             }
-           })
-           this.setState({markers:markers,complete:true});
-         })
+              firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
+                location:pos.coords
+              })
+            });
+          })
+      } else {
+        this.setState({locationEnabled:false,complete:true}, () => {
+          Location.requestPermissionsAsync()
+            .then((permission) => {
+              if(permission.status == "granted"){
+                this.setState({locationEnabled:true})
+              }
+            })
+        })
+      }
+    })
+        // firebase.firestore().collection('games').where("gameState", "==", "created").get()
+        //  .then((docsC) => {
+        //    let markers = {}
+        //    docsC.forEach((doc) => {
+        //      markers[doc.id] = doc.data()
+        //      markers[doc.id].id = doc.id;
+        //    });
+        //    firebase.firestore().collection('games').where("gameState", "==", "inProgress").get()
+        //      .then((docsIp) => {
+        //        docsIp.forEach((doc) => {
+        //          markers[doc.id] = doc.data()
+        //          markers[doc.id].id = doc.id;
+        //         })
+        //       })
+        //  })
+    firebase.firestore().collection('games').onSnapshot((docs) => {
+      let markers = {};
+      docs.forEach((doc) => {
+        if(doc.data().gameState == "created" || doc.data().gameState == "inProgress"){
+          markers[doc.id] = doc.data();
+          markers[doc.id].id = doc.id;
+        }
       })
-      firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot((user) => {
-        this.setState({user:user.data()});
-      })
+      this.setState({markers:markers,complete:true});
+    })
    }
 
    navToGame = () => {
@@ -190,7 +188,7 @@ class MapScreen extends React.Component {
    }
 
    onClusterPress = (cluster) => {
-     this.mapView.root.animateToRegion({
+     this.mapView.animateToRegion({
        longitude:cluster.longitude,
        latitude: cluster.latitude,
        longitudeDelta: this.state.region.longitudeDelta / 3,
@@ -210,7 +208,7 @@ class MapScreen extends React.Component {
     if(this.props.navigation.getParam("marker",null) != null){
       this.setState({focusMarker:this.props.navigation.getParam("marker",null)}, () => {
         this.props.navigation.navigate('MapScreen',{marker:null});
-        this.mapView.root.animateToRegion({longitude:this.state.focusMarker.longitude,latitude:this.state.focusMarker.latitude, latitudeDelta:this.state.region.latitudeDelta,longitudeDelta:this.state.region.longitudeDelta},500);
+        this.mapView.animateToRegion({longitude:this.state.focusMarker.longitude,latitude:this.state.focusMarker.latitude, latitudeDelta:this.state.region.latitudeDelta,longitudeDelta:this.state.region.longitudeDelta},500);
       })
     }
     const colors = this.props.theme.colors
@@ -219,7 +217,7 @@ class MapScreen extends React.Component {
         return (
           <>
             <Portal>
-              <Modal contentContainerStyle={{backgroundColor:this.props.theme.colors.dBlue, width:width*.8, height: height*.4, marginLeft:"auto", marginRight:"auto", borderRadius:8, borderWidth:2, borderColor:colors.orange}} visible={this.state.gameModalVisible} onDismiss={() => {this.setGameModalVisible(false)}}>
+              <Modal contentContainerStyle={{backgroundColor:this.props.theme.colors.dBlue, marginLeft:"auto", marginRight:"auto"}} visible={this.state.gameModalVisible} onDismiss={() => {this.setGameModalVisible(false)}}>
                 <GameForm navToGame={this.navToGame} closeModal={() => this.setGameModalVisible(false)}/>
               </Modal>
             </Portal>
@@ -256,9 +254,9 @@ class MapScreen extends React.Component {
                     <Marker
                       key={index}
                       coordinate={{longitude:marker.location.longitude,latitude:marker.location.latitude}}
-                      onPress={()=>{this.mapView.root.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
+                      onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
                     >
-                      <Image source={marker.sport == 'basketball' ? basketballMarker : marker.sport == 'spikeball' ? spikeballMarker : marker.sport == 'football' ? footballMarker : marker.sport == 'soccer' ? soccerMarker : marker.sport == 'volleyball' ? volleyballMarker : null} style={{height:50, width:50}}/>
+                      <Image source={sportMarkers[marker.sport]} style={{height:50, width:50}}/>
                     </Marker>
                   );
                 })
@@ -279,9 +277,9 @@ class MapScreen extends React.Component {
         );
       } else {
         return (
-          <Block flex center middle style={{width,backgroundColor:colors.dBlue}}>
-            <Block center middle style={{width:width*.9, borderColor:colors.orange, borderWidth:1, borderRadius:8, padding:10}}>
-              <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025,textAlign:'center'}}>You must have your location enabled to use the map.</Headline>
+          <Block flex center middle style={{width,backgroundColor:colors.dBlue, padding:16}}>
+            <Block center middle style={{borderColor:colors.orange, borderWidth:1, borderRadius:8, padding:16}}>
+              <Headline style={{color:colors.white,fontSize:20,textAlign:'center'}}>You must have your location enabled to use the map.</Headline>
             </Block>
           </Block>
         )
@@ -301,16 +299,7 @@ const styles = StyleSheet.create({
     opacity: .3, 
     backgroundColor:'#E68A54'
   },
-  modal: {
-    marginLeft:"auto",
-    marginRight:"auto",
-    marginTop:"auto",
-    marginBottom:"auto",
-    backgroundColor:"#F4F5F7",
-    height:"75%"
-  },
   fab: {
-    // width:70,
     position:"absolute",
     bottom:0,
     right:0,

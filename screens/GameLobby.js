@@ -6,7 +6,7 @@ import {
   Dimensions,
   Share,
   TouchableOpacity,
-  StyleSheet
+  StyleSheet,
 } from 'react-native';
 import LobbyMember from '../components/LobbyMember';
 import ScoreForm from '../components/ScoreForm';
@@ -15,6 +15,7 @@ import firestore from 'firebase/firestore'
 import { withTheme, Headline, Button, Subheading, Text, Modal, Portal, Caption } from 'react-native-paper';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { ScrollView } from 'react-native-gesture-handler';
+import HeaderBlock from '../components/HeaderBlock';
 const { width, height } = Dimensions.get("screen");
 const orange = "#E68A54";
 const green = "#56B49E";
@@ -90,48 +91,24 @@ class GameScreen extends React.Component{
   };
 
   componentDidMount(){
-    firebase.firestore().collection("users").orderBy("points", "desc").limit(10).get()
-      .then((users) => {
-        firebase.firestore().collection("users").orderBy("points", "desc").limit(10).onSnapshot((users) => {
-          let topTen = [];
-          users.forEach(user => {
-            let userData = user.data();
-            userData.id = user.id
-            topTen.push(userData);
-          })
-          this.setState({topTen});
-        })
-        let topTen = [];
-        users.forEach(user => {
-          let userData = user.data();
-          userData.id = user.id
-          topTen.push(userData);
-        })
-        this.setState({topTen});
+    firebase.firestore().collection("users").orderBy("points", "desc").limit(10).onSnapshot((users) => {
+      let topTen = [];
+      users.forEach(user => {
+        let userData = user.data();
+        userData.id = user.id
+        topTen.push(userData);
       })
-      .then(() => {
-        let userRef = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
-        let gameRef;
-        userRef.get()
-          .then((user) => {
-            if(user.data().currentGame != null){
-              gameRef = firebase.firestore().collection("games").doc(user.data().currentGame);
-                gameRef.onSnapshot((game) => {
-                  this.getGame();
-                })
-            }
+      this.setState({topTen});
+    })
+      let userRef = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
+      let gameRef;
+      userRef.onSnapshot((user) => {
+        if(user.data().currentGame != null){
+          gameRef = firebase.firestore().collection("games").doc(user.data().currentGame);
+          gameRef.onSnapshot((game) => {
+            this.getGame();
           })
-        userRef.onSnapshot((user) => {
-          if(user.data().currentGame != null){
-            gameRef = firebase.firestore().collection("games").doc(user.data().currentGame);
-            gameRef.onSnapshot((game) => {
-              this.getGame();
-            })
-          }
-          this.getGame();
-        })
-        this.getGame();
-
+        }
       })
   }
 
@@ -157,13 +134,13 @@ class GameScreen extends React.Component{
       gameState: newState,
       updated: new Date()
     })
-      .then(() => {
-        this.setState(prevState => {
-          let game = Object.assign({}, prevState.game);
-          game.gameState = newState;
-          return { game };
-        })
+    .then(() => {
+      this.setState(prevState => {
+        let game = Object.assign({}, prevState.game);
+        game.gameState = newState;
+        return { game };
       })
+    })
   }
 
   navToMap = () => {
@@ -172,7 +149,7 @@ class GameScreen extends React.Component{
 
   makePlayers(team){
     let items = [];
-    for(let i = 0; i < Math.min(this.state.game.teamSize , 3); i++){
+    for(let i = 0; i < Math.min(this.state.game.teamSize, 3); i++){
       if(i < this.state.game.teams[team].length){
         items.push(<LobbyMember key={i} user={this.state.game.teams[team][i]} navToUserProfile={this.navToUserProfile} navToProfile={this.navToProfile}/>);
       } else {
@@ -180,23 +157,22 @@ class GameScreen extends React.Component{
       }
     }
     return (
-      <Block>
+      <Block style={{width:'100%'}}>
         <Text style={{color:this.props.theme.colors.white}}>{team.toUpperCase()}</Text>
-        <Block column>
+        <Block column style={{width:'100%'}}>
           {items}
           {
             this.state.game.teamSize > 3
             ? <Button
                 mode='text'
                 theme={{colors:{primary:this.props.theme.colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}
-                style={{height:height*.05,marginBottom:height*.005}}
+                style={{padding:4,marginBottom:12}}
                 onPress={() => this.setTeamModalVisible(team,true)}
               >
                 See More
               </Button>
             : null
           }
-          
         </Block>
       </Block>
     );
@@ -204,37 +180,33 @@ class GameScreen extends React.Component{
 
   makePlayersFull = () => {
     let items = [];
-    for(let i = 0; i <(this.state.game.teamSize > 8 ? 8 : this.state.game.teamSize); i++){
+    this.state
+    for(let i = 0; i < this.state.game.teamSize; i++){
       if(i < this.state.teamData.length){
         items.push(<LobbyMember key={i} user={this.state.teamData[i]} navToUserProfile={this.props.navToUserProfile} navToProfile={this.props.navToProfile}/>);
       } else {
         items.push(<LobbyMember key={i} user={null} />);
       }
     }
-    if(this.state.game.teamSize > 8){
-      items.push(
-        <Block center middle style={styles.containerAvailable}>
-          <Text style={{color:this.props.theme.colors.grey}}>More Players...</Text>
-        </Block>
-      );
-    }
     return (
-      <Block>
-        <Headline style={{color:this.props.theme.colors.white,textAlign:"center",height:height*.05,marginBottom:height*.005}}>{this.state.team.toUpperCase()}</Headline>
-        <Block column center>
-          {items}
-        </Block>
-      </Block>
+      <>
+        <HeaderBlock text={this.state.team.toUpperCase()} backButton={true} backPress={() => {this.setTeamModalVisible(null,false)}}/>
+        <ScrollView>
+          <Block column center style={{width:'100%'}}>
+            {items}
+          </Block>
+        </ScrollView>
+      </>
     );
   }
 
   deleteGame = (gameId) => {
-    users = this.state.game.teams.home.concat(this.state.game.teams.away);
+    let users = this.state.game.teams.home.concat(this.state.game.teams.away);
     users.forEach((user) => {
       firebase.firestore().collection("users").doc(user.id).update({
         currentGame: null
       })
-    })
+    });
     firebase.firestore().collection("games").doc(gameId).delete()
       .then(() => {
         this.setState({
@@ -242,7 +214,7 @@ class GameScreen extends React.Component{
           complete: true
         });
         this.props.navigation.navigate("MapScreen");
-      })
+      });
   }
 
   leaveGame = () => {
@@ -252,20 +224,20 @@ class GameScreen extends React.Component{
           "teams.home": game.data().teams.home.filter(user => user.id != firebase.auth().currentUser.uid),
           "teams.away": game.data().teams.away.filter(user => user.id != firebase.auth().currentUser.uid),
         })
-          .then(() => {
-            firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).update({
-              currentGame: null
-            })
+        .then(() => {
+          firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).update({
+            currentGame: null
           })
+        })
     })
   }
 
   render(){
-    if(this.props.navigation.getParam("new",null) != null){
-      this.setState({newModalVisible:true}, () => {
-        this.props.navigation.navigate('Lobby',{new:null});
-      })
-    }
+    // if(this.props.navigation.getParam("new",null) != null){
+    //   this.setState({newModalVisible:true}, () => {
+    //     this.props.navigation.navigate('Lobby',{new:null});
+    //   })
+    // }
     const colors = this.props.theme.colors;
       if(this.state.game != null){
         return (
@@ -275,30 +247,29 @@ class GameScreen extends React.Component{
               ? <LoadingOverlay />
               : null
             }
-            <Portal>
-              <Modal contentContainerStyle={{backgroundColor:this.props.theme.colors.dBlue, width:width*.9,  marginLeft:"auto", marginRight:"auto", borderRadius:8, borderWidth:2, borderColor:colors.orange}} visible={this.state.modalVisible} onDismiss={() => {this.setModalVisible(false)}}>
+            <Portal style={{padding:16}}>
+              <Modal style={{padding:16}} contentContainerStyle={[{backgroundColor:this.props.theme.colors.dBlue,borderColor:colors.orange},styles.modalStyle]} visible={this.state.modalVisible} onDismiss={() => {this.setModalVisible(false)}}>
                 <ScoreForm setModalVisible={this.setModalVisible} navToMap={this.navToMap} game={this.state.game}/>
               </Modal>
             </Portal>
             <Portal>
-              <Modal contentContainerStyle={{backgroundColor:this.props.theme.colors.dBlue, width:width*.9,  marginLeft:"auto", marginRight:"auto", borderRadius:8, borderWidth:2, borderColor:colors.orange, padding:10}} visible={this.state.newModalVisible} onDismiss={() => this.setState({newModalVisible:false})}>
-                <Headline style={{textAlign:'center',color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025}}>Reminder: After 1 hour of inactivity, this game will be removed. Press the 'Start Game' button when you begin gameplay and use the 'Submit Score' form to complete the game. </Headline>
+              <Modal contentContainerStyle={[{backgroundColor:this.props.theme.colors.dBlue,borderColor:colors.orange},styles.modalStyle]} visible={this.state.newModalVisible} onDismiss={() => this.setState({newModalVisible:false})}>
+                <HeaderBlock text="Reminder: After 1 hour of inactivity, this game will be removed. Press the 'Start Game' button when you begin gameplay and use the 'Submit Score' form to complete the game."/>
                 <Button mode="contained" dark={true} onPress={() => this.setState({newModalVisible:false})} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                   OK
                 </Button>
               </Modal>
             </Portal>
             <Portal>
-              <Modal contentContainerStyle={{backgroundColor:this.props.theme.colors.dBlue, width:width*.9, padding:5, paddingTop:10, marginLeft:"auto", marginRight:"auto", borderRadius:8, borderWidth:2, borderColor:colors.orange}} visible={this.state.teamModalVisible} onDismiss={() => {this.setTeamModalVisible(null,false)}}>
+              <Modal contentContainerStyle={[{backgroundColor:colors.dBlue,borderColor:colors.orange},styles.modalStyle]} visible={this.state.teamModalVisible} onDismiss={() => {this.setTeamModalVisible(null,false)}}>
                   {this.state.teamData != null
                   ? this.makePlayersFull()
                   :null
                   }
               </Modal>
             </Portal>
-            <Block column flex center middle style={{backgroundColor:colors.dBlue, width, height}}>
-              <Block flex center middle  width={width*.9} style={{}}>
-                <Headline style={{color:colors.white,textAlign:"center"}}>{`${this.state.game.intensity} ${this.state.game.sport[0].toUpperCase() + this.state.game.sport.substring(1)}`}</Headline>
+            <Block column flex center middle style={{backgroundColor:colors.dBlue, width, height, padding:16}}>
+                <Headline style={{color:colors.white,textAlign:"center"}}>{`${this.state.game.intensity[0].toUpperCase() + this.state.game.intensity.substring(1)} ${this.state.game.sport[0].toUpperCase() + this.state.game.sport.substring(1)}`}</Headline>
                 <Subheading style={{color:colors.grey,textAlign:"center"}}>{`Owner: @${this.state.game.ownerUsername}`}</Subheading>
                 {this.state.complete ? this.makePlayers('home') : null
                 }
@@ -307,7 +278,7 @@ class GameScreen extends React.Component{
                 {
                   firebase.auth().currentUser.uid == this.state.game.owner
                   ? (
-                    <Block row style={{justifyContent:"space-between", width:width*.8}}>
+                    <Block row style={{justifyContent:"space-between",width:'100%'}}>
                         <Button mode="contained" dark={true} onPress={() => this.deleteGame(this.state.game.id)} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                           Cancel Game
                         </Button>
@@ -324,29 +295,27 @@ class GameScreen extends React.Component{
                   )
                   : (
                     <Block>
-                        <Button mode="contained" dark={true} onPress={() =>this.leaveGame()} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}}>
-                          Leave Game
-                        </Button>
+                      <Button mode="contained" dark={true} onPress={() =>this.leaveGame()} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}}>
+                        Leave Game
+                      </Button>
                     </Block>
                   )
                 }
-              </Block>
             </Block>
           </>
         );
       } else {
         return (
-          <Block column center flex style={{backgroundColor:colors.dBlue,width}}>
-            <Block flex width={width*.9}>
-                <Headline style={{color:"#FFF",textAlign:'center',marginTop:height*.1, marginBottom:20}}>Leaderboard</Headline>
-                <Block flex>
-                  <ScrollView>
+          <Block column center flex style={{backgroundColor:colors.dBlue,width,height,padding:16,paddingTop:32}}>
+            <HeaderBlock text='Leaderboard'/>
+                <Block flex style={{width:'100%'}}>
+                  <ScrollView style={{width:'100%'}}>
                     {
                       this.state.topTen.map((user,key) => {
                           return (
-                            <Block row center middle width={width*.9} style={{marginBottom:10}}>
-                              <Text style={{color:"white", marginRight:10}}>{key+1}.</Text>
-                              <TouchableOpacity 
+                            <Block row center middle style={{marginBottom:12,width:'100%'}} key={key}>
+                              <Text style={{color:"white", marginRight:12}}>{key+1}.</Text>
+                              {/* <TouchableOpacity 
                                 onPress={() => {
                                   if(user.id == firebase.auth().currentUser.uid){
                                     this.props.navigation.navigate("Profile");
@@ -356,29 +325,27 @@ class GameScreen extends React.Component{
                                 }} 
                                 key={key} 
                                 style={{flex:1}}
-                              >
-                                  <Block width={"100%"} row center middle style={key == 0 ? styles.firstPlace : key == 1 ? styles.secondPlace : key == 2 ? styles.thirdPlace : styles.defaultPlace}>
-                                      <Block column>
-                                          <Text style={{color:"#fff"}}>{user.name}</Text>
-                                          <Text style={{color:"#fff"}}>@{user.username}</Text>
-                                      </Block>
-                                      <Text style={{color:"#fff"}}>{user.points}</Text>
-                                  </Block>
-                              </TouchableOpacity>
+                              > */}
+                                <Block row center middle flex style={key == 0 ? styles.firstPlace : key == 1 ? styles.secondPlace : key == 2 ? styles.thirdPlace : styles.defaultPlace}>
+                                    <Block column>
+                                        <Text style={{color:"#fff"}}>{user.name}</Text>
+                                        <Text style={{color:"#fff"}}>@{user.username}</Text>
+                                    </Block>
+                                    <Text style={{color:"#fff"}}>{user.points}</Text>
+                                </Block>
+                              {/* </TouchableOpacity> */}
                             </Block>
-                              
                           )
                       })
                     }
                   </ScrollView>
                 </Block>
-            </Block>
             <Block style={{borderTopWidth:1, borderTopColor:colors.orange, width, paddingTop:5}}>
               <Caption style={{color:colors.grey,textAlign:"center"}}>
                 For Bonus Points:
               </Caption>
-              <Block width={width}>
-                <Button mode="contained" dark={true} onPress={() =>this.onShare()} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto',marginLeft:'auto'}}>
+              <Block center middle style={{width:'100%'}}>
+                <Button mode="contained" dark={true} onPress={() =>this.onShare()} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
                   Share
                 </Button>
               </Block>
@@ -397,6 +364,7 @@ const styles = StyleSheet.create({
     borderRadius:8, 
     padding: 10, 
     backgroundColor:orange,
+    width:'100%'
   },
   secondPlace: {
     justifyContent:'space-between',
@@ -404,6 +372,7 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderRadius:8, 
     padding: 10, 
+    width:'100%'
   },
   thirdPlace:{
     justifyContent:'space-between',
@@ -411,6 +380,7 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderRadius:8, 
     padding: 10, 
+    width:'100%'
   },
   defaultPlace:{
     justifyContent:'space-between',
@@ -418,6 +388,7 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderRadius:8, 
     padding: 10, 
+    width:'100%'
   },
   containerAvailable: {
     padding:15,
@@ -425,6 +396,14 @@ const styles = StyleSheet.create({
     marginBottom: height*.01,
     width: width*.8
   },
+  modalStyle:{ 
+    marginLeft:"auto", 
+    marginRight:"auto", 
+    borderRadius:8, 
+    borderWidth:2, 
+    padding:16,
+    width:width-32,
+  }
 })
 
 export default withTheme(GameScreen);

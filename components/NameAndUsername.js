@@ -89,10 +89,8 @@ class NameAndUsername extends React.Component {
       <Form>
         <HeaderBlock text='Sign Up' />
         <TouchableRipple onPress={this.pickImage} style={{marginBottom:12}}>
-          <>
-            <ProfilePic proPicUrl={this.state.image} size={80} addEnabled={true} />
-          </>
-        </TouchableRipple>ç
+          <ProfilePic proPicUrl={this.state.image} size={80} addEnabled={true} />
+        </TouchableRipple>
         <InputBlock 
           value={this.state.name}
           placeholder="Name" 
@@ -151,32 +149,9 @@ class NameAndUsername extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  registerContainer: {
-    width: width * 0.9,
-    borderRadius: 8,
-    borderWidth: 2,
-    padding:16,
-  },
-  createButton: {
-    marginBottom:height*.025,
-    width: width * 0.5,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  input: {
-    justifyContent:"center"
-  },
-  inputBlock:{
-    width:"100%",
-    marginBottom:12,
-  },
   buttonBlock:{
     width:"100%",
     marginTop:16
-  },
-  headerBlock:{
-    marginTop:16,
-    marginBottom:16
   }
 });
 

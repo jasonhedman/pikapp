@@ -97,40 +97,40 @@ MapStack.navigationOptions = {
 
 MapStack.path = '';
 
-const SocialStack = createStackNavigator(
-  {
-    SocialScreen: {
-      screen: SearchPlayers,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    UserProfile: {
-      screen: UserProfile,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    UserList: {
-      screen: UserList,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
+// const SocialStack = createStackNavigator(
+//   {
+//     SocialScreen: {
+//       screen: SearchPlayers,
+//       navigationOptions: {
+//         headerShown:false
+//       }
+//     },
+//     UserProfile: {
+//       screen: UserProfile,
+//       navigationOptions: {
+//         headerShown:false
+//       }
+//     },
+//     UserList: {
+//       screen: UserList,
+//       navigationOptions: {
+//         headerShown:false
+//       }
+//     },
     
-  },
-  config
-);
+//   },
+//   config
+// );
 
-SocialStack.navigationOptions = {
-  tabBarLabel: 'Social',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={'Platform.OS' === 'ios' ? 'ios-git-network' : 'md-git-network'} />
-  ),
-};
+// SocialStack.navigationOptions = {
+//   tabBarLabel: 'Social',
+//   tabBarIcon: ({ focused }) => (
+//     <TabBarIcon focused={focused} name={'Platform.OS' === 'ios' ? 'ios-git-network' : 'md-git-network'} />
+//   ),
+// };
 
 
-SocialStack.path = '';
+// SocialStack.path = '';
 
 
 const ProfileStack = createStackNavigator(
@@ -183,7 +183,7 @@ ProfileStack.path = '';
 const tabNavigator = createMaterialBottomTabNavigator({
   GameStack,
   MapStack,
-  SocialStack,
+  // SocialStack,
   ProfileStack,
 },{
   shifting:true,

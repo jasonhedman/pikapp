@@ -12,6 +12,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import HeaderBlock from './HeaderBlock';
 import HelperText from './HelperText';
+import Form from './Form';
+
 
 
 const moment = require('moment');
@@ -27,14 +29,6 @@ class AgeAndIntensity extends React.Component {
       dobModalVisible: false,
       dobChosen: false
     }
-  }
-
-  onEmailChange = (email) => {
-    this.setState({email});
-  }
-
-  onPasswordChange = (password) => {
-    this.setState({password});
   }
 
   componentDidMount(){
@@ -72,32 +66,17 @@ class AgeAndIntensity extends React.Component {
                   />
                 </Block>
               </Modal>
-            <KeyboardAvoidingView
-              style={{ flex: 1 }}
-              behavior="padding"
-              enabled
-            >
-              <Block flex middle>
-                <Block style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
-                  <Block>
+              <Form>
                     <HeaderBlock text='Sign Up' backButton={false} />
                     <Block center>
-                        <Block width={width*.8}  style={{ marginBottom: 12 }}>
+                        <Block center middle style={{ marginBottom: 12 }}>
                             <Button style={{display:"flex",justifyContent:"center",alignItems:"center",borderColor:"#FFF"}} icon="menu-down" dark={true} mode="text" onPress={() => {this.setState({dobModalVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
                                 {this.state.dob.toDateString() != new Date().toDateString() ? this.state.dob.toDateString() : "Select Your Date of Birth"}
                             </Button>
-                            {
-                              moment().diff(moment(this.state.dob.getTime()),'years',false) < 13 && this.state.dobChosen
-                              ? (
-                                <HelperText
-                                  visible={moment().diff(moment(this.state.dob.getTime()),'years',false) < 13}
-                                  styles={{textAlign:'center'}}
-                                >
-                                  You must be 13 to use PikApp
-                                </HelperText>
-                              )
-                              : null
-                            }
+                            <HelperText
+                              visible={moment().diff(moment(this.state.dob.getTime()),'years',false) < 13 && this.state.dobChosen}
+                              text='You must be 13 to use PikApp'
+                            />
                         </Block>
                         <Block row style={styles.buttonBlock}>
                           <Button style={{marginBottom:0}} onPress={() => {this.props.prevFn();this.props.saveState(2,this.state);this.props.setState(this.state.dob,this.state.intensity)}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
@@ -116,40 +95,16 @@ class AgeAndIntensity extends React.Component {
                           </Button>
                         </Block>
                     </Block>
-                  </Block>
-                </Block>
-              </Block>
-            </KeyboardAvoidingView>
+                  </Form>
           </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  registerContainer: {
-    width: width * 0.9,
-    borderRadius: 8,
-    borderWidth: 2,
-    padding:16
-  },
-  passwordCheck: {
-    paddingLeft: 15,
-    paddingTop: 13,
-    paddingBottom: 30
-  },
   buttonBlock:{
     width:"100%",
     marginTop:16
-  },
-  headerBlock:{
-    marginTop:16,
-    marginBottom:16
-  },
-  ageButton:{
-    display:"flex",
-    justifyContent:"center",
-    alignItems:"center",
-    borderColor:"#FFF"
   }
 });
 

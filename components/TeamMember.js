@@ -72,10 +72,9 @@ const styles = StyleSheet.create({
   container: {
     borderRadius:8,
     borderWidth:1,
-    width:width*.45,
-    marginBottom:height*.025,
-    height:height*.06,
-    padding:5
+    marginBottom:8,
+    width:'100%',
+    padding:8
   }
 })
 

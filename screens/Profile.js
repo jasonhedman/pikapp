@@ -198,18 +198,18 @@ class Profile extends React.Component {
               : null
             }
             
-            <ScrollView style={{flex:1,backgroundColor:colors.dBlue}} snapToStart={false}>
-              <Block row style={{justifyContent:'flex-end',position:'absolute',top:height*.1,right:0,zIndex:2}}>
+            <ScrollView style={{flex:1,backgroundColor:colors.dBlue,padding:16}} snapToStart={false}>
+              <Block row style={{justifyContent:'flex-end',position:'absolute',top:56,right:0,zIndex:2}}>
                   <IconButton color={colors.white} icon={'settings'} onPress={() => this.setState({settingsVisible:true})}></IconButton>
               </Block>
-              <Block style={{marginRight:"auto",marginLeft:"auto",marginTop:height*.1,marginBottom:20}} width={width*.9}>
-                <Block center middle style={{marginBottom:height*.025}}>
+              <Block style={{marginTop:56,marginBottom:32}}>
+                <Block center middle style={{marginBottom:16}}>
                   <Headline style={styles.header}>{this.state.user.name}</Headline>
                   <Subheading style={styles.header}>{`@${this.state.user.username}`}</Subheading>
-                  <Block row style={{alignItems:'center',marginTop:height*.015,marginBottom:height*.015}}>
-                    <ProfilePic size={75} proPicUrl={this.state.proPicUrl}/>
-                    <Block column flex style={{paddingRight:30,paddingLeft:30}}>
-                      <Block row flex style={{justifyContent:'space-around'}}>
+                  <Block row style={{alignItems:'center',marginTop:16,marginBottom:16}}>
+                    <ProfilePic size={80} proPicUrl={this.state.proPicUrl}/>
+                    <Block column flex style={{paddingRight:32,paddingLeft:32}}>
+                      <Block row flex style={{justifyContent:'space-around', marginBottom:8}}>
                         <TouchableOpacity onPress={() => this.navToUserList(this.state.user.followers, "Followers")}>
                           <Block column center middle>
                             <Subheading style={styles.subheading}>Followers</Subheading>
@@ -243,9 +243,9 @@ class Profile extends React.Component {
                     </Block>
                   </Block>
                 </Block>
-                <Headline style={[styles.header,{marginBottom:height*.015,textAlign:"center"}]}>Stats Breakdown</Headline>
+                <Headline style={[styles.header,{marginBottom:16,textAlign:"center"}]}>Stats Breakdown</Headline>
                 <SportsTabs user={this.state.user} />
-                <Headline style={[styles.header,{marginBottom:height*.015,textAlign:"center"}]}>Last Three Games</Headline>
+                <Headline style={[styles.header,{marginBottom:16,textAlign:"center"}]}>Last Three Games</Headline>
                 {
                   this.state.lastThree.length > 0
                   ? (
@@ -258,15 +258,14 @@ class Profile extends React.Component {
                     </Block>
                   )
                   : (
-                    <Block flex center middle style={{backgroundColor:colors.dBlue, width:width}}>
-                      <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,width:width*.9,padding:10}}>
-                        <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025,textAlign:'center'}}>You have not completed any games.</Headline>
+                    <Block flex center middle style={{backgroundColor:colors.dBlue, width:width, paddingLeft:16,paddingRight:16}}>
+                      <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,padding:16}}>
+                        <Headline style={{color:colors.white,fontSize:20,marginBottom:16,textAlign:'center'}}>You have not completed any games.</Headline>
                         <Button
                           mode="contained" 
                           dark={true}                 
                           onPress={() => this.props.navigation.navigate("MapStack")}
                           theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}
-                          style={{marginBottom:height*.025}}
                         > 
                           Find a Game
                         </Button>
@@ -317,9 +316,11 @@ const styles = StyleSheet.create({
   statContainer:{
     borderWidth:1,
     borderRadius:8,
+    flex:1,
     borderColor: '#E68A54',
-    width:width*.29,
-    paddingTop:height*.01
+    padding:8,
+    marginRight:8,
+    marginLeft:8
   },
   subheading:{
     color:"#83838A",
@@ -328,12 +329,10 @@ const styles = StyleSheet.create({
   },
   stat:{
     color:"white",
-    marginBottom:10
   },
   info:{
     color:"white",
     fontSize:35,
-    marginBottom: 15,
     paddingTop:5
   }
 })

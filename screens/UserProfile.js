@@ -151,7 +151,7 @@ class UserProfile extends React.Component {
               
               <ScrollView style={{flex:1,backgroundColor:colors.dBlue}} snapToStart={false}>
                   <Block column style={{height: height*.1,justifyContent:'flex-end'}}>
-                      <Button icon='navigate-before' onPress={() => this.props.navigation.goBack()} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto'}}>
+                      <Button icon='keyboard-backspace' onPress={() => this.props.navigation.goBack()} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto'}}>
                           Back
                       </Button>
                   </Block>
