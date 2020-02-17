@@ -72,7 +72,7 @@ class ChangePassword extends React.Component {
             this.state.submitted
             ? (
             <>
-                <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025}}>Your password has been changed.</Headline>
+                <HeaderBlock text='Your Password Has Been Changed.' />
                 <ButtonBlock text='Back' onPress={() => this.props.navigation.navigate("Profile")}></ButtonBlock>
             </>
             )

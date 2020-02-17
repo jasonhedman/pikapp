@@ -24,7 +24,7 @@ const { width, height } = Dimensions.get("window");
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 
-import {withTheme,Text,Avatar,Button,Headline, Subheading, IconButton, Caption} from 'react-native-paper';
+import {withTheme,Text,Avatar,Button,Headline, Subheading, IconButton, Caption, TouchableRipple} from 'react-native-paper';
 
 import {TabView,SceneMap} from 'react-native-tab-view';
 
@@ -93,7 +93,6 @@ class Profile extends React.Component {
   };
 
   componentDidMount(){
-    this.getData();
     firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot(() => {
       this.getData();
     })
@@ -154,7 +153,6 @@ class Profile extends React.Component {
 
 
   render() {
-    const fonts = this.props.theme.fontss;
     const colors = this.props.theme.colors;
     if(this.state.complete){
       return (

@@ -23,6 +23,9 @@ import * as firebase from 'firebase';
 import 'firebase/firestore';
 
 import {withTheme,Text,Avatar,Button,Headline, Subheading, IconButton} from 'react-native-paper';
+import ProfilePic from "../components/ProfilePic";
+import HeaderBlock from "../components/HeaderBlock";
+import ButtonBlock from "../components/ButtonBlock";
 
 
 const defaultUser = require("../assets/images/defaultUser.jpg")
@@ -46,6 +49,7 @@ class UserProfile extends React.Component {
     firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).get()
       .then((doc) => {
         if(doc.exists){
+          let following = doc.data().followers.includes(firebase.auth().currentUser.uid);
           let lastThree = [];
           for(let i = doc.data().gameHistory.length - 1; i >= (doc.data().gameHistory.length >= 3?doc.data().gameHistory.length-3:0);i--){
             firebase.firestore().collection("games").doc(doc.data().gameHistory[i].id).get()
@@ -54,7 +58,7 @@ class UserProfile extends React.Component {
                 this.setState({lastThree});
               });
           }
-          this.setState({user:doc.data()})
+          this.setState({user:doc.data(),following})
         } else {
           this.setState({error:true})
         }
@@ -71,7 +75,6 @@ class UserProfile extends React.Component {
       })
   }
   componentDidMount(){
-    this.getData();
     firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).onSnapshot(() => {
       this.getData();
     })
@@ -98,7 +101,7 @@ class UserProfile extends React.Component {
   addFriend = () => {
     let user = this.state.user;
     user.followers.push(this.props.navigation.getParam('userId',null));
-    this.setState({user}, () => {
+    this.setState({user,following:true}, () => {
       firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
         friendsList:firebase.firestore.FieldValue.arrayUnion(this.props.navigation.getParam('userId',null))
       })
@@ -111,7 +114,7 @@ class UserProfile extends React.Component {
   removeFriend = () => {
     let user = this.state.user;
     user.friendsList = user.friendsList.filter(friend => friend != this.props.navigation.getParam('userId',null));
-    this.setState({user}, () => {
+    this.setState({user,following:false}, () => {
       firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
         friendsList:firebase.firestore.FieldValue.arrayRemove(this.props.navigation.getParam('userId',null))
       })   
@@ -136,7 +139,6 @@ class UserProfile extends React.Component {
 
 
   render() {
-    const fonts = this.props.theme.fontss;
     const colors = this.props.theme.colors;
     if(this.state.complete){
       if(!(this.state.error)){
@@ -149,56 +151,40 @@ class UserProfile extends React.Component {
                 : null
               }
               
-              <ScrollView style={{flex:1,backgroundColor:colors.dBlue}} snapToStart={false}>
-                  <Block column style={{height: height*.1,justifyContent:'flex-end'}}>
-                      <Button icon='keyboard-backspace' onPress={() => this.props.navigation.goBack()} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto'}}>
-                          Back
-                      </Button>
-                  </Block>
-                <Block style={{marginRight:"auto",marginLeft:"auto",marginBottom:20}} width={width*.9}>
-                  <Block center middle style={{marginBottom:height*.025}}>
+              <ScrollView style={{flex:1,backgroundColor:colors.dBlue,padding:16}} snapToStart={false}>
+                <Block row style={{justifyContent:'flex-start',position:'absolute',top:56,left:0,zIndex:2}}>
+                    <Button icon='keyboard-backspace' compact={true} onPress={() => this.props.navigation.goBack()} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto'}} />
+                </Block>
+                <Block style={{marginTop:56,marginBottom:32}}>
+                  <Block center middle style={{marginBottom:16}}>
                     <Headline style={styles.header}>{this.state.user.name}</Headline>
                     <Subheading style={styles.header}>{`@${this.state.user.username}`}</Subheading>
-                    <Block row style={{alignItems:'center',marginTop:height*.015,marginBottom:height*.015}}>
-                      <Block center middle style={{width:height*.1,height:height*.1,borderRadius:height*.1/2,borderWidth:2,borderColor:this.props.theme.colors.orange,marginBottom:height*.015}}>
-                        {
-                          this.state.proPicUrl != null
-                          ? <Avatar.Image
-                              theme={{colors:{primary:colors.dBlue}}}
-                              source={{uri:this.state.proPicUrl}}
-                              size={height*.1-4}
-                            />
-                          : <Avatar.Image
-                              theme={{colors:{primary:colors.dBlue}}}
-                              source={defaultUser}
-                              size={height*.1-4}
-                            />
-                        }
-                      </Block>
-                      <Block column flex style={{paddingRight:30,paddingLeft:30}}>
-                        <Block row flex style={{justifyContent:'space-around'}}>
+                    <Block row style={{alignItems:'center',marginTop:16,marginBottom:16}}>
+                      <ProfilePic size={80} proPicUrl={this.state.proPicUrl}/>
+                      <Block column flex style={{paddingRight:32,paddingLeft:32}}>
+                        <Block row flex style={{justifyContent:'space-around', marginBottom:8}}>
                           <TouchableOpacity onPress={() => this.navToUserList(this.state.user.followers, "Followers")}>
-                              <Block column center middle>
-                                <Subheading style={styles.subheading}>Followers</Subheading>
-                                <Headline style={styles.stat}>{this.state.user.followers.length}</Headline>
-                              </Block>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.navToUserList(this.state.user.friendsList, "Following")}>
-                              <Block column center middle>
-                                <Subheading style={styles.subheading}>Following</Subheading>
-                                <Headline style={styles.stat}>{this.state.user.friendsList.length}</Headline>
-                              </Block>
-                            </TouchableOpacity>
+                            <Block column center middle>
+                              <Subheading style={styles.subheading}>Followers</Subheading>
+                              <Headline style={styles.stat}>{this.state.user.followers.length}</Headline>
+                            </Block>
+                          </TouchableOpacity>
+                          <TouchableOpacity onPress={() => this.navToUserList(this.state.user.friendsList, "Following")}>
+                            <Block column center middle>
+                              <Subheading style={styles.subheading}>Following</Subheading>
+                              <Headline style={styles.stat}>{this.state.user.friendsList.length}</Headline>
+                            </Block>
+                          </TouchableOpacity>
                         </Block>
                         {
-                          this.state.user.followers.includes(firebase.auth().currentUser.uid)
-                          ? <Button mode="contained" onPress={this.removeFriend} dark={true} style={{marginBottom: height*.025,justifyContent:"center",alignItems:"center",borderWidth:1,borderColor:colors.white}} theme={{colors:{primary:colors.dBlue},fonts:{medium:this.props.theme.fonts.regular}}}>
-                                  Unfollow
-                              </Button>
-                          : <Button mode="contained" onPress={this.addFriend} dark={true} style={{marginBottom: height*.025,justifyContent:"center",alignItems:"center"}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                                  Follow
-                              </Button>
-                          }
+                          this.state.following
+                          ? <Button mode="contained" onPress={this.removeFriend} dark={true} style={[styles.button,{borderColor:colors.white}]} contentStyle={{width:'100%'}} labelStyle={{backgroundColor:'red'}} theme={{colors:{primary:colors.dBlue},fonts:{medium:this.props.theme.fonts.regular}}}>
+                              Unfollow
+                            </Button>
+                          : <Button mode="contained" onPress={this.addFriend} dark={true} style={[styles.button,{borderColor:colors.orange}]} contentStyle={{width:'100%'}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                              Follow
+                            </Button>
+                        }
                       </Block>
                     </Block>
                     <Block row style={{width,justifyContent:"space-around",}}>
@@ -216,9 +202,9 @@ class UserProfile extends React.Component {
                       </Block>
                     </Block>
                   </Block>
-                  <Headline style={[styles.header,{marginBottom:height*.015,textAlign:"center"}]}>Stats Breakdown</Headline>
-                  <SportsTabs style={{height:100}} user={this.state.user} />
-                  <Headline style={[styles.header,{marginBottom:height*.015,textAlign:"center"}]}>Last Three Games</Headline>
+                  <Headline style={[styles.header,{marginBottom:16,textAlign:"center"}]}>Stats Breakdown</Headline>
+                  <SportsTabs user={this.state.user} />
+                  <Headline style={[styles.header,{marginBottom:16,textAlign:"center"}]}>Last Three Games</Headline>
                   {
                     this.state.lastThree.length > 0
                     ? (
@@ -231,9 +217,9 @@ class UserProfile extends React.Component {
                       </Block>
                     )
                     : (
-                      <Block flex center middle style={{backgroundColor:colors.dBlue, width:width}}>
-                        <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,width:width*.9,padding:10}}>
-                          <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025,textAlign:'center'}}>{this.state.user.name} has not completed any games.</Headline>
+                      <Block flex center middle style={{backgroundColor:colors.dBlue, width:width, paddingLeft:16,paddingRight:16}}>
+                        <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,padding:16}}>
+                          <Headline style={{color:colors.white,fontSize:20,marginBottom:16,textAlign:'center'}}>{this.state.user.name} has not completed any games.</Headline>
                         </Block>
                       </Block>
                     )
@@ -245,18 +231,10 @@ class UserProfile extends React.Component {
         );
       } else {
         return (
-          <Block flex center middle style={{backgroundColor:colors.dBlue, width:width}}>
-            <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,width:width*.9,padding:10}}>
-              <Headline style={{color:colors.white,fontSize:20,marginTop:height*.025,marginBottom:height*.025,textAlign:'center'}}>User does not exist.</Headline>
-              <Button
-                mode="contained" 
-                dark={true}                 
-                onPress={() => this.props.navigation.goBack()}
-                theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}
-                style={{marginBottom:height*.025}}
-              > 
-                Go Back
-              </Button>
+          <Block flex center middle style={{backgroundColor:colors.dBlue, width:width,padding:16}}>
+            <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,padding:16,width:'100%'}}>
+              <HeaderBlock text='User does not exist.' backButton={true} backPress={() => this.props.navigation.goBack()} />
+              <ButtonBlock text="Go Back" onPress={() => this.props.navigation.goBack()} />
             </Block>
           </Block>
         );
@@ -275,16 +253,25 @@ const styles = StyleSheet.create({
     color: "white"
   },
   button: {
-    marginBottom: height*.025,
+    borderWidth:1,
+    marginBottom: 12,
+    justifyContent:"center",
+    alignItems:"center"
+  },
+  modalButton: {
+    marginBottom: 12,
+    padding:4,
     justifyContent:"center",
     alignItems:"center"
   },
   statContainer:{
     borderWidth:1,
     borderRadius:8,
+    flex:1,
     borderColor: '#E68A54',
-    width:width*.29,
-    paddingTop:height*.01
+    padding:8,
+    marginRight:8,
+    marginLeft:8
   },
   subheading:{
     color:"#83838A",
@@ -293,12 +280,10 @@ const styles = StyleSheet.create({
   },
   stat:{
     color:"white",
-    marginBottom:10
   },
   info:{
     color:"white",
     fontSize:35,
-    marginBottom: 15,
     paddingTop:5
   }
 })

@@ -1,10 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, Dimensions, StatusBar } from 'react-native';
-import { withTheme,Text,Headline,Subheading } from 'react-native-paper';
+import { StyleSheet} from 'react-native';
+import { withTheme,Headline,Subheading } from 'react-native-paper';
 
 import {Block} from 'galio-framework';
-
-const {height,width} = Dimensions.get("screen");
 
 class SportInfo extends React.Component {
   state = {
@@ -18,17 +16,17 @@ class SportInfo extends React.Component {
   render() {
     return (
         <Block>
-            <Headline style={{color:"#fff",textAlign:'center',marginTop:10,marginBottom:10,fontSize:20}}>{this.props.sport}</Headline>
+            <Headline style={{color:"#fff",textAlign:'center',marginTop:12,marginBottom:12,fontSize:20}}>{this.props.sport}</Headline>
             <Block row style={styles.container}>
-                <Block column middle center style={styles.statContainer}>
+                <Block flex column middle center style={styles.statContainer}>
                     <Subheading style={styles.subheading}>Record</Subheading>
                     <Headline style={styles.stat}>{`${this.props.user.wins}-${this.props.user.losses}`}</Headline>
                 </Block>
-                <Block column middle center style={styles.statContainer}>
+                <Block flex column middle center style={styles.statContainer}>
                     <Subheading style={styles.subheading}>Point Spread</Subheading>
                     <Headline style={styles.stat}>{`${this.props.user.ptsFor}-${this.props.user.ptsAgainst}`}</Headline>
                 </Block>
-                <Block column middle center style={styles.statContainer}>
+                <Block flex column middle center style={styles.statContainer}>
                     <Subheading style={styles.subheading}>Percentage</Subheading>
                     <Headline style={styles.stat}>{`${(this.props.user.losses + this.props.user.wins) > 0 ? Math.floor(this.props.user.wins/(this.props.user.losses + this.props.user.wins)*100) : 0}%`}</Headline>
                 </Block>
@@ -49,7 +47,6 @@ const styles = StyleSheet.create({
     },
     stat:{
         color:"white",
-        marginBottom:10
     },
     sport:{
         color:"white"
@@ -58,8 +55,9 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderRadius:8,
         borderColor: '#E68A54',
-        width:width*.29,
-        paddingTop:height*.01
+        padding:8,
+        marginLeft:8,
+        marginRight:8
     }
 });
 

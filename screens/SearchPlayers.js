@@ -4,9 +4,8 @@ import {Block} from 'galio-framework';
 
 import {withTheme, TextInput, Text, Headline, Subheading} from 'react-native-paper'
 
-import SlideModal from 'react-native-modal';
-import UserInfo from '../components/UserInfo'
 import Notification from '../components/Notification'
+import HeaderBlock from '../components/HeaderBlock';
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
@@ -95,16 +94,16 @@ class SearchPlayers extends React.Component {
         return (
             <>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} height={height} width={width}>
-                    <Block column center flex style={{backgroundColor:colors.dBlue,width}}>
-                        <Block flex width={width*.9}>
-                            <Headline style={{color:"#FFF",textAlign:'center',marginTop:height*.1}}>Find Other Users</Headline>
+                    <Block column center flex style={{backgroundColor:colors.dBlue,padding:16,width,paddingTop:56}}>
+                        <Block flex style={{}}>
+                            <HeaderBlock text='Find Other Users' />
                             <TextInput
                                 mode={'outlined'}
                                 theme={{colors: {text:colors.white,placeholder:colors.white,underlineColor:colors.orange,selectionColor:colors.orange,primary:colors.orange}}}
                                 placeholder={'Username'}
                                 onChangeText={this.onSearch}
                                 value={this.state.search}
-                                style={{marginBottom:20}}
+                                style={{marginBottom:16}}
                             />
                             <Block flex>
                                 {

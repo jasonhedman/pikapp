@@ -8,6 +8,7 @@ import Notification from '../components/Notification'
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
+import HeaderBlock from '../components/HeaderBlock';
 
 const {height, width} = Dimensions.get('window');
 
@@ -48,44 +49,34 @@ class UserList extends React.Component {
         return (
             <>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} height={height} width={width}>
-                    <Block column center flex style={{backgroundColor:colors.dBlue,width}}>
-                        <Block flex width={width*.9}>
-                            <Block column style={{justifyContent:'flex-end',marginTop:height*.1,}}>
-                                <Button icon='keyboard-backspace' onPress={() => this.props.navigation.goBack()} mode={'text'} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}} style={{marginRight:'auto'}}>
-                                    Back
-                                </Button>
-                            </Block>
-                            <Headline style={{color:"#FFF",textAlign:'center', marginBottom:height*.025}}>{this.props.navigation.getParam('listType',null)}</Headline>
-                            <Block flex style={{justifyContent:'flex-start'}}>
-                                {
-                                    this.state.complete
-                                    ? (this.state.users.length > 0
-                                        ? <ScrollView style={{flex:1}}>
-                                            {
-                                                this.state.users.map((user,key) => {
-                                                    return (
-                                                        <TouchableOpacity onPress={() => this.navToUserProfile(user.id)} key={key}>
-                                                            <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width: width*.9,marginBottom:10}}>
-                                                                <Block column>
-                                                                    <Text style={{color:"#fff"}}>{user.name}</Text>
-                                                                    <Text style={{color:"#fff"}}>@{user.username}</Text>
-                                                                </Block>
-                                                                <Text style={{color:"#fff"}}>{`${user.wins}-${user.losses}`}</Text>
+                    <Block column center flex style={{backgroundColor:colors.dBlue,width,padding:16, paddingTop:56}}>
+                        <HeaderBlock text={this.props.navigation.getParam('listType',null)} backButton={true} backPress={() => this.props.navigation.goBack()} />
+                            {
+                                this.state.complete
+                                ? (this.state.users.length > 0
+                                    ? <ScrollView style={{flex:1}}>
+                                        {
+                                            this.state.users.map((user,key) => {
+                                                return (
+                                                    <TouchableOpacity onPress={() => this.navToUserProfile(user.id)} key={key}>
+                                                        <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width: width*.9,marginBottom:10}}>
+                                                            <Block column>
+                                                                <Text style={{color:"#fff"}}>{user.name}</Text>
+                                                                <Text style={{color:"#fff"}}>@{user.username}</Text>
                                                             </Block>
-                                                        </TouchableOpacity>
-                                                    )
-                                                })
-                                            }
-                                        </ScrollView>
-                                        :   <Block center middle style={{width:width*.9, borderColor:colors.orange, borderWidth:1, borderRadius:8}}>
-                                                <Headline style={{color:colors.grey,fontSize:20,marginTop:height*.015,marginBottom:height*.015,textAlign:'center'}}>No Users</Headline>
-                                            </Block>
-                                    )
-                                    : null
-                                }
-                            </Block>
-                            
-                        </Block>
+                                                            <Text style={{color:"#fff"}}>{`${user.wins}-${user.losses}`}</Text>
+                                                        </Block>
+                                                    </TouchableOpacity>
+                                                )
+                                            })
+                                        }
+                                    </ScrollView>
+                                    :   <Block center middle style={{ borderColor:colors.orange, borderWidth:1, borderRadius:8, width:'100%', padding:8}}>
+                                            <Headline style={{color:colors.grey,fontSize:20,textAlign:'center'}}>No Users</Headline>
+                                        </Block>
+                                )
+                                : null
+                            }
                     </Block>
                 </TouchableWithoutFeedback>
             </>

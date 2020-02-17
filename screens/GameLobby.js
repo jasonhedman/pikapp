@@ -247,8 +247,8 @@ class GameScreen extends React.Component{
               ? <LoadingOverlay />
               : null
             }
-            <Portal style={{padding:16}}>
-              <Modal style={{padding:16}} contentContainerStyle={[{backgroundColor:this.props.theme.colors.dBlue,borderColor:colors.orange},styles.modalStyle]} visible={this.state.modalVisible} onDismiss={() => {this.setModalVisible(false)}}>
+            <Portal>
+              <Modal contentContainerStyle={[{backgroundColor:this.props.theme.colors.dBlue,borderColor:colors.orange},styles.modalStyle]} visible={this.state.modalVisible} onDismiss={() => {this.setModalVisible(false)}}>
                 <ScoreForm setModalVisible={this.setModalVisible} navToMap={this.navToMap} game={this.state.game}/>
               </Modal>
             </Portal>
@@ -315,17 +315,18 @@ class GameScreen extends React.Component{
                           return (
                             <Block row center middle style={{marginBottom:12,width:'100%'}} key={key}>
                               <Text style={{color:"white", marginRight:12}}>{key+1}.</Text>
-                              {/* <TouchableOpacity 
+                              <TouchableOpacity 
                                 onPress={() => {
-                                  if(user.id == firebase.auth().currentUser.uid){
-                                    this.props.navigation.navigate("Profile");
-                                  } else {
-                                    this.navToUserProfile(user.id);
-                                  }
+                                  this.setModalVisible(true);
+                                  // if(user.id == firebase.auth().currentUser.uid){
+                                  //   this.props.navigation.navigate("Profile");
+                                  // } else {
+                                  //   this.navToUserProfile(user.id);
+                                  // }
                                 }} 
                                 key={key} 
                                 style={{flex:1}}
-                              > */}
+                              >
                                 <Block row center middle flex style={key == 0 ? styles.firstPlace : key == 1 ? styles.secondPlace : key == 2 ? styles.thirdPlace : styles.defaultPlace}>
                                     <Block column>
                                         <Text style={{color:"#fff"}}>{user.name}</Text>
@@ -333,7 +334,7 @@ class GameScreen extends React.Component{
                                     </Block>
                                     <Text style={{color:"#fff"}}>{user.points}</Text>
                                 </Block>
-                              {/* </TouchableOpacity> */}
+                              </TouchableOpacity>
                             </Block>
                           )
                       })
@@ -390,19 +391,13 @@ const styles = StyleSheet.create({
     padding: 10, 
     width:'100%'
   },
-  containerAvailable: {
-    padding:15,
-    paddingRight:height*.01,
-    marginBottom: height*.01,
-    width: width*.8
-  },
   modalStyle:{ 
     marginLeft:"auto", 
     marginRight:"auto", 
     borderRadius:8, 
     borderWidth:2, 
-    padding:16,
     width:width-32,
+    padding:16
   }
 })
 

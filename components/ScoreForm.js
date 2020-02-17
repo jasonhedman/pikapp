@@ -9,6 +9,9 @@ import firestore from 'firebase/firestore';
 
 import {Button,Headline,withTheme, Text} from 'react-native-paper';
 import NumericInput from 'react-native-numeric-input';
+import HeaderBlock from './HeaderBlock';
+import ButtonBlock from './ButtonBlock';
+
 const { width, height } = Dimensions.get("screen");
 
 
@@ -252,11 +255,11 @@ class ScoreForm extends React.Component{
     const colors = this.props.theme.colors;
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <Block center middle>
-          <Headline style={styles.heading}>Final Score</Headline>
+        <Block center middle style={{width:'100%',padding:0}}>
+          <HeaderBlock text='Final Score' backButton={true} backPress={() => this.props.setModalVisible(false)}/>
           <Block row>
-            <Block column style={{width:width*.42,marginLeft:width*.02,marginRight:width*.01,alignItems:'center'}}>
-              <Text style={{color:colors.white,marginBottom:10}}>Home</Text>
+            <Block flex column style={{marginRight:8,alignItems:'center'}}>
+              <Text style={{color:colors.white,marginBottom:12}}>Home</Text>
               <NumericInput
                 value={this.state.home}
                 onChange={this.onHomeChange}
@@ -268,15 +271,15 @@ class ScoreForm extends React.Component{
                 rightButtonBackgroundColor={colors.dBlue}
                 leftButtonBackgroundColor={colors.dBlue}
                 textColor={colors.white}
-                totalHeight={height*.05}
+                totalHeight={42}
                 iconStyle={{color:colors.white}}
-                inputStyle={{fontFamily:this.props.theme.fonts.regular}}
-                containerStyle={{marginBottom:10}}
+                inputStyle={{fontFamily:this.props.theme.fonts.regular.fontFamily}}
+                containerStyle={{marginBottom:12}}
               />
               {
                 this.props.game.teams.home.map((user,index) => {
                   return (
-                    <Block middle center row style={{marginBottom:10,padding: 5, justifyContent:"space-between",height:height*.05, width:"100%"}} key={index}>
+                    <Block middle center row style={{marginBottom:12,padding: 4, justifyContent:"space-between", width:"100%"}} key={index}>
                       <Block column >
                         <Text style={{color:"#FFF"}}>{user.name}</Text>
                         <Text style={{color:"#FFF"}}>{"@" + user.username}</Text>
@@ -287,8 +290,8 @@ class ScoreForm extends React.Component{
                 })
               }
             </Block>
-            <Block column style={{width:width*.42,marginLeft:width*.01,marginRight:width*.02, alignItems:'center', justifyContent:'flex-start'}}>
-              <Text style={{color:colors.white,marginBottom:10}}>Away</Text>
+            <Block flex column style={{marginLeft:8, alignItems:'center'}}>
+              <Text style={{color:colors.white,marginBottom:12}}>Away</Text>
               <NumericInput
                 value={this.state.away}
                 onChange={this.onAwayChange}
@@ -300,16 +303,15 @@ class ScoreForm extends React.Component{
                 rightButtonBackgroundColor={colors.dBlue}
                 leftButtonBackgroundColor={colors.dBlue}
                 textColor={colors.white}
-                totalHeight={height*.05}
+                totalHeight={42}
                 iconStyle={{color:colors.white}}
-                inputStyle={{fontFamily:this.props.theme.fonts.regular}}
-                containerStyle={{marginBottom:10}}
-                extraTextInputProps={{disabled:false}}
+                inputStyle={{fontFamily:this.props.theme.fonts.regular.fontFamily}}
+                containerStyle={{marginBottom:12}}
               />
               {
                 this.props.game.teams.away.map((user,index) => {
                   return (
-                    <Block middle center row style={{marginBottom:10,padding: 5, justifyContent:"space-between",height:height*.05, width:"100%"}} key={index}>
+                    <Block middle center row style={{marginBottom:12,padding: 4, justifyContent:"space-between", width:"100%"}} key={index}>
                       <Block column >
                         <Text style={{color:"#FFF"}}>{user.name}</Text>
                         <Text style={{color:"#FFF"}}>{"@" + user.username}</Text>
@@ -321,46 +323,11 @@ class ScoreForm extends React.Component{
               }
             </Block>
           </Block>
-          <Button 
-            mode="contained" 
-            dark={true} 
-            onPress={() => this.submitGame()}
-            theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}
-            style={[styles.button, this.state.home == this.state.away ? {opacity: .3, backgroundColor:colors.orange} : null]}
-            disabled={this.state.home == this.state.away}
-          >
-            Submit Score
-          </Button>
+          <ButtonBlock text='Submit Score' onPress={this.submitGame} disabled={this.state.home == this.state.away} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} />
         </Block>
       </TouchableWithoutFeedback>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  input: {
-    alignItems:"center",
-    width:"100%",
-    height:height*.075,
-    marginBottom: height*.025,
-  },
-  heading:{
-    color:"#FFF",
-    height: height*.05,
-    marginTop:height*.025,
-    marginBottom: height*.015,
-  },
-  button:{
-    height:height*.05,
-    marginBottom:height*.025,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  team: {
-    width:width*.42,
-    marginLeft:width*.02,
-    marginRight:width*.01
-  }
-})
 
 export default withTheme(ScoreForm)
