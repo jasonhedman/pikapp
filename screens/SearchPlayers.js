@@ -94,7 +94,7 @@ class SearchPlayers extends React.Component {
         return (
             <>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} height={height} width={width}>
-                    <Block column center flex style={{backgroundColor:colors.dBlue,padding:16,width,paddingTop:56}}>
+                    <Block column flex style={{backgroundColor:colors.dBlue,padding:16,width,paddingTop:56}}>
                         <Block flex style={{}}>
                             <HeaderBlock text='Find Other Users' />
                             <TextInput
@@ -108,12 +108,12 @@ class SearchPlayers extends React.Component {
                             <Block flex>
                                 {
                                     this.state.search != ""
-                                    ? <ScrollView style={{}}>
+                                    ? <ScrollView style={{width:'100%'}}>
                                     {
                                         this.state.filteredUsers.map((user,key) => {
                                             return (
-                                                <TouchableOpacity onPress={() => this.navToUserProfile(user.id)} key={key}>
-                                                    <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width: width*.9,marginBottom:10}}>
+                                                <TouchableOpacity onPress={() => this.navToUserProfile(user.id)} key={key} style={{width:'100%'}}>
+                                                    <Block row middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10,marginBottom:10}}>
                                                         <Block column>
                                                             <Text style={{color:"#fff"}}>{user.name}</Text>
                                                             <Text style={{color:"#fff"}}>@{user.username}</Text>
@@ -126,7 +126,7 @@ class SearchPlayers extends React.Component {
                                     }
                                     </ScrollView>
                                     : <Block>
-                                        <Subheading style={{color:colors.white, textAlign:'center',marginBottom:20}}>Recent Activity</Subheading>
+                                        <Subheading style={{color:colors.white, textAlign:'center',marginBottom:16}}>Recent Activity</Subheading>
                                         {
                                             this.state.notifications.length > 0
                                             ? this.state.notifications.map((notification, index) => {
@@ -134,7 +134,7 @@ class SearchPlayers extends React.Component {
                                                     <Notification notification={notification} key={index} navToMap={this.navToMap}/>
                                                 )
                                             })
-                                            : <Block center middle style={{width:width*.8, padding:10, borderWidth:1, borderRadius:8, borderColor:colors.orange}}>
+                                            : <Block center middle style={{padding:8, borderWidth:1, borderRadius:8, borderColor:colors.orange}}>
                                                 <Subheading style={{color:colors.grey,textAlign:'center'}}>Your friends have no recent activity. Connect with other users to see more.</Subheading>
                                             </Block>
                                         }

@@ -16,7 +16,7 @@ class Notification extends React.Component{
         const colors = this.props.theme.colors
         return (
             <TouchableHighlight onPress={() => this.props.navToMap(this.props.notification.game.location)}>
-                <Block row style={{borderWidth:1, borderColor:colors.orange, borderRadius: 8, padding:10,marginBottom:10,alignItems:'center',justifyContent:"space-between"}}>
+                <Block row style={{borderWidth:1, borderColor:colors.orange, borderRadius: 8, padding:10,marginBottom:12,alignItems:'center',justifyContent:"space-between"}}>
                     <Block>
                         <Text style={{color:colors.white}}>{`@${this.props.notification.user.username} ${this.props.notification.action} a game`}</Text>
                         <Text style={{color:colors.grey}}>{`${moment.unix(parseInt(this.props.notification.time.seconds)).fromNow()}`}</Text>

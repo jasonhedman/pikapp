@@ -75,9 +75,10 @@ class UserProfile extends React.Component {
       })
   }
   componentDidMount(){
-    firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).onSnapshot(() => {
-      this.getData();
-    })
+    this.getData();
+    // firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).onSnapshot(() => {
+    //   this.getData();
+    // })
   }
   
   getLastTen(){
@@ -100,7 +101,7 @@ class UserProfile extends React.Component {
 
   addFriend = () => {
     let user = this.state.user;
-    user.followers.push(this.props.navigation.getParam('userId',null));
+    user.followers.push(firebase.auth().currentUser.uid);
     this.setState({user,following:true}, () => {
       firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
         friendsList:firebase.firestore.FieldValue.arrayUnion(this.props.navigation.getParam('userId',null))
@@ -112,16 +113,19 @@ class UserProfile extends React.Component {
   }
 
   removeFriend = () => {
-    let user = this.state.user;
-    user.friendsList = user.friendsList.filter(friend => friend != this.props.navigation.getParam('userId',null));
-    this.setState({user,following:false}, () => {
-      firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
-        friendsList:firebase.firestore.FieldValue.arrayRemove(this.props.navigation.getParam('userId',null))
-      })   
-      firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).update({
-        followers:firebase.firestore.FieldValue.arrayRemove(firebase.auth().currentUser.uid)
-      }) 
-    });
+    this.setState({following:false}, () => {
+      let user = this.state.user;
+      user.followers = user.followers.filter(friend => friend != firebase.auth().currentUser.uid);
+      this.setState({user}, () => {
+        firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
+          friendsList:firebase.firestore.FieldValue.arrayRemove(this.props.navigation.getParam('userId',null))
+        })   
+        firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).update({
+          followers:firebase.firestore.FieldValue.arrayRemove(firebase.auth().currentUser.uid)
+        }) 
+      });
+    })
+    
   }
 
   navToUserProfile = (id) => {
@@ -176,15 +180,15 @@ class UserProfile extends React.Component {
                             </Block>
                           </TouchableOpacity>
                         </Block>
-                        {
-                          this.state.following
-                          ? <Button mode="contained" onPress={this.removeFriend} dark={true} style={[styles.button,{borderColor:colors.white}]} contentStyle={{width:'100%'}} labelStyle={{backgroundColor:'red'}} theme={{colors:{primary:colors.dBlue},fonts:{medium:this.props.theme.fonts.regular}}}>
-                              Unfollow
-                            </Button>
-                          : <Button mode="contained" onPress={this.addFriend} dark={true} style={[styles.button,{borderColor:colors.orange}]} contentStyle={{width:'100%'}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                              Follow
-                            </Button>
-                        }
+                          {
+                            this.state.following
+                            ? <Button mode="contained" onPress={this.removeFriend} dark={true} style={[styles.button,{borderColor:colors.white}]} contentStyle={{}} theme={{colors:{primary:colors.dBlue},fonts:{medium:this.props.theme.fonts.regular}}}>
+                                Unfollow
+                              </Button>
+                            : <Button mode="contained" onPress={this.addFriend} dark={true} style={[styles.button,{borderColor:colors.orange}]} contentStyle={{}} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                                Follow
+                              </Button>
+                          }
                       </Block>
                     </Block>
                     <Block row style={{width,justifyContent:"space-around",}}>
@@ -219,7 +223,7 @@ class UserProfile extends React.Component {
                     : (
                       <Block flex center middle style={{backgroundColor:colors.dBlue, width:width, paddingLeft:16,paddingRight:16}}>
                         <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,padding:16}}>
-                          <Headline style={{color:colors.white,fontSize:20,marginBottom:16,textAlign:'center'}}>{this.state.user.name} has not completed any games.</Headline>
+                          <Headline style={{color:colors.white,fontSize:20,textAlign:'center'}}>{this.state.user.name} has not completed any games.</Headline>
                         </Block>
                       </Block>
                     )
@@ -253,10 +257,8 @@ const styles = StyleSheet.create({
     color: "white"
   },
   button: {
+    flex:1,
     borderWidth:1,
-    marginBottom: 12,
-    justifyContent:"center",
-    alignItems:"center"
   },
   modalButton: {
     marginBottom: 12,
