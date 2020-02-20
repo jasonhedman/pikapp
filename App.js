@@ -5,6 +5,7 @@ import { StyleSheet, View, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
+import 'firebase/functions';
 import { Appearance, AppearanceProvider } from 'react-native-appearance';
 
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
@@ -136,11 +137,11 @@ async function loadResourcesAsync() {
     authDomain: "pickapp-4dcc0.firebaseapp.com",
     databaseURL: "https://pickapp-4dcc0.firebaseio.com",
     projectId: "pickapp-4dcc0",
-    storageBucket: "gs://pickapp-4dcc0.appspot.com/",
+    storageBucket: "pickapp-4dcc0.appspot.com",
     messagingSenderId: "322765285697",
     appId: "1:322765285697:web:ecd162e09c8d5a3f"
   };
-  firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig)
   await Promise.all([
     Font.loadAsync({
       ...Ionicons.font,
@@ -152,8 +153,6 @@ async function loadResourcesAsync() {
 }
 
 function handleLoadingError(error: Error) {
-  // In this case, you might want to report the error to your error reporting
-  // service, for example Sentry
   console.warn(error);
 }
 

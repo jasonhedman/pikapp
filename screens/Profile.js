@@ -24,11 +24,9 @@ const { width, height } = Dimensions.get("window");
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 
-import {withTheme,Text,Avatar,Button,Headline, Subheading, IconButton, Caption, TouchableRipple} from 'react-native-paper';
+import {withTheme,Button,Headline, Subheading, IconButton, Caption} from 'react-native-paper';
 
-import {TabView,SceneMap} from 'react-native-tab-view';
 
-const defaultUser = require("../assets/images/defaultUser.jpg")
 
 class Profile extends React.Component {
   constructor(){
@@ -257,8 +255,8 @@ class Profile extends React.Component {
                   )
                   : (
                     <Block flex center middle style={{backgroundColor:colors.dBlue, width:width, paddingLeft:16,paddingRight:16}}>
-                      <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,padding:16}}>
-                        <Headline style={{color:colors.white,fontSize:20,marginBottom:16,textAlign:'center'}}>You have not completed any games.</Headline>
+                      <Block center style={{borderWidth:1,borderColor:colors.orange,borderRadius:8,padding:16, width:'100%'}}>
+                        <Headline style={{color:colors.white,fontSize:20,marginBottom:8,textAlign:'center'}}>You have not completed any games.</Headline>
                         <Button
                           mode="contained" 
                           dark={true}                 
@@ -302,8 +300,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginBottom: 12,
-    justifyContent:"center",
-    alignItems:"center"
   },
   modalButton: {
     marginBottom: 12,

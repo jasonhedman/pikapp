@@ -54,12 +54,12 @@ class UserList extends React.Component {
                             {
                                 this.state.complete
                                 ? (this.state.users.length > 0
-                                    ? <ScrollView style={{flex:1}}>
+                                    ? <ScrollView style={{width:'100%'}}>
                                         {
                                             this.state.users.map((user,key) => {
                                                 return (
-                                                    <TouchableOpacity onPress={() => this.navToUserProfile(user.id)} key={key}>
-                                                        <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width: width*.9,marginBottom:10}}>
+                                                    <TouchableOpacity onPress={() => this.navToUserProfile(user.id)} key={key} style={{width:'100%'}}>
+                                                        <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%', marginBottom:10}}>
                                                             <Block column>
                                                                 <Text style={{color:"#fff"}}>{user.name}</Text>
                                                                 <Text style={{color:"#fff"}}>@{user.username}</Text>

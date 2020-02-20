@@ -125,7 +125,7 @@ const SocialStack = createStackNavigator(
 SocialStack.navigationOptions = {
   tabBarLabel: 'Social',
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={'Platform.OS' === 'ios' ? 'ios-git-network' : 'md-git-network'} />
+    <TabBarIcon focused={focused} name={'Platform.OS' === 'ios' ? 'ios-search' : 'md-search'} />
   ),
 };
 

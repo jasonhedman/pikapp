@@ -39,7 +39,9 @@ class GameForm extends React.Component {
   componentDidMount(){
     firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).get()
       .then((user) => {
-        this.setState({user:user.data()})
+        let userData = user.data();
+        userData.id = user.id;
+        this.setState({user:userData})
       })
   }
 
@@ -57,14 +59,16 @@ class GameForm extends React.Component {
       .then((pos)=>{
         firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).get()
           .then((doc) => {
+            let docData = doc.data();
+            docData.id = doc.id;
             if(doc.exists){
               firebase.firestore().collection('games').add({
                 intensity: this.state.intensity,
                 location: pos.coords,
                 sport:this.state.sport,
                 teamSize: this.state.teamSize,
-                owner: doc.id,
-                ownerUsername: doc.data().username,
+                ownerId: doc.id,
+                owner: docData,
                 teams: {
                   home: [{
                     id: firebase.auth().currentUser.uid,
@@ -85,18 +89,19 @@ class GameForm extends React.Component {
                   })
                     .then(() => {
                       firebase.firestore().collection('notifications').add({
+                        type: 'newGame',
                         game: {
                           intensity: this.state.intensity,
                           location: pos.coords,
                           sport:this.state.sport,
                           teamSize: this.state.teamSize,
-                          owner: doc.id,
-                          ownerUsername: doc.data().username,
+                          ownerId: doc.id,
+                          owner: docData,
                           gameState: "created"
                         },
-                        userId:firebase.auth().currentUser.uid,
                         action:"created",
-                        user:this.state.user,
+                        from:this.state.user,
+                        to: this.state.user.followers,
                         time: new Date(),
                         date: new Date().toDateString()
                       })
@@ -162,7 +167,7 @@ class GameForm extends React.Component {
 
 const styles = StyleSheet.create({
   registerContainer: {
-    width: width * 0.9,
+    width: '100%',
     borderRadius: 8,
     borderWidth: 2,
     padding:16,

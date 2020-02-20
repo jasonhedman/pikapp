@@ -53,7 +53,7 @@ class LobbyModal extends React.Component {
     return (
       <Block column style={[styles.modalContainer,{backgroundColor:colors.dBlue,borderTopWidth:2,borderTopColor:colors.orange}]}>
         <HeaderBlock text={`${marker.intensity[0].toUpperCase() + marker.intensity.substring(1)} ${marker.sport[0].toUpperCase() + marker.sport.substring(1)}`} />
-        <Subheading style={{color:colors.grey,textAlign:"center"}}>{`Owner: @${marker.ownerUsername}`}</Subheading>
+        <Subheading style={{color:colors.grey,textAlign:"center"}}>{`Owner: @${marker.owner.username}`}</Subheading>
         <Subheading style={{color:colors.grey,textAlign:"center"}}>{`Created ${moment.unix(parseInt(marker.time.seconds)).fromNow()}`}</Subheading>
         <Subheading style={{color:colors.grey,textAlign:"center",marginBottom:16}}>{`Team Size: ${marker.teamSize}`}</Subheading>
         <Block row style={{zIndex:1000, maxHeight:height*.4}}>

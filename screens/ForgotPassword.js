@@ -74,35 +74,4 @@ class Register extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  registerContainer: {
-    width: width * 0.9,
-    borderRadius: 8,
-    borderWidth: 2,
-    padding:16,
-  },
-  createButton: {
-    padding:4,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  input: {
-    justifyContent:"center"
-  },
-  inputBlock:{
-    width:"100%",
-    marginBottom:16,
-  },
-  headerBlock:{
-    width:"100%",
-    marginTop:16,
-    marginBottom:16
-  },
-  backButton:{
-    position:"absolute",
-    left:0,
-
-  }
-});
-
 export default withTheme(Register);

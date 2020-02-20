@@ -140,12 +140,6 @@ class ChangePassword extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  registerContainer: {
-    width: width * 0.9,
-    borderRadius: 8,
-    borderWidth: 2,
-    padding:16,
-  },
   createButton: {
     padding:4,
     alignItems: "center",

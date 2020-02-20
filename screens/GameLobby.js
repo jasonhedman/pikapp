@@ -16,6 +16,7 @@ import { withTheme, Headline, Button, Subheading, Text, Modal, Portal, Caption }
 import LoadingOverlay from '../components/LoadingOverlay';
 import { ScrollView } from 'react-native-gesture-handler';
 import HeaderBlock from '../components/HeaderBlock';
+import InvitePlayers from '../components/InvitePlayers';
 const { width, height } = Dimensions.get("screen");
 const orange = "#E68A54";
 const green = "#56B49E";
@@ -26,6 +27,7 @@ class GameScreen extends React.Component{
     super(props);
     this.state = {
       modalVisible:false,
+      inviteModalVisible:false,
       teamModalVisible:false,
       teamData:null,
       team:"",
@@ -47,6 +49,7 @@ class GameScreen extends React.Component{
                 let gameData = game.data();
                 gameData.id = game.id;
                 this.setState({
+                  user:user.data(),
                   game:gameData,
                   complete:true,
                   loading:false
@@ -54,6 +57,7 @@ class GameScreen extends React.Component{
               })
           } else {
             this.setState({
+              user:user.data(),
               game: null,
               complete: true,
               loading:false
@@ -127,6 +131,10 @@ class GameScreen extends React.Component{
 
   setModalVisible = (modalVisible) => {
     this.setState({modalVisible});
+  }
+
+  setInviteModalVisible = (inviteModalVisible) => {
+    this.setState({inviteModalVisible})
   }
 
   changeGameState = (newState) => {
@@ -232,12 +240,11 @@ class GameScreen extends React.Component{
     })
   }
 
+  toSocialScreen = () => {
+    this.props.navigation.navigate('SocialScreen');
+  }
+
   render(){
-    // if(this.props.navigation.getParam("new",null) != null){
-    //   this.setState({newModalVisible:true}, () => {
-    //     this.props.navigation.navigate('Lobby',{new:null});
-    //   })
-    // }
     const colors = this.props.theme.colors;
       if(this.state.game != null){
         return (
@@ -250,6 +257,11 @@ class GameScreen extends React.Component{
             <Portal>
               <Modal contentContainerStyle={[{backgroundColor:this.props.theme.colors.dBlue,borderColor:colors.orange},styles.modalStyle]} visible={this.state.modalVisible} onDismiss={() => {this.setModalVisible(false)}}>
                 <ScoreForm setModalVisible={this.setModalVisible} navToMap={this.navToMap} game={this.state.game}/>
+              </Modal>
+            </Portal>
+            <Portal>
+              <Modal contentContainerStyle={[{backgroundColor:this.props.theme.colors.dBlue,borderColor:colors.orange},styles.modalStyle]} visible={this.state.inviteModalVisible} onDismiss={() => {this.setInviteModalVisible(false)}}>
+                <InvitePlayers setModalVisible={this.setInviteModalVisible} game={this.state.game} user={this.state.user} toSocialScreen={this.toSocialScreen}/>
               </Modal>
             </Portal>
             <Portal>
@@ -270,31 +282,37 @@ class GameScreen extends React.Component{
             </Portal>
             <Block column flex center middle style={{backgroundColor:colors.dBlue, width, height, padding:16}}>
                 <Headline style={{color:colors.white,textAlign:"center"}}>{`${this.state.game.intensity[0].toUpperCase() + this.state.game.intensity.substring(1)} ${this.state.game.sport[0].toUpperCase() + this.state.game.sport.substring(1)}`}</Headline>
-                <Subheading style={{color:colors.grey,textAlign:"center"}}>{`Owner: @${this.state.game.ownerUsername}`}</Subheading>
+                <Subheading style={{color:colors.grey,textAlign:"center"}}>{`Owner: @${this.state.game.owner.username}`}</Subheading>
                 {this.state.complete ? this.makePlayers('home') : null
                 }
                 {this.state.complete ? this.makePlayers('away'): null
               }
                 {
-                  firebase.auth().currentUser.uid == this.state.game.owner
+                  firebase.auth().currentUser.uid == this.state.game.owner.id
                   ? (
                     <Block row style={{justifyContent:"space-between",width:'100%'}}>
                         <Button mode="contained" dark={true} onPress={() => this.deleteGame(this.state.game.id)} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
-                          Cancel Game
+                          Cancel
+                        </Button>
+                        <Button mode="contained" onPress={() => this.setInviteModalVisible(true)} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
+                          Invite
                         </Button>
                         {
                           this.state.game.gameState == "created"
-                          ? <Button disabled={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0} mode="contained" dark={true} onPress={() =>this.changeGameState('inProgress')} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}}>
-                              Start Game
+                          ? <Button disabled={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0} dark={true} mode="contained" onPress={() =>this.changeGameState('inProgress')} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}} style={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0 ? {opacity:.3,backgroundColor:colors.lGreen} : {}}>
+                              Start
                             </Button>
-                          : <Button disabled={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0} mode="contained" dark={true} onPress={() =>this.setModalVisible(true)} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}}>
-                              Submit Score
+                          : <Button disabled={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0} dark={true} mode="contained" onPress={() =>this.setModalVisible(true)} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}}>
+                              Submit
                             </Button>
                         }
                     </Block>
                   )
                   : (
-                    <Block>
+                    <Block row style={{justifyContent:"space-between",width:'100%'}}>
+                      <Button mode="contained" dark={true} onPress={() => this.setInviteModalVisible(true)} theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
+                        Invite
+                      </Button>
                       <Button mode="contained" dark={true} onPress={() =>this.leaveGame()} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}}>
                         Leave Game
                       </Button>
@@ -317,12 +335,11 @@ class GameScreen extends React.Component{
                               <Text style={{color:"white", marginRight:12}}>{key+1}.</Text>
                               <TouchableOpacity 
                                 onPress={() => {
-                                  this.setModalVisible(true);
-                                  // if(user.id == firebase.auth().currentUser.uid){
-                                  //   this.props.navigation.navigate("Profile");
-                                  // } else {
-                                  //   this.navToUserProfile(user.id);
-                                  // }
+                                  if(user.id == firebase.auth().currentUser.uid){
+                                    this.props.navigation.navigate("Profile");
+                                  } else {
+                                    this.navToUserProfile(user.id);
+                                  }
                                 }} 
                                 key={key} 
                                 style={{flex:1}}

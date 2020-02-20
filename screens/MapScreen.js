@@ -11,10 +11,11 @@ import GameForm from '../components/GameForm';
 import LobbyModal from '../components/LobbyModal';
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore'
+import {Notifications} from 'expo';
 
 import {Block} from 'galio-framework';
 
-import {withTheme,Modal,Portal,FAB, Subheading,Headline} from 'react-native-paper';
+import {withTheme,Modal,Portal,FAB,Headline,IconButton} from 'react-native-paper';
 
 import * as Location from 'expo-location';
 
@@ -67,7 +68,9 @@ class MapScreen extends React.Component {
 
    componentDidMount(){
     firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot((user) => {
-      this.setState({user:user.data()});
+      let userData = user.data();
+      userData.id = user.id;
+      this.setState({user:userData});
     })
     Location.hasServicesEnabledAsync()
     .then((locationEnabled) => {
@@ -100,21 +103,6 @@ class MapScreen extends React.Component {
         })
       }
     })
-        // firebase.firestore().collection('games').where("gameState", "==", "created").get()
-        //  .then((docsC) => {
-        //    let markers = {}
-        //    docsC.forEach((doc) => {
-        //      markers[doc.id] = doc.data()
-        //      markers[doc.id].id = doc.id;
-        //    });
-        //    firebase.firestore().collection('games').where("gameState", "==", "inProgress").get()
-        //      .then((docsIp) => {
-        //        docsIp.forEach((doc) => {
-        //          markers[doc.id] = doc.data()
-        //          markers[doc.id].id = doc.id;
-        //         })
-        //       })
-        //  })
     firebase.firestore().collection('games').onSnapshot((docs) => {
       let markers = {};
       docs.forEach((doc) => {
@@ -124,6 +112,20 @@ class MapScreen extends React.Component {
         }
       })
       this.setState({markers:markers,complete:true});
+    })
+    Notifications.addListener((notification) => {
+      if(notification.origin == 'selected'){
+        this.props.navigation.navigate('MapScreen');
+        this.mapView.animateToRegion({
+          longitude: notification.data.game.location.longitude,
+          latitude: notification.data.game.location.latitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        })
+      } else if (notification.origin == 'received') {
+        //show an invite modal
+      }
+
     })
    }
 
@@ -137,9 +139,10 @@ class MapScreen extends React.Component {
     firebase.firestore().collection('games').doc(gameId).get()
       .then(game => {
         firebase.firestore().collection("notifications").add({
+          type:'newGame',
           game:game.data(),
-          userId:firebase.auth().currentUser.uid,
-          user: this.state.user,
+          from: this.state.user,
+          to: this.state.user.followers,
           action:"joined",
           time: new Date(),
           date: new Date().toDateString(),
@@ -217,7 +220,7 @@ class MapScreen extends React.Component {
         return (
           <>
             <Portal>
-              <Modal contentContainerStyle={{backgroundColor:this.props.theme.colors.dBlue, marginLeft:"auto", marginRight:"auto"}} visible={this.state.gameModalVisible} onDismiss={() => {this.setGameModalVisible(false)}}>
+              <Modal contentContainerStyle={{ marginLeft:"auto", marginRight:"auto",width:'100%', padding:32}} visible={this.state.gameModalVisible} onDismiss={() => {this.setGameModalVisible(false)}}>
                 <GameForm navToGame={this.navToGame} closeModal={() => this.setGameModalVisible(false)}/>
               </Modal>
             </Portal>
@@ -265,13 +268,25 @@ class MapScreen extends React.Component {
             {
               this.state.lobbyModalVisible
               ? null
-              : <FAB
-                icon="plus"
-                label="Create Game"
-                onPress={() => {this.setGameModalVisible(true)}}
-                style={[styles.fab,{backgroundColor:colors.orange,color:colors.white},this.state.user.currentGame != null ? styles.disabled:null]}
-                disabled={this.state.user.currentGame != null}
-              />
+              : <Block style={{position:'absolute',bottom:8, right:8}}> 
+                  <Block style={{marginLeft:'auto'}}>
+                    <IconButton
+                      icon='bell'
+                      color={colors.dBlue}
+                      size={28}
+                      style={{backgroundColor:colors.white,margin:0}}
+                    />
+                    <Block style={{height:.29*(3/2)*28,width:.29*(3/2)*28,borderRadius:'50%',position:'absolute',left:0,top:0,backgroundColor:colors.orange}}></Block>
+                  </Block>
+                  <FAB
+                    icon="plus"
+                    label="Create Game"
+                    onPress={() => {this.setGameModalVisible(true)}}
+                    style={[styles.fab,{backgroundColor:colors.orange,color:colors.white},this.state.user.currentGame != null ? styles.disabled:null]}
+                    disabled={this.state.user.currentGame != null}
+                  />
+                </Block>
+              
             }
           </>
         );
@@ -300,10 +315,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#E68A54'
   },
   fab: {
-    position:"absolute",
-    bottom:0,
-    right:0,
-    margin:12,
+    marginTop:8,
     zIndex:2
   }
 });

@@ -49,15 +49,19 @@ exports.clearGamesSchedule = functions.pubsub.schedule('every 1 hours').onRun((c
 })
 
 exports.sendPushNotification = functions.firestore.document('notifications/{id}').onCreate((snap,context) => {
-    let users = []
+    let tokens = []
     let notification = snap.data();
-    notification.user.followers.forEach((user) => {
-        users.push(admin.firestore().collection('users').doc(user).get()
-            .then((user) => {
+    notification.to.forEach((user) => {
+        admin.firestore().collection('users').doc(user).update({
+            'notifications':admin.firestore.FieldValue.arrayUnion({id:snap.id,seen:false})
+        })
+        tokens.push(
+            admin.firestore().collection('users').doc(user).get().then((user) => {
                 return user.data().pushToken;
-        }))
+            })
+        )
     })
-    return Promise.all(users)
+    return Promise.all(tokens)
         .then((pushTokens) => {
             let messages = [];
             pushTokens.forEach((token) => {
@@ -66,7 +70,7 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
                         to: token,
                         data: notification.game.location,
                         title: "New Game",
-                        body: `@${notification.user.username} ${notification.action[0].toUpperCase() + notification.action.substring(1)} a Game`,
+                        body: `@${notification.user.name} (${notification.user.username}) ${notification.action[0].toUpperCase() + notification.action.substring(1)} a game!`,
                     })
                 }
             })
@@ -81,3 +85,25 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
             return messages;
         })
 })
+
+exports.invite = functions.https.onCall((data, context) => {
+    if(data.user.pushToken !== undefined) {
+        fetch('https://exp.host/--/api/v2/push/send', {
+            method:"POST",
+            headers:{
+                "Accept":"application/json",
+                "Content-Type":"application/json",
+            },
+            body:JSON.stringify({
+                to: data.user.pushToken,
+                data: data,
+                title: "New Invite",
+                body: `${data.fromUser.name} (@${data.fromUser.username}) invited you to play ${data.game.sport[0].toUpperCase() + data.game.sport.substring(1)}`,
+            })
+        })
+    } else {
+        return null;
+    }
+    return data;
+});
+  

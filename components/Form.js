@@ -22,8 +22,8 @@ class Form extends React.Component {
     let colors = this.props.theme.colors;
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{height,width}}>
-        <Block center middle style={{height,width,backgroundColor:colors.dBlue}}>
-          <KeyboardAvoidingView enabled behavior="position">
+        <Block center middle style={{height,width,backgroundColor:colors.dBlue, padding:16}}>
+          <KeyboardAvoidingView enabled behavior="position" style={{width:'100%'}}>
             <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
               {this.props.children}
             </Block>
@@ -36,7 +36,7 @@ class Form extends React.Component {
 
 const styles = StyleSheet.create({
   registerContainer: {
-    width: width * 0.9,
+    width:'100%',
     borderRadius: 8,
     borderWidth: 2,
     padding:16,
