@@ -8,6 +8,7 @@ import * as firebase from 'firebase';
 import firestore from 'firebase/firestore';
 require('firebase/functions')
 import HeaderBlock from './HeaderBlock'
+import moment from 'moment';
 
 
 import {withTheme, Text, Headline, Subheading, Button, ActivityIndicator} from 'react-native-paper';
@@ -78,13 +79,22 @@ class InvitePlayers extends React.Component{
     firebase.firestore().collection('users').doc(id).get().then((user) => {
         let userData = user.data();
         userData.id = user.id;
-        var invite = firebase.functions().httpsCallable('invite');
-        invite({
-            user: userData,
-            fromUser: this.props.user,
-            game: this.props.game
-        }).then((result) => {
+        firebase.firestore().collection('notifications').add({
+            type: 'invite',
+            game: this.props.game,
+            from:this.props.user,
+            to: userData,
+            time: moment().toDate(),
+            date: moment().toDate(),
+            expire: moment().add(1, 'h').toDate()
         })
+        // var invite = firebase.functions().httpsCallable('invite');
+        // invite({
+        //     user: userData,
+        //     fromUser: this.props.user,
+        //     game: this.props.game
+        // }).then((result) => {
+        // })
     })
   }
 
@@ -123,21 +133,26 @@ class InvitePlayers extends React.Component{
                         this.state.followingComplete
                         ?  this.state.users.length > 0
                             ?   <ScrollView style={styles.scrollview}>
-                                {
-                                    this.state.users.map((user,key) => {
-                                        return (
-                                            <TouchableOpacity onPress={() => this.onPress(user.id)} key={key} style={{width:'100%'}}>
-                                                <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%', marginBottom:10}}>
-                                                    <Block column>
-                                                        <Text style={{color:"#fff"}}>{user.name}</Text>
-                                                        <Text style={{color:"#fff"}}>@{user.username}</Text>
+                                    {
+                                        this.state.users.map((user,key) => {
+                                            return (
+                                                <TouchableOpacity onPress={() => this.onPress(user.id)} key={key} style={{width:'100%'}}>
+                                                    <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%', marginBottom:10}}>
+                                                        <Block column>
+                                                            <Text style={{color:"#fff"}}>{user.name}</Text>
+                                                            <Text style={{color:"#fff"}}>@{user.username}</Text>
+                                                        </Block>
+                                                        <Text style={{color:"#fff"}}>{`${user.wins}-${user.losses}`}</Text>
                                                     </Block>
-                                                    <Text style={{color:"#fff"}}>{`${user.wins}-${user.losses}`}</Text>
-                                                </Block>
-                                            </TouchableOpacity>
-                                        )
-                                    })
-                                }
+                                                </TouchableOpacity>
+                                            )
+                                        })
+                                    }
+                                    <TouchableOpacity onPress={this.onShare} style={{width:'100%',marginBottom:10}}>
+                                        <Block center middle style={{borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%'}}>
+                                            <Text style={{color:"#fff"}}>Invite More Friends</Text>
+                                        </Block>
+                                    </TouchableOpacity>
                                 </ScrollView>
                             :   <Block center style={{ borderColor:colors.white, borderWidth:1, borderRadius:8, width:'100%', padding:16}}>
                                     <Headline style={{color:colors.grey,fontSize:20,textAlign:'center',marginBottom:8}}>You do not follow any users.</Headline>
@@ -178,6 +193,11 @@ class InvitePlayers extends React.Component{
                                         
                                     })
                                 }
+                                <TouchableOpacity onPress={this.onShare} style={{width:'100%',marginBottom:10}}>
+                                    <Block center middle style={{borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%'}}>
+                                        <Text style={{color:"#fff"}}>Invite More Friends</Text>
+                                    </Block>
+                                </TouchableOpacity>
                             </ScrollView>
                             :<Block center style={{ borderColor:colors.white, borderWidth:1, borderRadius:8, width:'100%', padding:16}}>
                                 <Headline style={{color:colors.grey,fontSize:20,textAlign:'center',marginBottom:8}}>No nearby players.</Headline>
@@ -207,7 +227,6 @@ const styles = StyleSheet.create({
         borderColor:'white',
         borderWidth:1,
         padding:4,
-        paddingBottom:0
     }
 })
 

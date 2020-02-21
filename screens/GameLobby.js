@@ -43,13 +43,15 @@ class GameScreen extends React.Component{
       let userRef = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
       userRef.get()
         .then((user) => {
-          if(user.data().currentGame != null) {
-            firebase.firestore().collection("games").doc(user.data().currentGame).get()
+          let userData = user.data();
+          userData.id = user.id;
+          if(userData.currentGame != null) {
+            firebase.firestore().collection("games").doc(userData.currentGame).get()
               .then((game) => {
                 let gameData = game.data();
                 gameData.id = game.id;
                 this.setState({
-                  user:user.data(),
+                  user:userData,
                   game:gameData,
                   complete:true,
                   loading:false
@@ -57,7 +59,7 @@ class GameScreen extends React.Component{
               })
           } else {
             this.setState({
-              user:user.data(),
+              user:userData,
               game: null,
               complete: true,
               loading:false
@@ -333,7 +335,7 @@ class GameScreen extends React.Component{
                           return (
                             <Block row center middle style={{marginBottom:12,width:'100%'}} key={key}>
                               <Text style={{color:"white", marginRight:12}}>{key+1}.</Text>
-                              <TouchableOpacity 
+                              {/* <TouchableOpacity 
                                 onPress={() => {
                                   if(user.id == firebase.auth().currentUser.uid){
                                     this.props.navigation.navigate("Profile");
@@ -343,7 +345,7 @@ class GameScreen extends React.Component{
                                 }} 
                                 key={key} 
                                 style={{flex:1}}
-                              >
+                              > */}
                                 <Block row center middle flex style={key == 0 ? styles.firstPlace : key == 1 ? styles.secondPlace : key == 2 ? styles.thirdPlace : styles.defaultPlace}>
                                     <Block column>
                                         <Text style={{color:"#fff"}}>{user.name}</Text>
@@ -351,7 +353,7 @@ class GameScreen extends React.Component{
                                     </Block>
                                     <Text style={{color:"#fff"}}>{user.points}</Text>
                                 </Block>
-                              </TouchableOpacity>
+                              {/* </TouchableOpacity> */}
                             </Block>
                           )
                       })

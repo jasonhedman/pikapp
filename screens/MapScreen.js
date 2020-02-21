@@ -2,7 +2,8 @@ import React from 'react';
 import {
   Dimensions,
   StyleSheet,
-  Image
+  Image,
+  ScrollView
 } from 'react-native';
 import SlideModal from 'react-native-modal';
 import {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
@@ -12,10 +13,11 @@ import LobbyModal from '../components/LobbyModal';
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore'
 import {Notifications} from 'expo';
+import moment from 'moment';
 
 import {Block} from 'galio-framework';
 
-import {withTheme,Modal,Portal,FAB,Headline,IconButton} from 'react-native-paper';
+import {withTheme,Modal,Portal,FAB,Headline,IconButton, Menu,Text} from 'react-native-paper';
 
 import * as Location from 'expo-location';
 
@@ -24,6 +26,11 @@ import spikeballMarker from '../assets/images/sball_map.png';
 import footballMarker from '../assets/images/fball_map.png';
 import soccerMarker from '../assets/images/soccer_map.png';
 import volleyballMarker from '../assets/images/vball_map.png';
+import HeaderBlock from '../components/HeaderBlock';
+import NewGame from '../components/Notifications/NewGame'
+import Invite from '../components/Notifications/Invite';
+import Follower from '../components/Notifications/Follower';
+
 
 const sportMarkers = {
   basketball: basketballMarker,
@@ -51,6 +58,8 @@ class MapScreen extends React.Component {
         userLoc: null,
         locationEnabled: false,
         focusMarker:null,
+        menuVisible:false,
+        userNotifications: new Array(),
     }
   }
 
@@ -67,42 +76,67 @@ class MapScreen extends React.Component {
   }
 
    componentDidMount(){
-    firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot((user) => {
-      let userData = user.data();
-      userData.id = user.id;
-      this.setState({user:userData});
-    })
-    Location.hasServicesEnabledAsync()
-    .then((locationEnabled) => {
-      if(locationEnabled == true){
-        Location.getCurrentPositionAsync()
-          .then((pos) => {
-            let region = {
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
+    Promise.all([
+      firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot((user) => {
+        let userData = user.data();
+        userData.id = user.id;
+        this.setState({user:userData}, () => {
+          let notifications = new Array();
+          if(userData.notifications != undefined){
+            for(let i = userData.notifications.length - 1; i > -1; i--){
+              notifications.push(firebase.firestore().collection('notifications').doc(userData.notifications[i]).get()
+                .then((doc) => {
+                  let docData = doc.data();
+                  docData.id = doc.id;
+                  if(moment.unix(parseInt(docData.expire.seconds)).isBefore(moment())){
+                    this.removeNotification(doc);
+                    return null;
+                  } else {
+                    return docData;
+                  }
+                })
+              )
             }
-            this.setState({region, userLoc:pos.coords,locationEnabled:true}, () => {
-              Location.watchPositionAsync({},(pos) => {
-                this.setState({userPos: pos.coords, complete:true});
+            Promise.all(notifications)
+              .then((nots) => {
+                nots = nots.filter((val) => {return val !== null});
+                this.setState({userNotifications:nots})
               })
-              firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
-                location:pos.coords
-              })
-            });
-          })
-      } else {
-        this.setState({locationEnabled:false,complete:true}, () => {
-          Location.requestPermissionsAsync()
-            .then((permission) => {
-              if(permission.status == "granted"){
-                this.setState({locationEnabled:true})
+          }
+        });
+      }),
+      Location.hasServicesEnabledAsync()
+      .then((locationEnabled) => {
+        if(locationEnabled == true){
+          Location.getCurrentPositionAsync()
+            .then((pos) => {
+              let region = {
+                latitude: pos.coords.latitude,
+                longitude: pos.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
               }
+              this.setState({region, userLoc:pos.coords,locationEnabled:true}, () => {
+                Location.watchPositionAsync({},(pos) => {
+                  this.setState({userPos: pos.coords, complete:true});
+                })
+                firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
+                  location:pos.coords
+                })
+              });
             })
-        })
-      }
-    })
+        } else {
+          this.setState({locationEnabled:false,complete:true}, () => {
+            Location.requestPermissionsAsync()
+              .then((permission) => {
+                if(permission.status == "granted"){
+                  this.setState({locationEnabled:true})
+                }
+              })
+          })
+        }
+      }),
+    ])
     firebase.firestore().collection('games').onSnapshot((docs) => {
       let markers = {};
       docs.forEach((doc) => {
@@ -125,7 +159,6 @@ class MapScreen extends React.Component {
       } else if (notification.origin == 'received') {
         //show an invite modal
       }
-
     })
    }
 
@@ -144,8 +177,9 @@ class MapScreen extends React.Component {
           from: this.state.user,
           to: this.state.user.followers,
           action:"joined",
-          time: new Date(),
-          date: new Date().toDateString(),
+          time: moment().toDate(),
+          date: moment().toDate(),
+          expire: moment().add(1, 'h').toDate()
         })
           .then(() => {
             if(team == "home") {
@@ -200,12 +234,58 @@ class MapScreen extends React.Component {
    }
 
    navToUserProfile = (id) => {
-     if(id != firebase.auth().currentUser.uid){
-      this.props.navigation.navigate("UserProfile", {userId:id});
-     } else {
-      this.props.navigation.navigate('Profile')
-     }
+    if(id != firebase.auth().currentUser.uid){
+    this.props.navigation.navigate("UserProfile", {userId:id});
+    } else {
+    this.props.navigation.navigate('Profile')
     }
+  }
+
+  onMenuDismiss = () => {
+    this.setState({menuVisible:false})
+  }
+
+  setMenuVisible = () => {
+    this.setState({menuVisible:true})
+  }
+
+  closeMenu = () => {
+    this.setState({menuVisible:false})
+  }
+
+  onNewGamePress = (notification) => {
+    this.closeMenu();
+    this.mapView.animateToRegion({
+      longitude: notification.game.location.longitude,
+      latitude: notification.game.location.latitude,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    });
+    this.removeNotification(notification);
+  }
+
+  onInvitePress = (notification) => {
+    this.closeMenu();
+    this.mapView.animateToRegion({
+      longitude: notification.game.location.longitude,
+      latitude: notification.game.location.latitude,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    });
+    this.removeNotification(notification);
+  }
+
+  onFollowerPress = (notification) => {
+    this.closeMenu();
+    this.props.navigation.navigate('UserProfile', {userId:notification.from.id})
+    this.removeNotification(notification);
+  }
+
+  removeNotification = (notification) => {
+    firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
+      notifications: firebase.firestore.FieldValue.arrayRemove(notification.id)
+    })
+  }
 
   render() {
     if(this.props.navigation.getParam("marker",null) != null){
@@ -270,13 +350,55 @@ class MapScreen extends React.Component {
               ? null
               : <Block style={{position:'absolute',bottom:8, right:8}}> 
                   <Block style={{marginLeft:'auto'}}>
-                    <IconButton
-                      icon='bell'
-                      color={colors.dBlue}
-                      size={28}
-                      style={{backgroundColor:colors.white,margin:0}}
-                    />
-                    <Block style={{height:.29*(3/2)*28,width:.29*(3/2)*28,borderRadius:'50%',position:'absolute',left:0,top:0,backgroundColor:colors.orange}}></Block>
+                    <Menu
+                      visible={this.state.menuVisible}
+                      anchor={
+                        <>
+                          <IconButton
+                            icon='bell'
+                            color={colors.dBlue}
+                            size={28}
+                            style={{backgroundColor:colors.white,margin:0}}
+                            onPress={this.setMenuVisible}
+                          />
+                          {
+                            this.state.userNotifications.length > 0
+                            ? <Block style={{height:.29*(3/2)*28,width:.29*(3/2)*28,borderRadius:'50%',position:'absolute',left:0,top:0,backgroundColor:colors.orange}}></Block>
+                            : null
+                          }
+                        </>
+                      }
+                      onDismiss={this.onMenuDismiss}
+                      contentStyle={{marginBottom:28*1.5+8,backgroundColor:colors.dBlue,padding:16,borderRadius:8,borderWidth:2,borderColor:colors.orange, width:width-16}}
+                    >
+                        <HeaderBlock text='Notifications' backButton={true} backPress={this.onMenuDismiss}/>
+                        <ScrollView style={{maxHeight:height*.5}}>
+                        {
+                          this.state.userNotifications.length > 0
+                          ? this.state.userNotifications.map((notification, index) => {
+                            if(notification.type == 'newGame'){
+                              return (
+                                <NewGame notification={notification} action={() => this.onNewGamePress(notification)} key={index} navToUserProfile={this.navToUserProfile} closeMenu={this.closeMenu} />
+                              )
+                            } else if(notification.type == 'invite'){
+                              return (
+                                <Invite notification={notification} action={() => this.onInvitePress(notification)} key={index} navToUserProfile={this.navToUserProfile} closeMenu={this.closeMenu} />
+                              )
+                            } 
+                            else if(notification.type == 'follower'){
+                              return (
+                                <Follower notification={notification} action={() => this.onFollowerPress(notification)} key={index} navToUserProfile={this.navToUserProfile} closeMenu={this.closeMenu} />
+                              )
+                            }
+                          })
+                          : <Block row style={{borderWidth:1, borderColor:colors.orange, borderRadius: 8, padding:10,marginBottom:12,alignItems:'center',justifyContent:"space-between",height:50}}>
+                              <Block center middle flex>
+                                <Text style={{color:colors.white}}>No New Notifications</Text>
+                              </Block>
+                          </Block>
+                        }
+                        </ScrollView>
+                    </Menu>
                   </Block>
                   <FAB
                     icon="plus"

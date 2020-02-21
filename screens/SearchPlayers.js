@@ -106,6 +106,7 @@ class SearchPlayers extends React.Component {
                                 style={{marginBottom:16}}
                             />
                             <Block flex>
+                                <Subheading style={{color:colors.white, textAlign:'center',marginBottom:16}}>Results</Subheading>
                                 {
                                     this.state.search != ""
                                     ? <ScrollView style={{width:'100%'}}>
@@ -125,20 +126,8 @@ class SearchPlayers extends React.Component {
                                         })
                                     }
                                     </ScrollView>
-                                    : <Block>
-                                        <Subheading style={{color:colors.white, textAlign:'center',marginBottom:16}}>Recent Activity</Subheading>
-                                        {
-                                            this.state.notifications.length > 0
-                                            ? this.state.notifications.map((notification, index) => {
-                                                return (
-                                                    <Notification notification={notification} key={index} navToMap={this.navToMap}/>
-                                                )
-                                            })
-                                            : <Block center middle style={{padding:8, borderWidth:1, borderRadius:8, borderColor:colors.orange}}>
-                                                <Subheading style={{color:colors.grey,textAlign:'center'}}>Your friends have no recent activity. Connect with other users to see more.</Subheading>
-                                            </Block>
-                                        }
-                                        
+                                    : <Block style={{borderColor:colors.orange,borderWidth:1,borderRadius:8, padding:16}}>
+                                        <Subheading style={{color:colors.white, textAlign:'center'}}>Start typing to find users...</Subheading>
                                     </Block>
                                 }
                             </Block>

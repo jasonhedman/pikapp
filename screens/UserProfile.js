@@ -9,11 +9,7 @@ import {
 import { Block } from "galio-framework";
 
 import GameResult from "../components/GameResult";
-import TeamMember from "../components/TeamMember";
 import SportsTabs from "../components/SportsTabs";
-import EditProfile from "../components/EditProfile";
-
-import SlideModal from 'react-native-modal';
 
 import LoadingOverlay from '../components/LoadingOverlay';
 
@@ -22,13 +18,10 @@ const { width, height } = Dimensions.get("window");
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 
-import {withTheme,Text,Avatar,Button,Headline, Subheading, IconButton} from 'react-native-paper';
+import {withTheme,Button,Headline, Subheading} from 'react-native-paper';
 import ProfilePic from "../components/ProfilePic";
 import HeaderBlock from "../components/HeaderBlock";
 import ButtonBlock from "../components/ButtonBlock";
-
-
-const defaultUser = require("../assets/images/defaultUser.jpg")
 
 class UserProfile extends React.Component {
   constructor(){
@@ -41,7 +34,8 @@ class UserProfile extends React.Component {
       editModalVisible:false,
       loading:false,
       settingsVisible:false,
-      error:false
+      error:false,
+      currentUser:{}
     }
   }
 
@@ -49,6 +43,8 @@ class UserProfile extends React.Component {
     firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).get()
       .then((doc) => {
         if(doc.exists){
+          let userData = doc.data();
+          userData.id = doc.id;
           let following = doc.data().followers.includes(firebase.auth().currentUser.uid);
           let lastThree = [];
           for(let i = doc.data().gameHistory.length - 1; i >= (doc.data().gameHistory.length >= 3?doc.data().gameHistory.length-3:0);i--){
@@ -58,7 +54,7 @@ class UserProfile extends React.Component {
                 this.setState({lastThree});
               });
           }
-          this.setState({user:doc.data(),following})
+          this.setState({user:userData,following})
         } else {
           this.setState({error:true})
         }
@@ -76,6 +72,13 @@ class UserProfile extends React.Component {
   }
   componentDidMount(){
     this.getData();
+    firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).get().then((user) => {
+      let userData = user.data();
+      userData.id = user.id;
+      this.setState({
+        currentUser: userData
+      })
+    })
     // firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).onSnapshot(() => {
     //   this.getData();
     // })
@@ -108,6 +111,13 @@ class UserProfile extends React.Component {
       })
       firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).update({
         followers:firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid)
+      })
+      firebase.firestore().collection('notifications').add({
+        type: 'follower',
+        from:this.state.currentUser,
+        to: this.state.user,
+        time: new Date(),
+        date: new Date().toDateString()
       })
     })
   }
@@ -200,15 +210,15 @@ class UserProfile extends React.Component {
                         <Subheading style={styles.subheading}>Points</Subheading>
                         <Headline style={styles.info}>{this.state.user.points}</Headline>
                       </Block>
-                      <Block style={styles.statContainer} column center middle>
+                      {/* <Block style={styles.statContainer} column center middle>
                         <Subheading style={styles.subheading}>Last 10</Subheading>
                         <Headline style={styles.info}>{this.getLastTen()}</Headline>
-                      </Block>
+                      </Block> */}
                     </Block>
                   </Block>
                   <Headline style={[styles.header,{marginBottom:16,textAlign:"center"}]}>Stats Breakdown</Headline>
                   <SportsTabs user={this.state.user} />
-                  <Headline style={[styles.header,{marginBottom:16,textAlign:"center"}]}>Last Three Games</Headline>
+                  {/* <Headline style={[styles.header,{marginBottom:16,textAlign:"center"}]}>Last Three Games</Headline>
                   {
                     this.state.lastThree.length > 0
                     ? (
@@ -227,7 +237,7 @@ class UserProfile extends React.Component {
                         </Block>
                       </Block>
                     )
-                  }
+                  } */}
                 </Block>
               </ScrollView>
             </View>

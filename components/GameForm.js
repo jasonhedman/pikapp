@@ -14,6 +14,7 @@ import MenuBlock from './MenuBlock';
 import ButtonBlock from './ButtonBlock';
 import Form from './Form';
 import * as firebase from 'firebase';
+import moment from 'moment';
 import 'firebase/firestore';
 
 const teamSizes = {
@@ -80,8 +81,8 @@ class GameForm extends React.Component {
                   away: []
                 },
                 gameState: "created",
-                updated:new Date(),
-                time: new Date()
+                updated:moment().toDate(),
+                time: moment().toDate()
               })
                 .then((game) => {
                   firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
@@ -102,8 +103,9 @@ class GameForm extends React.Component {
                         action:"created",
                         from:this.state.user,
                         to: this.state.user.followers,
-                        time: new Date(),
-                        date: new Date().toDateString()
+                        time: moment().toDate(),
+                        date: moment().toDate(),
+                        expire: moment().add(1, 'h').toDate()
                       })
                       this.props.navToGame();
                     })
