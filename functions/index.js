@@ -106,7 +106,7 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
                     to: notification.to.pushToken,
                     data: notification,
                     title: "New Invite",
-                    body: `${notification.from.name} (@${notification.from.username}) just invited you to play ${notification.game}`,
+                    body: `${notification.from.name} (@${notification.from.username}) just invited you to play ${notification.game.sport}`,
                 })
             })
         } else {
@@ -287,26 +287,62 @@ exports.createUser = functions.https.onCall((data,context) => {
         })
 })
 
-async function uploadImageAsync(uri, cred) {
-    if(uri !== null) {
-      const blob = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = function() {
-          resolve(xhr.response);
-        };
-        xhr.onerror = function(e) {
-          console.log(e);
-          reject(new TypeError('Network request failed'));
-        };
-        xhr.responseType = 'blob';
-        xhr.open('GET', uri, true);
-        xhr.send(null);
-      });
+exports.findMutualFriends = functions.https.onCall((data,context) => {
+    let mutualFriends = {};
+    return Promise.all(data.user.friendsList.map((friend, index) => {
+        return admin.firestore().collection('users').doc(friend).get().then((user) => {
+            return user.data();
+        })
+        .catch((err) => {return err})
+    }))
+    .then((friends) => {
+        friends.forEach((friend) => {
+            friend.friendsList.forEach((friendOfFriend) => {
+                if(mutualFriends[friendOfFriend] !== undefined){
+                    mutualFriends[friendOfFriend] += 1;
+                } else {
+                    if(!data.user.friendsList.includes(friendOfFriend)){
+                        mutualFriends[friendOfFriend] = 1;
+                    }
+                }
+            })
+        })
+        let keysFiltered = Object.keys(mutualFriends).filter((friend) => {return friend !== data.id});
+        let keysSorted = keysFiltered.sort((a,b) => {return mutualFriends[b]-mutualFriends[a]})
+        return keysSorted;
+    })
+    .then((sortedUsers) => {
+        return Promise.all(sortedUsers.map((friend) => {
+            return admin.firestore().collection('users').doc(friend).get().then((user) => {
+                let userData = user.data();
+                userData.id = user.id;
+                return userData;
+            })
+        }))
+    })
+    .catch((err) => {return err})
+})
+
+// uploadImageAsync = (uri, cred) => {
+//     if(uri !== null) {
+//       const blob =  new Promise((resolve, reject) => {
+//         const xhr = new XMLHttpRequest();
+//         xhr.onload = function() {
+//           resolve(xhr.response);
+//         };
+//         xhr.onerror = function(e) {
+//           console.log(e);
+//           reject(new TypeError('Network request failed'));
+//         };
+//         xhr.responseType = 'blob';
+//         xhr.open('GET', uri, true);
+//         xhr.send(null);
+//       });
     
-      const ref = firebase.storage().ref().child("profilePictures/" + cred.uid);
-      const snapshot = await ref.put(blob);
+//       const ref = firebase.storage().ref().child("profilePictures/" + cred.uid);
+//       const snapshot = ref.put(blob);
     
-      // We're done with the blob, close and release it
-      blob.close();
-    }
-  }
+//       // We're done with the blob, close and release it
+//       blob.close();
+//     }
+//   }

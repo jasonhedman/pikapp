@@ -27,7 +27,7 @@
       "supportsTablet": false,
       "bundleIdentifier": "io.pikapp.pikapp",
       "config": {
-        "googleMapsApiKey": "AIzaSyCEaambuIwMhUYHk64yrVPbhbrMPNDn6Hg"
+        "googleMapsApiKey": "gAIzaSyCEaambuIwMhUYHk64yrVPbhbrMPNDn6H"
       },
       "userInterfaceStyle": "dark",
       "infoPlist": {

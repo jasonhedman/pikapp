@@ -86,7 +86,10 @@ class InvitePlayers extends React.Component{
     //     userData.id = user.id;
         firebase.firestore().collection('notifications').add({
             type: 'invite',
-            game: this.props.game.sport,
+            game: {
+                sport:this.props.game.sport,
+                location:this.props.game.location
+            },
             from:this.props.user,
             to: user,
             time: moment().toDate(),

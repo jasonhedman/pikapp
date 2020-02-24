@@ -60,6 +60,8 @@ class GameForm extends React.Component {
     let equipment = this.state.bringingEquipment ? [firebase.auth().currentUser.uid] : [];
     Location.getCurrentPositionAsync()
       .then((pos)=>{
+        // pos.coords.longitude += .1;
+        // pos.coords.latitude += .1;
         firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).get()
           .then((doc) => {
             let docData = doc.data();

@@ -2,7 +2,7 @@ import React from 'react';
 import {Dimensions,Keyboard,TouchableWithoutFeedback,ScrollView,TouchableOpacity} from 'react-native';
 import {Block} from 'galio-framework';
 
-import {withTheme, TextInput, Text, Headline, Subheading} from 'react-native-paper'
+import {withTheme, TextInput, Text, ActivityIndicator, Subheading} from 'react-native-paper'
 
 import Notification from '../components/Notification'
 import HeaderBlock from '../components/HeaderBlock';
@@ -23,7 +23,9 @@ class SearchPlayers extends React.Component {
             notifications:new Array(),
             visible: false,
             focusUser: null,
-            user:{}
+            user:{},
+            mutualFriends:[],
+            mutualFriendsLoaded:false
         }
     }
 
@@ -37,18 +39,52 @@ class SearchPlayers extends React.Component {
                         userData.id  = user.id;
                         userArray.push(userData);
                     } else {
-                        this.setState({user:user.data()}, () => {
-                            firebase.firestore().collection('notifications').where('date', '==', new Date().toDateString()).orderBy('time','desc').onSnapshot((notifications) => {
-                                let notificationsList = new Array();
-                                notifications.forEach((notification) => {
-                                    notificationsList.push(notification.data());
+                        let findMutualFriends = firebase.functions().httpsCallable('findMutualFriends');
+                        let nearby = {};
+                        Promise.all([
+                            findMutualFriends({user:user.data(),id:user.id})
+                            .then((result) => {
+                                this.setState({mutualFriendsLoaded:true,mutualFriends:result.data});
+                            }),
+                            this.setState({user:user.data()}, () => {
+                                firebase.firestore().collection('notifications').where('date', '==', new Date().toDateString()).orderBy('time','desc').onSnapshot((notifications) => {
+                                    let notificationsList = new Array();
+                                    notifications.forEach((notification) => {
+                                        notificationsList.push(notification.data());
+                                    })
+                                    notificationsList = notificationsList.filter((notification) => {
+                                        return this.state.user.friendsList.includes(notification.userId)
+                                    })
+                                    this.setState({notifications:notificationsList});
                                 })
-                                notificationsList = notificationsList.filter((notification) => {
-                                    return this.state.user.friendsList.includes(notification.userId)
-                                })
-                                this.setState({notifications:notificationsList});
-                            })
+                            }),
+                            firebase.firestore().collection('users')
+                                .where('location.latitude', '<', this.props.user.location.latitude + (5*(1/69)))
+                                .where('location.latitude', '>', this.props.user.location.latitude - (5*(1/69)))
+                                .get()
+                                .then((users) => {
+                                    users.forEach((user) => {
+                                        let userData = user.data();
+                                        userData.id = user.id;
+                                        nearby[user.id] = userData;
+                                    })
+                                }),
+                            firebase.firestore().collection('users')
+                                .where('location.longitude', '<', this.props.user.location.longitude + (5*(1/69)))
+                                .where('location.longitude', '>', this.props.user.location.longitude - (5*(1/69)))
+                                .get()
+                                .then((users) => {
+                                    users.forEach((user) => {
+                                        let userData = user.data();
+                                        userData.id = user.id;
+                                        nearby[user.id] = userData;
+                                    })
+                            }),
+                        ])
+                        .then((result) => {
+                            this.setState({nearby,nearbyComplete:true})
                         })
+                        
                     }
                 });
                 this.setState({users:userArray});
@@ -106,7 +142,7 @@ class SearchPlayers extends React.Component {
                                 style={{marginBottom:16}}
                             />
                             <Block flex>
-                                <Subheading style={{color:colors.white, textAlign:'center',marginBottom:16}}>Results</Subheading>
+                                <Subheading style={{color:colors.white, textAlign:'center',marginBottom:16}}>{this.state.search != "" ? 'Results' : 'Recommended Friends'}</Subheading>
                                 {
                                     this.state.search != ""
                                     ? <ScrollView style={{width:'100%'}}>
@@ -126,9 +162,26 @@ class SearchPlayers extends React.Component {
                                         })
                                     }
                                     </ScrollView>
-                                    : <Block style={{borderColor:colors.orange,borderWidth:1,borderRadius:8, padding:16}}>
-                                        <Subheading style={{color:colors.white, textAlign:'center'}}>Start typing to find users...</Subheading>
-                                    </Block>
+                                    : <ScrollView style={{width:'100%'}}>
+                                    {
+                                        this.state.mutualFriendsLoaded
+                                        ?   this.state.mutualFriends.map((user,key) => {
+                                                return (
+                                                    <TouchableOpacity onPress={() => this.navToUserProfile(user.id)} key={key} style={{width:'100%'}}>
+                                                        <Block row middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10,marginBottom:10}}>
+                                                            <Block column>
+                                                                <Text style={{color:"#fff"}}>{user.name}</Text>
+                                                                <Text style={{color:"#fff"}}>@{user.username}</Text>
+                                                            </Block>
+                                                            <Text style={{color:"#fff"}}>{`${user.wins}-${user.losses}`}</Text>
+                                                        </Block>
+                                                    </TouchableOpacity>
+                                                )
+                                            })
+                                        :   <ActivityIndicator style={{opacity:1}} animating={true} color={this.props.theme.colors.orange} size={'small'} />
+                                        
+                                    }
+                                    </ScrollView>
                                 }
                             </Block>
                             

@@ -13,12 +13,12 @@ import LobbyModal from '../components/LobbyModal';
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore'
 require('firebase/functions')
-import {Notifications} from 'expo';
 const moment = require('moment');
+import MapViewDirections from 'react-native-maps-directions';
 
 import {Block} from 'galio-framework';
 
-import {withTheme,Modal,Portal,FAB,Headline,IconButton, Menu,Text} from 'react-native-paper';
+import {withTheme,Modal,Portal,FAB,Headline,IconButton, Menu,Text, Subheading} from 'react-native-paper';
 
 import * as Location from 'expo-location';
 
@@ -61,6 +61,9 @@ class MapScreen extends React.Component {
         focusMarker:null,
         menuVisible:false,
         userNotifications: new Array(),
+        currentGame: {},
+        directionsVisible:false,
+        filterVisible:false,
     }
   }
 
@@ -109,6 +112,12 @@ class MapScreen extends React.Component {
                 nots = nots.filter((val) => {return val !== null});
                 this.setState({userNotifications:nots})
               })
+          }
+          if(userData.currentGame != null) {
+            firebase.firestore().collection('games').doc(userData.currentGame).get()
+            .then((game) => {
+              this.setState({currentGame:game.data()})
+            })
           }
         });
       }),
@@ -252,6 +261,10 @@ class MapScreen extends React.Component {
     this.setState({menuVisible:false})
   }
 
+  onFilterDismiss = () => {
+    this.setState({filterVisible:false})
+  }
+
   setMenuVisible = () => {
     this.setState({menuVisible:true})
   }
@@ -274,8 +287,8 @@ class MapScreen extends React.Component {
   onInvitePress = (notification) => {
     this.closeMenu();
     this.mapView.animateToRegion({
-      longitude: notification.game.location.longitude,
-      latitude: notification.game.location.latitude,
+      longitude: notification.location.longitude,
+      latitude: notification.location.latitude,
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
     });
@@ -292,6 +305,14 @@ class MapScreen extends React.Component {
     firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
       notifications: firebase.firestore.FieldValue.arrayRemove(notification.id)
     })
+  }
+
+  switchDirectionsVisible = () => {
+    this.setState({directionsVisible:!this.state.directionsVisible});
+  }
+
+  setFilterVisible = () => {
+    this.setState({filterVisible:true})
   }
 
   render() {
@@ -337,25 +358,46 @@ class MapScreen extends React.Component {
                   showsUserLocation
                   onClusterPress={this.onClusterPress}
               >
-              {
-                Object.keys(this.state.markers).map((markerId,index) => {
-                  let marker = this.state.markers[markerId];
-                  return (
-                    <Marker
-                      key={index}
-                      coordinate={{longitude:marker.location.longitude,latitude:marker.location.latitude}}
-                      onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
-                    >
-                      <Image source={sportMarkers[marker.sport]} style={{height:50, width:50}}/>
-                    </Marker>
-                  );
-                })
-              }
+                {
+                  Object.keys(this.state.markers).map((markerId,index) => {
+                    let marker = this.state.markers[markerId];
+                    return (
+                      <Marker
+                        key={index}
+                        coordinate={{longitude:marker.location.longitude,latitude:marker.location.latitude}}
+                        onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
+                      >
+                        <Image source={sportMarkers[marker.sport]} style={{height:50, width:50}}/>
+                      </Marker>
+                    );
+                  })
+                }
+                {
+                  this.state.directionsVisible
+                  ? <MapViewDirections
+                      origin={this.state.userLoc}
+                      destination={this.state.currentGame.location}
+                      apikey={'AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE'}
+                      strokeWidth={5}
+                      strokeColor={colors.orange}
+                    />
+                  : null
+                }
             </MapView>
             {
               this.state.lobbyModalVisible
               ? null
-              : <Block style={{position:'absolute',bottom:8, right:8}}> 
+              : <Block style={{position:'absolute',bottom:8, right:8}}>
+                  <Block style={{marginLeft:'auto',marginBottom:8}}>
+                    <IconButton
+                      icon='directions-fork'
+                      color={colors.dBlue}
+                      size={28}
+                      style={{backgroundColor:colors.white,margin:0}}
+                      onPress={this.switchDirectionsVisible}
+                      disabled={this.state.user.currentGame == null}
+                    />
+                  </Block>
                   <Block style={{marginLeft:'auto'}}>
                     <Menu
                       visible={this.state.menuVisible}

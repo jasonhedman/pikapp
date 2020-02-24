@@ -31,7 +31,7 @@ class GameResult extends React.Component {
   render(){
     return (
       <Block column style={{}}>
-        <Subheading style={{textAlign:'center',color:"white"}}>{`${this.props.game.intensity[0].toUpperCase()+this.props.game.substring(1)} ${this.props.game.sport[0].toUpperCase() + this.props.game.sport.substring(1)}`}</Subheading>
+        <Subheading style={{textAlign:'center',color:"white"}}>{`${this.props.game.intensity[0].toUpperCase()+this.props.game.intensity.substring(1)} ${this.props.game.sport[0].toUpperCase()}${this.props.game.sport.substring(1)}`}</Subheading>
         <Block row>
           <Block flex column style={{padding:10}}>
             <Text style={{color:this.props.game.winningTeam == "home" ? '#E68A54' : 'white',textAlign:"center"}}>Home</Text>
