@@ -169,7 +169,8 @@ exports.createUser = functions.https.onCall((data,context) => {
         volleyball: 3
     }
     let chance = new Chance()
-    let first = chance.first({nationality:'en'});
+    let gender = chance.gender().toLowerCase();
+    let first = chance.first({nationality:'en', gender:gender});
     let last = chance.last({nationality:'en'});
     let username;
     switch(chance.integer({min:0, max:6})){
@@ -266,16 +267,46 @@ exports.createUser = functions.https.onCall((data,context) => {
     }
     admin.auth().createUser({email:first+last+'@mail.com',password:'letmein123'})
         .then((cred) => {
-            return admin.firestore().collection('users').doc(cred.uid).set(user)
+            return Promise.all([
+                admin.firestore().collection('users').doc(cred.uid).set(user)
                 .then((doc) => {
                     console.log('created');
                     return doc;
                 })
                 .catch((err) => {
                     console.log(err);
-                })
+                    return err;
+                }),
+                fetch(`https://api.generated.photos/api/v1/faces?api_key=-o9RUblbajTTUQdPqenc9g&age=young-adult&per_page=1&order_by=random&gender=${gender}`)
+                .then(res => res.json())
+                .then(json => uploadImageAsync(json.faces[0].urls[4]["512"],cred)),
+            ])
         })
         .catch((err) => {
             return err
         })
 })
+
+async function uploadImageAsync(uri, cred) {
+    if(uri !== null) {
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function(e) {
+          console.log(e);
+          reject(new TypeError('Network request failed'));
+        };
+        xhr.responseType = 'blob';
+        xhr.open('GET', uri, true);
+        xhr.send(null);
+      });
+    
+      const ref = firebase.storage().ref().child("profilePictures/" + cred.uid);
+      const snapshot = await ref.put(blob);
+    
+      // We're done with the blob, close and release it
+      blob.close();
+    }
+  }

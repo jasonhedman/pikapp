@@ -78,7 +78,7 @@ class MapScreen extends React.Component {
 
    componentDidMount(){
     // var create = firebase.functions().httpsCallable('createUser');
-    // create({games:45}).then((result) => {})
+    // create({games:60}).then((result) => {})
     Promise.all([
       firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot((user) => {
         let userData = user.data();
