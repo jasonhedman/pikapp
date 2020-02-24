@@ -1,0 +1,18 @@
+[debug] [2020-02-22T19:33:02.098Z] ----------------------------------------------------------------------
+[debug] [2020-02-22T19:33:02.099Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy --only functions:createUser
+[debug] [2020-02-22T19:33:02.099Z] CLI Version:   7.13.1
+[debug] [2020-02-22T19:33:02.099Z] Platform:      darwin
+[debug] [2020-02-22T19:33:02.099Z] Node Version:  v12.15.0
+[debug] [2020-02-22T19:33:02.100Z] Time:          Sat Feb 22 2020 14:33:02 GMT-0500 (Eastern Standard Time)
+[debug] [2020-02-22T19:33:02.100Z] ----------------------------------------------------------------------
+[debug] [2020-02-22T19:33:02.100Z] 
+[debug] [2020-02-22T19:33:02.108Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-02-22T19:33:02.108Z] > authorizing via signed-in user
+[debug] [2020-02-22T19:33:02.108Z] [iam] checking project pickapp-4dcc0 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2020-02-22T19:33:02.109Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2020-02-22T19:33:02.109Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2020-02-22T19:33:02.277Z] <<< HTTP RESPONSE 200
+[debug] [2020-02-22T19:33:02.287Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/pickapp-4dcc0:testIamPermissions  
+
+[debug] [2020-02-22T19:33:02.536Z] <<< HTTP RESPONSE 200

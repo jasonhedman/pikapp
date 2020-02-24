@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 const moment = require('moment');
 const fetch = require('node-fetch');
+const Chance = require('chance');
 
 exports.clearGamesSchedule = functions.pubsub.schedule('every 1 hours').onRun((context) => {
     return Promise.all([
@@ -51,9 +52,9 @@ exports.clearGamesSchedule = functions.pubsub.schedule('every 1 hours').onRun((c
 })
 
 exports.sendPushNotification = functions.firestore.document('notifications/{id}').onCreate((snap,context) => {
-    let tokens = []
     let notification = snap.data();
     if(notification.type === 'newGame'){
+        let tokens = [];
         notification.to.forEach((user) => {
             admin.firestore().collection('users').doc(user).update({
                 'notifications':admin.firestore.FieldValue.arrayUnion(snap.id)
@@ -73,7 +74,7 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
                             to: token,
                             data: notification.game.location,
                             title: "New Game",
-                            body: `${notification.user.name} (@${notification.user.username}) ${notification.action[0].toUpperCase() + notification.action.substring(1)} a game!`,
+                            body: `${notification.from.name} (@${notification.from.username}) ${notification.action} a game!`,
                         })
                     }
                 })
@@ -87,11 +88,14 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
                 })
                 return messages;
             })
-    } else if(notification.type === 'invite'){
+    } 
+    if(notification.type === 'invite'){
         admin.firestore().collection('users').doc(notification.to.id).update({
             'notifications':admin.firestore.FieldValue.arrayUnion(snap.id)
         })
+        console.log(notification.to.pushToken !== undefined);
         if(notification.to.pushToken !== undefined){
+            console.log(notification.to.pushToken);
             fetch('https://exp.host/--/api/v2/push/send', {
                 method:"POST",
                 headers:{
@@ -102,17 +106,18 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
                     to: notification.to.pushToken,
                     data: notification,
                     title: "New Invite",
-                    body: `${notification.from.name} (@${notification.from.username}) invited you to play ${notification.game.sport[0].toUpperCase() + notification.game.sport.substring(1)}`,
+                    body: `${notification.from.name} (@${notification.from.username}) just invited you to play ${notification.game}`,
                 })
             })
         } else {
             return null
         }
-        return notification;
-    } else if(notification.type === 'follower'){
+    }
+    if(notification.type === 'follower'){
         admin.firestore().collection('users').doc(notification.to.id).update({
             'notifications':admin.firestore.FieldValue.arrayUnion(snap.id)
         })
+        console.log(notification.to.pushToken);
         if(notification.to.pushToken !== undefined){
             fetch('https://exp.host/--/api/v2/push/send', {
                 method:"POST",
@@ -130,9 +135,8 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
         } else {
             return null
         }
-    } else {
-        return null;
     }
+    return null
 })
 
 exports.invite = functions.https.onCall((data, context) => {
@@ -155,4 +159,123 @@ exports.invite = functions.https.onCall((data, context) => {
     }
     return data;
 });
-  
+
+exports.createUser = functions.https.onCall((data,context) => {
+    let sports = {
+        basketball: 21,
+        spikeball: 21,
+        football: 35,
+        soccer: 3,
+        volleyball: 3
+    }
+    let chance = new Chance()
+    let first = chance.first({nationality:'en'});
+    let last = chance.last({nationality:'en'});
+    let username;
+    switch(chance.integer({min:0, max:6})){
+        case 0:
+        username = first.toLowerCase() + last.toLowerCase();
+        break;
+        case 1:
+        username = first[0].toLowerCase() + last.toLowerCase();
+        break;
+        case 2:
+        username = first[0].toLowerCase() + last.toLowerCase() + chance.integer({min:1,max:999});
+        break;
+        case 3:
+        username = first[0].toLowerCase() + last[0].toLowerCase() + chance.integer({min:1,max:999});
+        break;
+        case 4:
+        username = first.toLowerCase() + last.toLowerCase() + chance.integer({min:1,max:999});
+        break;
+        case 5:
+        username = first.toLowerCase();
+        break;
+        case 6:
+        username = last.toLowerCase();
+    }
+    let sportsResults = {
+        basketball: {
+            wins:0,
+            losses:0,
+            ptsFor: 0,
+            ptsAgainst:0
+        },
+        football: {
+            wins:0,
+            losses:0,
+            ptsFor: 0,
+            ptsAgainst:0
+        },
+        spikeball: {
+            wins:0,
+            losses:0,
+            ptsFor: 0,
+            ptsAgainst:0
+        },
+        volleyball: {
+            wins:0,
+            losses:0,
+            ptsFor: 0,
+            ptsAgainst:0
+        },
+        soccer: {
+            wins:0,
+            losses:0,
+            ptsFor: 0,
+            ptsAgainst:0
+        },
+    }
+    let wins = 0;
+    let losses = 0;
+    let points = 0;
+    for(let i = 0; i < data.games; i++){
+        let sport = Object.keys(sports)[chance.integer({min:0, max: Object.keys(sports).length-1})]
+        let win = chance.bool();
+        if(win){
+            wins+=1;
+            sportsResults[sport].wins += 1;
+            points += 5;
+            sportsResults[sport].ptsFor += sports[sport];
+            sportsResults[sport].ptsAgainst += chance.integer({min:0,max:sports[sport]-1});
+        } else {
+            losses+=1;
+            sportsResults[sport].losses += 1;
+            points += -2;
+            sportsResults[sport].ptsFor += chance.integer({min:0,max:sports[sport]-1});
+            sportsResults[sport].ptsAgainst += sports[sport];
+        }
+    }
+    let year = chance.year({min:1990, max:2002});
+    let dob = chance.birthday({year:year});
+    let user = {
+        name: first + " " + last,
+        currentGame:null,
+        username: username,
+        dob: dob,
+        gameHistory: [],
+        wins: wins,
+        losses: losses,
+        points:points,
+        email: first+last+'@mail.com',
+        notifications: [],
+        sports:sportsResults,
+        friendsList:[],
+        followers:[],
+        created: true
+    }
+    admin.auth().createUser({email:first+last+'@mail.com',password:'letmein123'})
+        .then((cred) => {
+            return admin.firestore().collection('users').doc(cred.uid).set(user)
+                .then((doc) => {
+                    console.log('created');
+                    return doc;
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+        })
+        .catch((err) => {
+            return err
+        })
+})

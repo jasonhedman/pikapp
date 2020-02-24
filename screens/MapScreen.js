@@ -12,8 +12,9 @@ import GameForm from '../components/GameForm';
 import LobbyModal from '../components/LobbyModal';
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore'
+require('firebase/functions')
 import {Notifications} from 'expo';
-import moment from 'moment';
+const moment = require('moment');
 
 import {Block} from 'galio-framework';
 
@@ -76,6 +77,8 @@ class MapScreen extends React.Component {
   }
 
    componentDidMount(){
+    // var create = firebase.functions().httpsCallable('createUser');
+    // create({games:45}).then((result) => {})
     Promise.all([
       firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot((user) => {
         let userData = user.data();
@@ -88,9 +91,13 @@ class MapScreen extends React.Component {
                 .then((doc) => {
                   let docData = doc.data();
                   docData.id = doc.id;
-                  if(moment.unix(parseInt(docData.expire.seconds)).isBefore(moment())){
-                    this.removeNotification(doc);
-                    return null;
+                  if(docData.expire !== undefined){
+                    if(moment.unix(parseInt(docData.expire.seconds)).isBefore(moment())){
+                      this.removeNotification(doc);
+                      return null;
+                    } else {
+                      return docData;
+                    }
                   } else {
                     return docData;
                   }
@@ -147,19 +154,19 @@ class MapScreen extends React.Component {
       })
       this.setState({markers:markers,complete:true});
     })
-    Notifications.addListener((notification) => {
-      if(notification.origin == 'selected'){
-        this.props.navigation.navigate('MapScreen');
-        this.mapView.animateToRegion({
-          longitude: notification.data.game.location.longitude,
-          latitude: notification.data.game.location.latitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        })
-      } else if (notification.origin == 'received') {
-        //show an invite modal
-      }
-    })
+    // Notifications.addListener((notification) => {
+    //   if(notification.origin == 'selected'){
+    //     this.props.navigation.navigate('MapScreen');
+    //     this.mapView.animateToRegion({
+    //       longitude: notification.data.game.location.longitude,
+    //       latitude: notification.data.game.location.latitude,
+    //       latitudeDelta: 0.0922,
+    //       longitudeDelta: 0.0421,
+    //     })
+    //   } else if (notification.origin == 'received') {
+    //     //show an invite modal
+    //   }
+    // })
    }
 
    navToGame = () => {

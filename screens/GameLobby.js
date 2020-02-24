@@ -35,6 +35,7 @@ class GameScreen extends React.Component{
       loading: false,
       newModalVisible:false,
       topTen: new Array(),
+      user:{}
     }
   }
   
@@ -106,16 +107,20 @@ class GameScreen extends React.Component{
       })
       this.setState({topTen});
     })
-      let userRef = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
-      let gameRef;
-      userRef.onSnapshot((user) => {
+    let userRef = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
+    let gameRef;
+    userRef.onSnapshot((user) => {
+      this.setState({user:user.data()}, () => {
         if(user.data().currentGame != null){
           gameRef = firebase.firestore().collection("games").doc(user.data().currentGame);
           gameRef.onSnapshot((game) => {
             this.getGame();
           })
+        } else {
+          this.setState({game:null})
         }
       })
+    })
   }
 
   setTeamModalVisible = (team,visible) => {
@@ -161,14 +166,17 @@ class GameScreen extends React.Component{
     let items = [];
     for(let i = 0; i < Math.min(this.state.game.teamSize, 3); i++){
       if(i < this.state.game.teams[team].length){
-        items.push(<LobbyMember key={i} user={this.state.game.teams[team][i]} navToUserProfile={this.navToUserProfile} navToProfile={this.navToProfile}/>);
+        items.push(<LobbyMember game={this.state.game} key={i} user={this.state.game.teams[team][i]} navToUserProfile={this.navToUserProfile} navToProfile={this.navToProfile} bringingEquipment={this.state.game.equipment.includes(this.state.game.teams[team][i].id)}/>);
       } else {
         items.push(<LobbyMember key={i} user={null} />);
       }
     }
     return (
       <Block style={{width:'100%'}}>
-        <Text style={{color:this.props.theme.colors.white}}>{team.toUpperCase()}</Text>
+        <Block row style={{justifyContent:'space-between'}}>
+          <Text style={{color:this.props.theme.colors.white}}>{team[0].toUpperCase() + team.substring(1)}</Text>
+          <Text style={{color:this.props.theme.colors.white}}>Equipment</Text>
+        </Block>
         <Block column style={{width:'100%'}}>
           {items}
           {
@@ -301,7 +309,7 @@ class GameScreen extends React.Component{
                         </Button>
                         {
                           this.state.game.gameState == "created"
-                          ? <Button disabled={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0} dark={true} mode="contained" onPress={() =>this.changeGameState('inProgress')} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}} style={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0 ? {opacity:.3,backgroundColor:colors.lGreen} : {}}>
+                          ? <Button disabled={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0 || this.state.game.equipment.length == 0} dark={true} mode="contained" onPress={() =>this.changeGameState('inProgress')} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}} style={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0 ? {opacity:.3,backgroundColor:colors.lGreen} : {}}>
                               Start
                             </Button>
                           : <Button disabled={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0} dark={true} mode="contained" onPress={() =>this.setModalVisible(true)} theme={{colors:{primary:colors.lGreen},fonts:{medium:this.props.theme.fonts.regular}}}>

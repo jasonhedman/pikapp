@@ -79,6 +79,7 @@ class Register extends React.Component {
           losses: 0,
           points:0,
           email: this.state.email,
+          notifications: [],
           sports:{
             basketball: {
               wins:0,

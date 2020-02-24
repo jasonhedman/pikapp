@@ -13,7 +13,6 @@ import moment from 'moment';
 
 import {withTheme, Text, Headline, Subheading, Button, ActivityIndicator} from 'react-native-paper';
 import {getDistance} from 'geolib';
-
 const { width, height } = Dimensions.get("screen");
 
 class InvitePlayers extends React.Component{
@@ -29,13 +28,19 @@ class InvitePlayers extends React.Component{
 
   componentDidMount(){
       let users = new Array();
+      let gameUsers = this.props.game.teams.home.concat(this.props.game.teams.away);
+      gameUsers.forEach((user,index) => {
+          gameUsers[index] = user.id;
+      })
       Promise.all(this.props.user.friendsList.map((user) => {
         return (
             firebase.firestore().collection('users').doc(user).get()
                 .then((user) => {
                     let userData = user.data();
                     userData.id = user.id;
-                    users.push(userData);
+                    if(!gameUsers.includes(user.id)){
+                        users.push(userData);
+                    }
                 })
         );
       }))
@@ -70,32 +75,25 @@ class InvitePlayers extends React.Component{
                     this.setState({nearby,nearbyComplete:true});
                 })
         })
-      this.props.user.friendsList.forEach((user) => {
-          firebase.firestore().collection('users').doc(user).get()
-      })
+    //   this.props.user.friendsList.forEach((user) => {
+    //       firebase.firestore().collection('users').doc(user).get()
+    //   })
   }
 
-  onPress = (id) => {
-    firebase.firestore().collection('users').doc(id).get().then((user) => {
-        let userData = user.data();
-        userData.id = user.id;
+  onPress = (id, user) => {
+    // firebase.firestore().collection('users').doc(id).get().then((user) => {
+    //     let userData = user.data();
+    //     userData.id = user.id;
         firebase.firestore().collection('notifications').add({
             type: 'invite',
-            game: this.props.game,
+            game: this.props.game.sport,
             from:this.props.user,
-            to: userData,
+            to: user,
             time: moment().toDate(),
             date: moment().toDate(),
             expire: moment().add(1, 'h').toDate()
         })
-        // var invite = firebase.functions().httpsCallable('invite');
-        // invite({
-        //     user: userData,
-        //     fromUser: this.props.user,
-        //     game: this.props.game
-        // }).then((result) => {
-        // })
-    })
+    // })
   }
 
   onFindUsersPress = () => {
@@ -136,7 +134,7 @@ class InvitePlayers extends React.Component{
                                     {
                                         this.state.users.map((user,key) => {
                                             return (
-                                                <TouchableOpacity onPress={() => this.onPress(user.id)} key={key} style={{width:'100%'}}>
+                                                <TouchableOpacity onPress={() => this.onPress(user.id, user)} key={key} style={{width:'100%'}}>
                                                     <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%', marginBottom:10}}>
                                                         <Block column>
                                                             <Text style={{color:"#fff"}}>{user.name}</Text>
@@ -179,7 +177,7 @@ class InvitePlayers extends React.Component{
                                         } else {
                                             let user = this.state.nearby[userId];
                                             return (
-                                                <TouchableOpacity onPress={() => this.onPress(user.id)} key={key} style={{width:'100%'}}>
+                                                <TouchableOpacity onPress={() => this.onPress(user.id,user)} key={key} style={{width:'100%'}}>
                                                     <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%', marginBottom:10}}>
                                                         <Block column>
                                                             <Text style={{color:"#fff"}}>{user.name}</Text>

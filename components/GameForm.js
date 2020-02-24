@@ -7,7 +7,7 @@ import { Block} from "galio-framework";
 
 import { argonTheme } from "../constants";
 
-import {withTheme,Headline,Button,Menu,IconButton} from 'react-native-paper';
+import {withTheme,Headline,Button,Menu,IconButton,Switch,Text} from 'react-native-paper';
 import * as Location from 'expo-location';
 import HeaderBlock from './HeaderBlock';
 import MenuBlock from './MenuBlock';
@@ -33,7 +33,8 @@ class GameForm extends React.Component {
       sport: null,
       intensity: null,
       teamSize: null,
-      user:null
+      user:null,
+      bringingEquipment:true
     }
   }
 
@@ -56,6 +57,7 @@ class GameForm extends React.Component {
 
 
   onCreate = () => {
+    let equipment = this.state.bringingEquipment ? [firebase.auth().currentUser.uid] : [];
     Location.getCurrentPositionAsync()
       .then((pos)=>{
         firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).get()
@@ -82,7 +84,8 @@ class GameForm extends React.Component {
                 },
                 gameState: "created",
                 updated:moment().toDate(),
-                time: moment().toDate()
+                time: moment().toDate(),
+                equipment: equipment,
               })
                 .then((game) => {
                   firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
@@ -161,6 +164,17 @@ class GameForm extends React.Component {
             : <Menu.Item title="Choose a Sport" disabled={true} theme={{colors:{text:colors.dBlue}}}  />
           }
         </Menu>
+        <Block center middle>
+          <Switch
+            value={this.state.bringingEquipment}
+            onValueChange={() =>
+              { this.setState({ bringingEquipment: !this.state.bringingEquipment }); }
+            }
+            color={colors.orange}
+            style={{marginBottom:8}}
+          />
+          <Text style={{color:"#fff",marginBottom:8}}>{this.state.bringingEquipment ? "I am providing equipment" : "I am not providing equipment"}</Text>
+        </Block>
         <ButtonBlock text='Create Game' onPress={this.onCreate} disabled={this.state.sport == null || this.state.intensity == null || this.state.teamSize == null} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} />
       </Block>
     );

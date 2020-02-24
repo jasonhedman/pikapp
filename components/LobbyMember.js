@@ -9,14 +9,15 @@ import {
 } from 'galio-framework';
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore'
+import { Ionicons } from '@expo/vector-icons';
+
 
 const moment = require('moment');
 
-import {withTheme,Text,Avatar} from 'react-native-paper';
+import {withTheme,Text,Button, IconButton} from 'react-native-paper';
 
 const { width, height } = Dimensions.get("screen");
 
-const defaultUser = require("../assets/images/defaultUser.jpg")
 import ProfilePic from './ProfilePic';
 
 
@@ -43,7 +44,20 @@ class LobbyMember extends React.Component{
     }
   }
 
+  onPress = () => {
+    if(this.props.bringingEquipment){
+      firebase.firestore().collection('games').doc(this.props.game.id).update({
+        equipment: firebase.firestore.FieldValue.arrayRemove(this.props.user.id)
+      })
+    } else {
+      firebase.firestore().collection('games').doc(this.props.game.id).update({
+        equipment: firebase.firestore.FieldValue.arrayUnion(this.props.user.id)
+      })
+    }
+  }
+
   render(){
+    let colors = this.props.theme.colors;
     if(this.state.complete != false){
       return (
         <TouchableOpacity
@@ -62,7 +76,25 @@ class LobbyMember extends React.Component{
                 <Text style={{color:"#FFF"}}>@{this.state.user.username}</Text>
                 <Text style={{color:"#FFF"}}>{`Age: ${moment().diff(moment.unix(parseInt(this.props.user.dob.seconds)),'years',false)}`}</Text>
               </Block>
-              <Text style={{color:"#FFF"}}>{this.state.user.record}</Text>
+              {
+                this.props.user.id == firebase.auth().currentUser.uid
+                ? <IconButton
+                    icon={this.props.bringingEquipment ? 'basketball' : 'cancel'}
+                    color={this.props.bringingEquipment ? colors.orange : colors.white}
+                    animated={true}
+                    onPress={this.onPress}
+                    style={{margin:0}}
+                  />
+                
+                : <IconButton
+                    icon={this.props.bringingEquipment ? 'basketball' : 'cancel'}
+                    color={this.props.bringingEquipment ? colors.orange : colors.white}
+                    animated={true}
+                    onPress={() => {}}
+                    style={{margin:0}}
+                  />
+                
+              }
             </Block>
         </TouchableOpacity>
       );

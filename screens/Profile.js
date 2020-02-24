@@ -14,12 +14,11 @@ import TeamMember from "../components/TeamMember";
 import SportsTabs from "../components/SportsTabs";
 import EditProfile from "../components/EditProfile";
 import ProfilePic from "../components/ProfilePic";
-
 import SlideModal from 'react-native-modal';
-
 import LoadingOverlay from '../components/LoadingOverlay';
 
 const { width, height } = Dimensions.get("window");
+import Chance from 'chance';
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
@@ -40,6 +39,114 @@ class Profile extends React.Component {
       loading:false,
       settingsVisible:false
     }
+  }
+
+  testUser = () => {
+    let sports = {
+      basketball: 21,
+      spikeball: 21,
+      football: 35,
+      soccer: 3,
+      volleyball: 3
+    }
+    let chance = new Chance()
+    let first = chance.first({nationality:'en'});
+    let last = chance.last({nationality:'en'});
+    let username;
+    switch(chance.integer({min:0, max:6})){
+      case 0:
+        username = first.toLowerCase() + last.toLowerCase();
+        break;
+      case 1:
+        username = first[0].toLowerCase() + last.toLowerCase();
+        break;
+      case 2:
+        username = first[0].toLowerCase() + last.toLowerCase() + chance.integer({min:1,max:999});
+        break;
+      case 3:
+        username = first[0].toLowerCase() + last[0].toLowerCase() + chance.integer({min:1,max:999});
+        break;
+      case 4:
+        username = first.toLowerCase() + last.toLowerCase() + chance.integer({min:1,max:999});
+        break;
+      case 5:
+        username = first.toLowerCase();
+        break;
+      case 6:
+        username = last.toLowerCase();
+    }
+    let sportsResults = {
+      basketball: {
+        wins:0,
+        losses:0,
+        ptsFor: 0,
+        ptsAgainst:0
+      },
+      football: {
+        wins:0,
+        losses:0,
+        ptsFor: 0,
+        ptsAgainst:0
+      },
+      spikeball: {
+        wins:0,
+        losses:0,
+        ptsFor: 0,
+        ptsAgainst:0
+      },
+      volleyball: {
+        wins:0,
+        losses:0,
+        ptsFor: 0,
+        ptsAgainst:0
+      },
+      soccer: {
+        wins:0,
+        losses:0,
+        ptsFor: 0,
+        ptsAgainst:0
+      },
+    }
+    let wins = 0;
+    let losses = 0;
+    let points = 0;
+    for(let i = 0; i < 30; i++){
+      let sport = Object.keys(sports)[chance.integer({min:0, max: Object.keys(sports).length-1})]
+      let win = chance.bool();
+      if(win){
+        wins+=1;
+        sportsResults[sport].wins += 1;
+        points += 5;
+        sportsResults[sport].ptsFor += sports[sport];
+        sportsResults[sport].ptsAgainst += chance.integer({min:0,max:sports[sport]-1});
+      } else {
+        losses+=1;
+        sportsResults[sport].losses += 1;
+        points += -2;
+        sportsResults[sport].ptsFor += chance.integer({min:0,max:sports[sport]-1});
+        sportsResults[sport].ptsAgainst += sports[sport];
+      }
+    }
+    let user = {
+      name: "" + first + " " + last,
+      currentGame:null,
+      username: username,
+      dob: new Date(),
+      gameHistory: [],
+      wins: wins,
+      losses: losses,
+      points:points,
+      email: first+last+'@mail.com',
+      notifications: [],
+      sports:sportsResults,
+      friendsList:[],
+      followers:[],
+      created: true
+    }
+    firebase.auth().createUserWithEmailAndPassword(first+last+'@mail.com','letmein123')
+      .then((cred) => {
+        firebase.firestore().collection('users').doc(cred.user.uid).set(user)
+      })
   }
 
   getData(){
@@ -91,6 +198,7 @@ class Profile extends React.Component {
   };
 
   componentDidMount(){
+    // this.testUser();
     firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot(() => {
       this.getData();
     })

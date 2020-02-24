@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     },
     stat:{
         color:"white",
+        textAlign:'center'
     },
     sport:{
         color:"white"
