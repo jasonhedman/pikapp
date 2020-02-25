@@ -12,7 +12,6 @@ import moment from 'moment';
 
 
 import {withTheme, Text, Headline, Subheading, Button, ActivityIndicator} from 'react-native-paper';
-import {getDistance} from 'geolib';
 const { width, height } = Dimensions.get("screen");
 
 class InvitePlayers extends React.Component{
@@ -191,7 +190,6 @@ class InvitePlayers extends React.Component{
                                                 </TouchableOpacity>
                                             )
                                         }
-                                        
                                     })
                                 }
                                 <TouchableOpacity onPress={this.onShare} style={{width:'100%',marginBottom:10}}>

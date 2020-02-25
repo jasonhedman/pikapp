@@ -316,6 +316,7 @@ exports.findMutualFriends = functions.https.onCall((data,context) => {
             return admin.firestore().collection('users').doc(friend).get().then((user) => {
                 let userData = user.data();
                 userData.id = user.id;
+                userData.mutualFriends = mutualFriends[friend];
                 return userData;
             })
         }))

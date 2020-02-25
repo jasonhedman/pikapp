@@ -14,6 +14,7 @@ import * as firebase from 'firebase';
 import firestore from 'firebase/firestore'
 require('firebase/functions')
 const moment = require('moment');
+const fetch = require('node-fetch');
 import MapViewDirections from 'react-native-maps-directions';
 
 import {Block} from 'galio-framework';
@@ -87,6 +88,13 @@ class MapScreen extends React.Component {
         let userData = user.data();
         userData.id = user.id;
         this.setState({user:userData}, () => {
+
+
+          // fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?&key=AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE&location=${this.state.user.location.latitude},${this.state.user.location.longitude}&radius=1000.72&type=park`)
+          // .then((res) => res.json())
+          // .then((json) => console.log(json.results))
+
+
           let notifications = new Array();
           if(userData.notifications != undefined){
             for(let i = userData.notifications.length - 1; i > -1; i--){
