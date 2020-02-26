@@ -6,8 +6,7 @@ import {
   ScrollView
 } from 'react-native';
 import SlideModal from 'react-native-modal';
-import {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import MapView from 'react-native-map-clustering'
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import GameForm from '../components/GameForm';
 import LobbyModal from '../components/LobbyModal';
 import * as firebase from 'firebase';
@@ -65,6 +64,7 @@ class MapScreen extends React.Component {
         currentGame: {},
         directionsVisible:false,
         filterVisible:false,
+        nearbyLocations: new Array()
     }
   }
 
@@ -88,13 +88,6 @@ class MapScreen extends React.Component {
         let userData = user.data();
         userData.id = user.id;
         this.setState({user:userData}, () => {
-
-
-          // fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?&key=AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE&location=${this.state.user.location.latitude},${this.state.user.location.longitude}&radius=1000.72&type=park`)
-          // .then((res) => res.json())
-          // .then((json) => console.log(json.results))
-
-
           let notifications = new Array();
           if(userData.notifications != undefined){
             for(let i = userData.notifications.length - 1; i > -1; i--){
@@ -127,6 +120,11 @@ class MapScreen extends React.Component {
               this.setState({currentGame:game.data()})
             })
           }
+          fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?&key=AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE&location=${userData.location.latitude},${userData.location.longitude}&radius=1000.72&type=park`)
+            .then((res) => res.json())
+            .then((json) => {
+              this.setState({nearbyLocations:json.results})
+            })
         });
       }),
       Location.hasServicesEnabledAsync()
@@ -171,20 +169,7 @@ class MapScreen extends React.Component {
       })
       this.setState({markers:markers,complete:true});
     })
-    // Notifications.addListener((notification) => {
-    //   if(notification.origin == 'selected'){
-    //     this.props.navigation.navigate('MapScreen');
-    //     this.mapView.animateToRegion({
-    //       longitude: notification.data.game.location.longitude,
-    //       latitude: notification.data.game.location.latitude,
-    //       latitudeDelta: 0.0922,
-    //       longitudeDelta: 0.0421,
-    //     })
-    //   } else if (notification.origin == 'received') {
-    //     //show an invite modal
-    //   }
-    // })
-   }
+  }
 
    navToGame = () => {
      this.setGameModalVisible(false);
@@ -358,13 +343,13 @@ class MapScreen extends React.Component {
                   customMapStyle={mapStyles}
                   provider={PROVIDER_GOOGLE}
                   style={{flex: 1}}
-                  clusterColor = {colors.dBlue}
-                  clusterTextColor = {colors.orange}
-                  clusterBorderColor = {colors.orange}
-                  clusterBorderWidth = {1}
+                  // clusterColor = {colors.dBlue}
+                  // clusterTextColor = {colors.orange}
+                  // clusterBorderColor = {colors.orange}
+                  // clusterBorderWidth = {1}
                   initialRegion={this.state.region}
                   showsUserLocation
-                  onClusterPress={this.onClusterPress}
+                  // onClusterPress={this.onClusterPress}
               >
                 {
                   Object.keys(this.state.markers).map((markerId,index) => {
@@ -376,6 +361,20 @@ class MapScreen extends React.Component {
                         onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
                       >
                         <Image source={sportMarkers[marker.sport]} style={{height:50, width:50}}/>
+                      </Marker>
+                    );
+                  })
+                }
+                {
+                 this.state.nearbyLocations.map((location,index) => {
+                    console.log(location.geometry.location)
+                    return (
+                      <Marker
+                        key={index}
+                        coordinate={{longitude:location.geometry.location.lng,latitude:location.geometry.location.lat}}
+                        // onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
+                      >
+                        {/* <Image source={sportMarkers[marker.sport]} style={{height:50, width:50}}/> */}
                       </Marker>
                     );
                   })
