@@ -27,6 +27,8 @@ import spikeballMarker from '../assets/images/sball_map.png';
 import footballMarker from '../assets/images/fball_map.png';
 import soccerMarker from '../assets/images/soccer_map.png';
 import volleyballMarker from '../assets/images/vball_map.png';
+import parkMarkerDark from '../assets/images/park_marker_dark.png';
+import parkMarkerLight from '../assets/images/park_marker_light.png';
 import HeaderBlock from '../components/HeaderBlock';
 import NewGame from '../components/Notifications/NewGame'
 import Invite from '../components/Notifications/Invite';
@@ -339,7 +341,7 @@ class MapScreen extends React.Component {
                   onRegionChangeComplete={(region) => {
                     this.setState({region});
                   }}
-                  mapRef={mapView => this.mapView = mapView}
+                  ref={mapView => this.mapView = mapView}
                   customMapStyle={mapStyles}
                   provider={PROVIDER_GOOGLE}
                   style={{flex: 1}}
@@ -358,7 +360,7 @@ class MapScreen extends React.Component {
                       <Marker
                         key={index}
                         coordinate={{longitude:marker.location.longitude,latitude:marker.location.latitude}}
-                        onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
+                        onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0622,longitudeDelta: 0.0221},500); this.setLobbyModalVisible(true,marker.id)}}
                       >
                         <Image source={sportMarkers[marker.sport]} style={{height:50, width:50}}/>
                       </Marker>
@@ -366,18 +368,17 @@ class MapScreen extends React.Component {
                   })
                 }
                 {
-                 this.state.nearbyLocations.map((location,index) => {
-                    console.log(location.geometry.location)
-                    return (
-                      <Marker
-                        key={index}
-                        coordinate={{longitude:location.geometry.location.lng,latitude:location.geometry.location.lat}}
-                        // onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
-                      >
-                        {/* <Image source={sportMarkers[marker.sport]} style={{height:50, width:50}}/> */}
-                      </Marker>
-                    );
-                  })
+                //  this.state.nearbyLocations.map((location,index) => {
+                //     return (
+                //       <Marker
+                //         key={index}
+                //         coordinate={{longitude:location.geometry.location.lng,latitude:location.geometry.location.lat}}
+                //         // onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
+                //       >
+                //         <Image source={parkMarkerLight} style={{height:50, width:50}}/>
+                //       </Marker>
+                //     );
+                //   })
                 }
                 {
                   this.state.directionsVisible
