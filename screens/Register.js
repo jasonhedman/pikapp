@@ -78,34 +78,40 @@ class Register extends React.Component {
           wins: 0,
           losses: 0,
           points:0,
+          gamesPlayed:0,
           email: this.state.email,
           notifications: [],
           sports:{
             basketball: {
+              gamesPlayed:0,
               wins:0,
               losses:0,
               ptsFor: 0,
               ptsAgainst:0
             },
             football: {
+              gamesPlayed:0,
               wins:0,
               losses:0,
               ptsFor: 0,
               ptsAgainst:0
             },
             spikeball: {
+              gamesPlayed:0,
               wins:0,
               losses:0,
               ptsFor: 0,
               ptsAgainst:0
             },
             volleyball: {
+              gamesPlayed:0,
               wins:0,
               losses:0,
               ptsFor: 0,
               ptsAgainst:0
             },
             soccer: {
+              gamesPlayed:0,
               wins:0,
               losses:0,
               ptsFor: 0,

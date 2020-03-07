@@ -17,22 +17,12 @@ import * as firebase from 'firebase';
 import moment from 'moment';
 import 'firebase/firestore';
 
-const teamSizes = {
-  basketball: [2,3,4,5],
-  spikeball: [2],
-  volleyball: [3,4,6],
-  football: [3,4,5,6],
-  soccer: [6,7,8,9,10,11]
-}
-const { width, height } = Dimensions.get("screen");
-
 class GameForm extends React.Component {
   constructor(props){
     super(props);
     this.state = {
       sport: null,
       intensity: null,
-      teamSize: null,
       user:null,
       bringingEquipment:true
     }
@@ -71,19 +61,16 @@ class GameForm extends React.Component {
                 intensity: this.state.intensity,
                 location: pos.coords,
                 sport:this.state.sport,
-                teamSize: this.state.teamSize,
                 ownerId: doc.id,
                 owner: docData,
-                teams: {
-                  home: [{
+                players: [
+                  {
                     id: firebase.auth().currentUser.uid,
                     name: this.state.user.name,
                     username: this.state.user.username,
-                    record: `${this.state.user.wins}-${this.state.user.losses}`,
                     dob:this.state.user.dob
-                  }],
-                  away: []
-                },
+                  }
+                ],
                 gameState: "created",
                 updated:moment().toDate(),
                 time: moment().toDate(),
@@ -100,7 +87,6 @@ class GameForm extends React.Component {
                           intensity: this.state.intensity,
                           location: pos.coords,
                           sport:this.state.sport,
-                          teamSize: this.state.teamSize,
                           ownerId: doc.id,
                           owner: docData,
                           gameState: "created"
@@ -146,7 +132,7 @@ class GameForm extends React.Component {
           onAnchorPress={() => this.setState({intensityVisible:true})}
           onMenuItemPress={this.onIntensityMenuClick}
         />
-        <Menu
+        {/* <Menu
           visible={this.state.tsVisible}
           onDismiss={() => {this.setState({tsVisible:false})}}
           style={{}}
@@ -165,7 +151,7 @@ class GameForm extends React.Component {
             }) 
             : <Menu.Item title="Choose a Sport" disabled={true} theme={{colors:{text:colors.dBlue}}}  />
           }
-        </Menu>
+        </Menu> */}
         <Block center middle>
           <Switch
             value={this.state.bringingEquipment}
@@ -177,7 +163,7 @@ class GameForm extends React.Component {
           />
           <Text style={{color:"#fff",marginBottom:8}}>{this.state.bringingEquipment ? "I am providing equipment" : "I am not providing equipment"}</Text>
         </Block>
-        <ButtonBlock text='Create Game' onPress={this.onCreate} disabled={this.state.sport == null || this.state.intensity == null || this.state.teamSize == null} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} />
+        <ButtonBlock text='Create Game' onPress={this.onCreate} disabled={this.state.sport == null || this.state.intensity == null} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} />
       </Block>
     );
   }

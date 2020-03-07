@@ -14,7 +14,7 @@ exports.clearGamesSchedule = functions.pubsub.schedule('every 1 hours').onRun((c
                     admin.firestore().collection('games').doc(game.id).update({
                         gameState:"incomplete"
                     })
-                    let users = game.data().teams.home.concat(game.data().teams.away);
+                    let users = game.data().players;
                     users.forEach((user) => {
                         admin.firestore().collection('users').doc(user.id).update({
                             currentGame:null
@@ -34,7 +34,7 @@ exports.clearGamesSchedule = functions.pubsub.schedule('every 1 hours').onRun((c
                     admin.firestore().collection('games').doc(game.id).update({
                         gameState:"incomplete"
                     })
-                    let users = game.data().teams.home.concat(game.data().teams.away);
+                    let users = game.data().players;
                     users.forEach((user) => {
                         admin.firestore().collection('users').doc(user.id).update({
                             currentGame:null
@@ -93,9 +93,8 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
         admin.firestore().collection('users').doc(notification.to.id).update({
             'notifications':admin.firestore.FieldValue.arrayUnion(snap.id)
         })
-        console.log(notification.to.pushToken !== undefined);
         if(notification.to.pushToken !== undefined){
-            console.log(notification.to.pushToken);
+            console.log(`${notification.from.name} (@${notification.from.username}) just invited you to play ${notification.game.sport}`);
             fetch('https://exp.host/--/api/v2/push/send', {
                 method:"POST",
                 headers:{
@@ -231,21 +230,22 @@ exports.createUser = functions.https.onCall((data,context) => {
     let losses = 0;
     let points = 0;
     for(let i = 0; i < data.games; i++){
-        let sport = Object.keys(sports)[chance.integer({min:0, max: Object.keys(sports).length-1})]
-        let win = chance.bool();
-        if(win){
-            wins+=1;
-            sportsResults[sport].wins += 1;
-            points += 5;
-            sportsResults[sport].ptsFor += sports[sport];
-            sportsResults[sport].ptsAgainst += chance.integer({min:0,max:sports[sport]-1});
-        } else {
-            losses+=1;
-            sportsResults[sport].losses += 1;
-            points += -2;
-            sportsResults[sport].ptsFor += chance.integer({min:0,max:sports[sport]-1});
-            sportsResults[sport].ptsAgainst += sports[sport];
-        }
+        let sport = Object.keys(sports)[chance.integer({min:0, max: Object.keys(sports).length-1})];
+        sportsResults[sport].gamesPlayed += 1;
+        // let win = chance.bool();
+        // if(win){
+        //     wins+=1;
+        //     sportsResults[sport].wins += 1;
+        //     points += 3;
+        //     sportsResults[sport].ptsFor += sports[sport];
+        //     sportsResults[sport].ptsAgainst += chance.integer({min:0,max:sports[sport]-1});
+        // } else {
+        //     losses+=1;
+        //     sportsResults[sport].losses += 1;
+        //     points += 3;
+        //     sportsResults[sport].ptsFor += chance.integer({min:0,max:sports[sport]-1});
+        //     sportsResults[sport].ptsAgainst += sports[sport];
+        // }
     }
     let year = chance.year({min:1990, max:2002});
     let dob = chance.birthday({year:year});
@@ -263,6 +263,7 @@ exports.createUser = functions.https.onCall((data,context) => {
         sports:sportsResults,
         friendsList:[],
         followers:[],
+        gamesPlayed: data.games,
         created: true
     }
     admin.auth().createUser({email:first+last+'@mail.com',password:'letmein123'})

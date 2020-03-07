@@ -22,6 +22,7 @@ import {withTheme,Button,Headline, Subheading} from 'react-native-paper';
 import ProfilePic from "../components/ProfilePic";
 import HeaderBlock from "../components/HeaderBlock";
 import ButtonBlock from "../components/ButtonBlock";
+import SportsBreakdown from '../components/SportsBreakdown'
 
 class UserProfile extends React.Component {
   constructor(){
@@ -40,7 +41,7 @@ class UserProfile extends React.Component {
   }
 
   getData(){
-    firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).get()
+    firebase.firestore().collection('users').doc(this.props.route.params.userId).get()
       .then((doc) => {
         if(doc.exists){
           let userData = doc.data();
@@ -60,7 +61,7 @@ class UserProfile extends React.Component {
         }
       })
       .then(() => {
-        var cuid = this.props.navigation.getParam('userId',null);
+        var cuid = this.props.route.params.userId;
         firebase.storage().ref("profilePictures/" + cuid).getDownloadURL()
           .then((url) => {
             this.setState({proPicUrl: url,complete:true});
@@ -79,37 +80,34 @@ class UserProfile extends React.Component {
         currentUser: userData
       })
     })
-    // firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).onSnapshot(() => {
-    //   this.getData();
-    // })
   }
   
-  getLastTen(){
-    if(this.state.user.gameHistory != undefined){
-      let wins = 0;
-      let i;
-      for(i = this.state.user.gameHistory.length - 1; i > this.state.user.gameHistory.length - 10; i--){
-        if(i < 0){
-          return `${wins}-${this.state.user.gameHistory.length - wins}`;
-        }
-        if(this.state.user.gameHistory[i].win){
-          wins++;
-        }
-      }
-      return `${wins}-${10-wins}`
-    } else {
-      return null;
-    }
-  }
+  // getLastTen(){
+  //   if(this.state.user.gameHistory != undefined){
+  //     let wins = 0;
+  //     let i;
+  //     for(i = this.state.user.gameHistory.length - 1; i > this.state.user.gameHistory.length - 10; i--){
+  //       if(i < 0){
+  //         return `${wins}-${this.state.user.gameHistory.length - wins}`;
+  //       }
+  //       if(this.state.user.gameHistory[i].win){
+  //         wins++;
+  //       }
+  //     }
+  //     return `${wins}-${10-wins}`
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   addFriend = () => {
     let user = this.state.user;
     user.followers.push(firebase.auth().currentUser.uid);
     this.setState({user,following:true}, () => {
       firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
-        friendsList:firebase.firestore.FieldValue.arrayUnion(this.props.navigation.getParam('userId',null))
+        friendsList:firebase.firestore.FieldValue.arrayUnion(this.props.route.params.userId)
       })
-      firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).update({
+      firebase.firestore().collection('users').doc(this.props.route.params.userId).update({
         followers:firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid)
       })
       firebase.firestore().collection('notifications').add({
@@ -128,9 +126,9 @@ class UserProfile extends React.Component {
       user.followers = user.followers.filter(friend => friend != firebase.auth().currentUser.uid);
       this.setState({user}, () => {
         firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
-          friendsList:firebase.firestore.FieldValue.arrayRemove(this.props.navigation.getParam('userId',null))
+          friendsList:firebase.firestore.FieldValue.arrayRemove(this.props.route.params.userId)
         })   
-        firebase.firestore().collection('users').doc(this.props.navigation.getParam('userId',null)).update({
+        firebase.firestore().collection('users').doc(this.props.route.params.userId).update({
           followers:firebase.firestore.FieldValue.arrayRemove(firebase.auth().currentUser.uid)
         }) 
       });
@@ -203,21 +201,18 @@ class UserProfile extends React.Component {
                     </Block>
                     <Block row style={{width,justifyContent:"space-around",}}>
                       <Block style={styles.statContainer} column center middle>
-                        <Subheading style={styles.subheading}>Overall</Subheading>
-                        <Headline style={styles.info}>{`${this.state.user.wins}-${this.state.user.losses}`}</Headline>
+                        <Subheading style={styles.subheading}>Games Played</Subheading>
+                        <Headline style={styles.info}>{`${this.state.user.gamesPlayed}`}</Headline>
                       </Block>
                       <Block style={styles.statContainer} column center middle>
                         <Subheading style={styles.subheading}>Points</Subheading>
                         <Headline style={styles.info}>{this.state.user.points}</Headline>
                       </Block>
-                      {/* <Block style={styles.statContainer} column center middle>
-                        <Subheading style={styles.subheading}>Last 10</Subheading>
-                        <Headline style={styles.info}>{this.getLastTen()}</Headline>
-                      </Block> */}
                     </Block>
                   </Block>
                   <Headline style={[styles.header,{marginBottom:16,textAlign:"center"}]}>Stats Breakdown</Headline>
-                  <SportsTabs user={this.state.user} />
+                  <SportsBreakdown user={this.state.user} />
+                  {/* <SportsTabs user={this.state.user} /> */}
                   {/* <Headline style={[styles.header,{marginBottom:16,textAlign:"center"}]}>Last Three Games</Headline>
                   {
                     this.state.lastThree.length > 0
@@ -225,7 +220,7 @@ class UserProfile extends React.Component {
                       <Block column>
                         {
                           this.state.lastThree.map((game,index) => {
-                            return <GameResult navToUserProfile={this.navToUserProfile} game={game} key={index} user={this.props.navigation.getParam('userId',null)} />
+                            return <GameResult navToUserProfile={this.navToUserProfile} game={game} key={index} user={this.props.route.params.userId} />
                           })
                         }
                       </Block>

@@ -18,6 +18,9 @@
     "@react-native-community/datetimepicker": "2.1.0",
     "@react-native-community/masked-view": "0.1.5",
     "@react-native-community/slider": "^2.0.0",
+    "@react-navigation/material-bottom-tabs": "^5.1.0",
+    "@react-navigation/native": "^5.0.8",
+    "@react-navigation/stack": "^5.1.0",
     "@react-navigation/web": "^1.0.0-alpha.9",
     "chance": "^1.1.4",
     "expo": "^36.0.1",
@@ -58,7 +61,6 @@
     "react-native-tab-view": "^2.9.0",
     "react-native-web": "^0.11.7",
     "react-native-wizard": "^1.0.1",
-    "react-navigation": "^4.1.1",
     "react-navigation-material-bottom-tabs": "^1.0.0",
     "react-navigation-stack": "^2.1.1"
   },

@@ -24,7 +24,7 @@ class UserList extends React.Component {
 
     componentDidMount(){
         let users = new Array();
-        this.props.navigation.getParam('users',[]).forEach(user => {
+        (this.props.route.params.users != undefined ? this.props.route.params.users : []).forEach(user => {
             users.push(firebase.firestore().collection('users').doc(user).get().then(user => {
                 let userData = user.data();
                 userData.id = user.id;
@@ -50,7 +50,7 @@ class UserList extends React.Component {
             <>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} height={height} width={width}>
                     <Block column center flex style={{backgroundColor:colors.dBlue,width,padding:16, paddingTop:56}}>
-                        <HeaderBlock text={this.props.navigation.getParam('listType',null)} backButton={true} backPress={() => this.props.navigation.goBack()} />
+                        <HeaderBlock text={this.props.route.params.listType} backButton={true} backPress={() => this.props.navigation.goBack()} />
                             {
                                 this.state.complete
                                 ? (this.state.users.length > 0
@@ -64,7 +64,7 @@ class UserList extends React.Component {
                                                                 <Text style={{color:"#fff"}}>{user.name}</Text>
                                                                 <Text style={{color:"#fff"}}>@{user.username}</Text>
                                                             </Block>
-                                                            <Text style={{color:"#fff"}}>{`${user.wins}-${user.losses}`}</Text>
+                                                            <Text style={{color:"#fff"}}>{`${user.points} point${user.points == 1 ? "" : 's'}`}</Text>
                                                         </Block>
                                                     </TouchableOpacity>
                                                 )

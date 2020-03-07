@@ -1,9 +1,8 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack' 
-import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs";
-
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import TabBarIcon from '../components/TabBarIcon';
 import GameLobby from '../screens/GameLobby';
 import MapScreen from '../screens/MapScreen';
@@ -13,186 +12,139 @@ import ChangePassword from '../screens/ChangePassword';
 import ChangeEmail from '../screens/ChangeEmail';
 import UserProfile from '../screens/UserProfile';
 import UserList from '../screens/UserList';
+import {UserContext} from '../UserContext';
 
+import firebase from 'firebase';
+import 'firebase/firestore';
 
+const Tab = createMaterialBottomTabNavigator();
+const MapStackNav = createStackNavigator();
+const ProfileStackNav = createStackNavigator();
+const SocialStackNav = createStackNavigator();
+const GameStackNav = createStackNavigator();
 
+function MapStack(){
+  return (
+    <MapStackNav.Navigator
+      initialRouteName="MapScreen"
+      headerMode='none'
+    >
+      <MapStackNav.Screen name="MapScreen" component={MapScreen} />
+      <MapStackNav.Screen name="UserProfile" component={UserProfile} />
+      <MapStackNav.Screen name="UserList" component={UserList} />
+    </MapStackNav.Navigator>
+  );
+}
 
-import {withTheme} from 'react-native-paper';
+function ProfileStack(){
+  return (
+    <ProfileStackNav.Navigator
+      initialRouteName="Profile"
+      headerMode='none'
+    >
+      <ProfileStackNav.Screen name="UserProfile" component={UserProfile} />
+      <ProfileStackNav.Screen name="Profile" component={Profile} />
+      <ProfileStackNav.Screen name="UserList" component={UserList} />
+      <ProfileStackNav.Screen name="ChangeEmail" component={ChangeEmail} />
+      <ProfileStackNav.Screen name="ChangePassword" component={ChangePassword} />
+    </ProfileStackNav.Navigator>
+  );
+}
 
-const config = {
-  headerShown:false
-};
+function SocialStack(){
+  return (
+    <SocialStackNav.Navigator
+      initialRouteName="Social Screen"
+      headerMode='none'
+    >
+      <SocialStackNav.Screen name="SocialScreen" component={SearchPlayers} />
+      <SocialStackNav.Screen name="UserProfile" component={UserProfile} />
+      <SocialStackNav.Screen name="UserList" component={UserList} />
+    </SocialStackNav.Navigator>
+  );
+}
 
-const GameStack = createStackNavigator(
-  {
-    Lobby: {
-      screen: GameLobby,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    UserProfile: {
-      screen: UserProfile,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    UserList: {
-      screen: UserList,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-  },
-  config
-);
+function GameStack(){
+  return (
+    <GameStackNav.Navigator
+      initialRouteName="Lobby"
+      headerMode='none'
+    >
+      <GameStackNav.Screen name="Lobby" component={GameLobby} />
+      <GameStackNav.Screen name="UserProfile" component={UserProfile} />
+      <GameStackNav.Screen name="UserList" component={UserList} />
+    </GameStackNav.Navigator>
+  );
+}
 
-GameStack.navigationOptions = {
-  tabBarLabel: 'Game',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-basketball`
-          : 'md-basketball'
-      }
-    />
-  ),
-};
-
-GameStack.path = '';
-
-const MapStack = createStackNavigator(
-  {
-    MapScreen: {
-      screen: MapScreen,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    UserProfile: {
-      screen: UserProfile,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    UserList: {
-      screen: UserList,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-  },
-  config
-);
-
-MapStack.navigationOptions = {
-  tabBarLabel: 'Map',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={'Platform.OS' === 'ios' ? 'ios-map' : 'md-map'} />
-  ),
-};
-
-
-MapStack.path = '';
-
-const SocialStack = createStackNavigator(
-  {
-    SocialScreen: {
-      screen: SearchPlayers,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    UserProfile: {
-      screen: UserProfile,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    UserList: {
-      screen: UserList,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    
-  },
-  config
-);
-
-SocialStack.navigationOptions = {
-  tabBarLabel: 'Social',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={'Platform.OS' === 'ios' ? 'ios-search' : 'md-search'} />
-  ),
-};
-
-
-SocialStack.path = '';
-
-
-const ProfileStack = createStackNavigator(
-  {
-    Profile: {
-      screen: Profile,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    ChangePassword: {
-      screen: ChangePassword,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    ChangeEmail: {
-      screen: ChangeEmail,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    UserProfile: {
-      screen: UserProfile,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-    UserList: {
-      screen: UserList,
-      navigationOptions: {
-        headerShown:false
-      }
-    },
-  },
-  {
-    initialRouteName:"Profile"
+export class MainNavigation extends React.Component {
+  constructor(){
+    super();
+    this.state = {
+      user:{}
+    }
   }
-);
 
-ProfileStack.navigationOptions = {
-  tabBarLabel: 'Profile',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-person' : 'md-person'} />
-  ),
-};
+  componentDidMount(){
+    firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).get()
+    .then((user) => {
+      let userData = user.data();
+      userData.id = user.id;
+      this.setState({user:userData});
+    })
+  }
 
-ProfileStack.path = '';
-
-const tabNavigator = createMaterialBottomTabNavigator({
-  GameStack,
-  MapStack,
-  SocialStack,
-  ProfileStack,
-},{
-  shifting:true,
-  initialRouteName: 'MapStack',
-  activeColor: '#E68A54',
-  inactiveColor: '#3e2465',
-  barStyle: { backgroundColor: '#121D28' },
-});
-
-tabNavigator.path = '';
-
-export default tabNavigator;
+  render(){
+    return (
+      <UserContext.Provider value={this.state}>
+          <Tab.Navigator
+            initialRouteName='MapStack'
+            activeColor='#E68A54'
+            inactiveColor='#fff'
+            barStyle={{backgroundColor:'#121D28'}}
+          >
+            <Tab.Screen 
+              name="Lobby" 
+              component={GameStack} 
+              options={{
+                tabBarLabel: "Lobby",
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name={'Platform.OS' === 'ios' ? 'ios-basketball' : 'md-basketball'} />
+                )
+              }}
+            />
+            <Tab.Screen 
+              name="MapStack" 
+              component={MapStack} 
+              options={{
+                tabBarLabel: "Map",
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name={'Platform.OS' === 'ios' ? 'ios-map' : 'md-map'} />
+                )
+              }}
+            />
+            <Tab.Screen 
+              name="SocialStack" 
+              component={SocialStack} 
+              options={{
+                tabBarLabel: "Social",
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name={'Platform.OS' === 'ios' ? 'ios-search' : 'md-search'} />
+                )
+              }}
+            />
+            <Tab.Screen 
+              name="ProfileStack" 
+              component={ProfileStack} 
+              options={{
+                tabBarLabel: "Profile",
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name={'Platform.OS' === 'ios' ? 'ios-person' : 'md-person'} />
+                )
+              }}
+            />
+          </Tab.Navigator>
+      </UserContext.Provider>
+    )
+  }
+}

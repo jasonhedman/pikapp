@@ -9,6 +9,7 @@ import firestore from 'firebase/firestore';
 require('firebase/functions')
 import HeaderBlock from './HeaderBlock'
 import moment from 'moment';
+import {getDistance} from 'geolib';
 
 
 import {withTheme, Text, Headline, Subheading, Button, ActivityIndicator} from 'react-native-paper';
@@ -22,15 +23,15 @@ class InvitePlayers extends React.Component{
         nearby:new Array(),
         followingComplete: false,
         nearbyComplete: false,
+        nearbySortedKeys: new Array(),
+        friendsSortedKeys: new Array(),
     }
   }
 
   componentDidMount(){
-      let users = new Array();
-      let gameUsers = this.props.game.teams.home.concat(this.props.game.teams.away);
-      gameUsers.forEach((user,index) => {
-          gameUsers[index] = user.id;
-      })
+      let users = new Object();
+      let gameUsers = this.props.game.players;
+      gameUsers = gameUsers.map((item) => {return item.id})
       Promise.all(this.props.user.friendsList.map((user) => {
         return (
             firebase.firestore().collection('users').doc(user).get()
@@ -38,13 +39,22 @@ class InvitePlayers extends React.Component{
                     let userData = user.data();
                     userData.id = user.id;
                     if(!gameUsers.includes(user.id)){
-                        users.push(userData);
+                        users[user.id] = userData;
                     }
                 })
         );
       }))
         .then(() => {
-            this.setState({users,followingComplete:true});
+            let friendsSortedKeys = Object.keys(users).sort((a,b) => {
+                if(this.props.user.location != undefined && users[a].location != undefined && users[b].location != undefined){
+                    return getDistance(users[a].location, this.props.user.location) - getDistance(users[b].location, this.props.user.location)
+                } else if(users[a].location == undefined) {
+                    return 1;
+                } else if(users[b].location == undefined) {
+                    return -1;
+                } 
+            })
+            this.setState({users,followingComplete:true,friendsSortedKeys});
             let nearby = new Object();
             Promise.all([
                 firebase.firestore().collection('users')
@@ -71,12 +81,10 @@ class InvitePlayers extends React.Component{
                     }),
             ])
                 .then(() => {
-                    this.setState({nearby,nearbyComplete:true});
+                    let nearbySortedKeys = Object.keys(nearby).sort((a,b) => {return getDistance(nearby[a].location, this.props.user.location) - getDistance(nearby[b].location, this.props.user.location)})
+                    this.setState({nearby,nearbyComplete:true,nearbySortedKeys});
                 })
         })
-    //   this.props.user.friendsList.forEach((user) => {
-    //       firebase.firestore().collection('users').doc(user).get()
-    //   })
   }
 
   onPress = (id, user) => {
@@ -131,10 +139,17 @@ class InvitePlayers extends React.Component{
                     <Subheading style={{color:colors.white, textAlign:'center',marginBottom:8}}>Friends</Subheading>
                     {
                         this.state.followingComplete
-                        ?  this.state.users.length > 0
+                        ?  Object.keys(this.state.users).length > 0
                             ?   <ScrollView style={styles.scrollview}>
                                     {
-                                        this.state.users.map((user,key) => {
+                                        this.state.friendsSortedKeys.map((userId,key) => {
+                                            let user = this.state.users[userId];
+                                            let distance;
+                                            if(user.location != undefined){
+                                                distance = Math.round(getDistance(user.location, this.props.user.location) * 0.000621371);
+                                            } else {
+                                                distance = null
+                                            }
                                             return (
                                                 <TouchableOpacity onPress={() => this.onPress(user.id, user)} key={key} style={{width:'100%'}}>
                                                     <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%', marginBottom:10}}>
@@ -142,7 +157,7 @@ class InvitePlayers extends React.Component{
                                                             <Text style={{color:"#fff"}}>{user.name}</Text>
                                                             <Text style={{color:"#fff"}}>@{user.username}</Text>
                                                         </Block>
-                                                        <Text style={{color:"#fff"}}>{`${user.wins}-${user.losses}`}</Text>
+                                                        <Text style={{color:"#fff"}}>{`${distance != null ? (distance < 1 ? "<1" : distance) : user.points} ${distance != null ? (distance < 2 ? "Mile Away" : "Miles Away") : (user.points == 1 ? "Point" : "Points")}`}</Text>
                                                     </Block>
                                                 </TouchableOpacity>
                                             )
@@ -173,11 +188,17 @@ class InvitePlayers extends React.Component{
                         ?   Object.keys(this.state.nearby).length > 0
                             ? <ScrollView style={styles.scrollview}>
                                 {
-                                    Object.keys(this.state.nearby).map((userId,key) => {
+                                    this.state.nearbySortedKeys.map((userId,key) => {
                                         if(this.props.user.friendsList.includes(userId) || userId == firebase.auth().currentUser.uid){
                                             return null;
                                         } else {
                                             let user = this.state.nearby[userId];
+                                            let distance;
+                                            if(user.location != undefined){
+                                                distance = Math.round(getDistance(user.location, this.props.user.location) * 0.000621371);
+                                            } else {
+                                                distance = null
+                                            }                                            
                                             return (
                                                 <TouchableOpacity onPress={() => this.onPress(user.id,user)} key={key} style={{width:'100%'}}>
                                                     <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%', marginBottom:10}}>
@@ -185,7 +206,7 @@ class InvitePlayers extends React.Component{
                                                             <Text style={{color:"#fff"}}>{user.name}</Text>
                                                             <Text style={{color:"#fff"}}>@{user.username}</Text>
                                                         </Block>
-                                                        <Text style={{color:"#fff"}}>{`${user.wins}-${user.losses}`}</Text>
+                                                        <Text style={{color:"#fff"}}>{`${distance != null ? (distance < 1 ? "<1" : distance) : user.points} ${distance != null ? (distance < 2 ? "Mile Away" : "Miles Away") : (user.points == 1 ? "Point" : "Points")}`}</Text>
                                                     </Block>
                                                 </TouchableOpacity>
                                             )

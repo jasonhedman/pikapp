@@ -121,10 +121,6 @@ class SearchPlayers extends React.Component {
         this.setState({focusUser:user,visible:true})
     }
 
-    navToMap = (marker) => {
-        this.props.navigation.navigate('MapScreen',{marker});
-    }
-
     navToUserProfile = (id) => {
         if(id != firebase.auth().currentUser.uid){
           this.props.navigation.navigate("UserProfile", {userId:id});
@@ -164,7 +160,7 @@ class SearchPlayers extends React.Component {
                                                                 <Text style={{color:"#fff"}}>{user.name}</Text>
                                                                 <Text style={{color:"#fff"}}>@{user.username}</Text>
                                                             </Block>
-                                                            <Text style={{color:"#fff"}}>{`${user.wins}-${user.losses}`}</Text>
+                                                            <Text style={{color:"#fff"}}>{`${user.points} point${user.points == 1 ? "" : "s"}`}</Text>
                                                         </Block>
                                                     </TouchableOpacity>
                                                 )

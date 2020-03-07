@@ -47,54 +47,6 @@ export default class App extends React.Component {
       isLoadingComplete: false
     }
   }
-
-  // componentDidMount(){
-  //   firebase.firestore().collection('users').get()
-  //     .then((users) => {
-  //       users.forEach((user) => {
-  //         firebase.firestore().collection('users').doc(user.id).update({
-  //           gameHistory: [],
-  //           wins: 0,
-  //           losses: 0,
-  //           sports:{
-  //             basketball: {
-  //               wins:0,
-  //               losses:0,
-  //               ptsFor: 0,
-  //               ptsAgainst:0
-  //             },
-  //             football: {
-  //               wins:0,
-  //               losses:0,
-  //               ptsFor: 0,
-  //               ptsAgainst:0
-  //             },
-  //             spikeball: {
-  //               wins:0,
-  //               losses:0,
-  //               ptsFor: 0,
-  //               ptsAgainst:0
-  //             },
-  //             volleyball: {
-  //               wins:0,
-  //               losses:0,
-  //               ptsFor: 0,
-  //               ptsAgainst:0
-  //             },
-  //             soccer: {
-  //               wins:0,
-  //               losses:0,
-  //               ptsFor: 0,
-  //               ptsAgainst:0
-  //             },
-  //           },
-  //           friendsList:[],
-  //           followers:[],
-  //           points:0
-  //         })
-  //       })
-  //     })
-  // }
   
   render(){
     if(Appearance.getColorScheme() == 'light'){
@@ -141,15 +93,17 @@ async function loadResourcesAsync() {
     messagingSenderId: "322765285697",
     appId: "1:322765285697:web:ecd162e09c8d5a3f"
   };
-  firebase.initializeApp(firebaseConfig)
   await Promise.all([
+    firebase.initializeApp(firebaseConfig),
     Font.loadAsync({
       ...Ionicons.font,
       "raleway": require('./assets/fonts/Raleway-Regular.ttf'),
     }),
     Permissions.askAsync(Permissions.LOCATION),
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL),
-  ]);
+  ])
+  .then(() => {
+  });
 }
 
 function handleLoadingError(error: Error) {

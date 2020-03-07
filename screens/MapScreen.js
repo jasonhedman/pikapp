@@ -6,7 +6,7 @@ import {
   ScrollView
 } from 'react-native';
 import SlideModal from 'react-native-modal';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import GameForm from '../components/GameForm';
 import LobbyModal from '../components/LobbyModal';
 import * as firebase from 'firebase';
@@ -15,13 +15,10 @@ require('firebase/functions')
 const moment = require('moment');
 const fetch = require('node-fetch');
 import MapViewDirections from 'react-native-maps-directions';
-
-import {Block} from 'galio-framework';
-
-import {withTheme,Modal,Portal,FAB,Headline,IconButton, Menu,Text, Subheading} from 'react-native-paper';
-
+import {UserContext} from '../UserContext';
+import { Block } from 'galio-framework';
+import { withTheme, Modal, Portal, FAB, Headline, IconButton, Menu, Text, Subheading } from 'react-native-paper';
 import * as Location from 'expo-location';
-
 import basketballMarker from '../assets/images/bball_map.png';
 import spikeballMarker from '../assets/images/sball_map.png';
 import footballMarker from '../assets/images/fball_map.png';
@@ -46,59 +43,57 @@ const sportMarkers = {
 const { width, height } = Dimensions.get("screen");
 
 class MapScreen extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-        markers:new Array(),
-        gameModalVisible:false,
-        lobbyModalVisible: false,
-        complete:false,
-        user: {
-          currentGame: null
-        },
-        userLoc: {},
-        modalGameId: "",
-        userLoc: null,
-        locationEnabled: false,
-        focusMarker:null,
-        menuVisible:false,
-        userNotifications: new Array(),
-        currentGame: {},
-        directionsVisible:false,
-        filterVisible:false,
-        nearbyLocations: new Array()
+      markers: new Array(),
+      gameModalVisible: false,
+      lobbyModalVisible: false,
+      complete: false,
+      user: {
+        currentGame: null
+      },
+      userLoc: {},
+      modalGameId: "",
+      userLoc: null,
+      locationEnabled: false,
+      focusMarker: null,
+      menuVisible: false,
+      userNotifications: new Array(),
+      currentGame: {},
+      directionsVisible: false,
+      filterVisible: false,
+      nearbyLocations: new Array()
     }
   }
 
   setGameModalVisible = (Visible) => {
-    this.setState({gameModalVisible: Visible});
+    this.setState({ gameModalVisible: Visible });
   }
 
   setLobbyModalVisible = (visible, gameId) => {
-    if(gameId != undefined){
-      this.setState({lobbyModalVisible: visible, modalGameId:gameId});
+    if (gameId != undefined) {
+      this.setState({ lobbyModalVisible: visible, modalGameId: gameId });
     } else {
-      this.setState({lobbyModalVisible:visible});
+      this.setState({ lobbyModalVisible: visible });
     }
   }
 
-   componentDidMount(){
-    // var create = firebase.functions().httpsCallable('createUser');
-    // create({games:60}).then((result) => {})
+  componentDidMount() {
     Promise.all([
       firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot((user) => {
         let userData = user.data();
         userData.id = user.id;
-        this.setState({user:userData}, () => {
+        this.setState({ user: userData }, () => {
           let notifications = new Array();
-          if(userData.notifications != undefined){
-            for(let i = userData.notifications.length - 1; i > -1; i--){
+          if (userData.notifications != undefined) {
+            for (let i = userData.notifications.length - 1; i > -1; i--) {
               notifications.push(firebase.firestore().collection('notifications').doc(userData.notifications[i]).get()
                 .then((doc) => {
                   let docData = doc.data();
                   docData.id = doc.id;
-                  if(docData.expire !== undefined){
-                    if(moment.unix(parseInt(docData.expire.seconds)).isBefore(moment())){
+                  if (docData.expire !== undefined) {
+                    if (moment.unix(parseInt(docData.expire.seconds)).isBefore(moment())) {
                       this.removeNotification(doc);
                       return null;
                     } else {
@@ -112,160 +107,142 @@ class MapScreen extends React.Component {
             }
             Promise.all(notifications)
               .then((nots) => {
-                nots = nots.filter((val) => {return val !== null});
-                this.setState({userNotifications:nots})
+                nots = nots.filter((val) => { return val !== null });
+                this.setState({ userNotifications: nots })
               })
           }
-          if(userData.currentGame != null) {
+          if (userData.currentGame != null) {
             firebase.firestore().collection('games').doc(userData.currentGame).get()
-            .then((game) => {
-              this.setState({currentGame:game.data()})
-            })
+              .then((game) => {
+                this.setState({ currentGame: game.data() })
+              })
           }
-          fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?&key=AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE&location=${userData.location.latitude},${userData.location.longitude}&radius=1000.72&type=park`)
-            .then((res) => res.json())
-            .then((json) => {
-              this.setState({nearbyLocations:json.results})
-            })
+          // fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?&key=AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE&location=${userData.location.latitude},${userData.location.longitude}&radius=1000.72&type=park`)
+          //   .then((res) => res.json())
+          //   .then((json) => {
+          //     this.setState({ nearbyLocations: json.results })
+          //   })
         });
       }),
       Location.hasServicesEnabledAsync()
-      .then((locationEnabled) => {
-        if(locationEnabled == true){
-          Location.getCurrentPositionAsync()
-            .then((pos) => {
-              let region = {
-                latitude: pos.coords.latitude,
-                longitude: pos.coords.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }
-              this.setState({region, userLoc:pos.coords,locationEnabled:true}, () => {
-                Location.watchPositionAsync({},(pos) => {
-                  this.setState({userPos: pos.coords, complete:true});
-                })
-                firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
-                  location:pos.coords
-                })
-              });
-            })
-        } else {
-          this.setState({locationEnabled:false,complete:true}, () => {
-            Location.requestPermissionsAsync()
-              .then((permission) => {
-                if(permission.status == "granted"){
-                  this.setState({locationEnabled:true})
+        .then((locationEnabled) => {
+          this.setState({locationEnabled})
+          if (locationEnabled == true) {
+            Location.getCurrentPositionAsync()
+              .then((pos) => {
+                let region = {
+                  latitude: pos.coords.latitude,
+                  longitude: pos.coords.longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
                 }
+                this.setState({ region, userLoc: pos.coords}, () => {
+                  Location.watchPositionAsync({}, (pos) => {
+                    this.setState({ userPos: pos.coords});
+                  })
+                  firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
+                    location: pos.coords
+                  })
+                });
               })
+          } else {
+            Location.requestPermissionsAsync()
+            .then((permission) => {
+              if (permission.status == "granted") {
+                this.setState({ locationEnabled: true })
+              }
+            })
+          }
+        }),
+        firebase.firestore().collection('games').onSnapshot((docs) => {
+          let markers = {};
+          docs.forEach((doc) => {
+            if (doc.data().gameState == "created" || doc.data().gameState == "inProgress") {
+              markers[doc.id] = doc.data();
+              markers[doc.id].id = doc.id;
+            }
           })
-        }
-      }),
+          this.setState({ markers: markers});
+        })
     ])
-    firebase.firestore().collection('games').onSnapshot((docs) => {
-      let markers = {};
-      docs.forEach((doc) => {
-        if(doc.data().gameState == "created" || doc.data().gameState == "inProgress"){
-          markers[doc.id] = doc.data();
-          markers[doc.id].id = doc.id;
-        }
-      })
-      this.setState({markers:markers,complete:true});
+    .then(() => {
+      this.setState({complete:true})
     })
+    
   }
 
-   navToGame = () => {
-     this.setGameModalVisible(false);
-     this.props.navigation.navigate("Lobby",{new:true});
-   }
+  navToGame = () => {
+    this.setGameModalVisible(false);
+    this.props.navigation.navigate("Lobby");
+  }
 
-   addToTeam = (gameId, team) => {
+  addToTeam = (gameId, team) => {
     this.setLobbyModalVisible(false);
     firebase.firestore().collection('games').doc(gameId).get()
       .then(game => {
         firebase.firestore().collection("notifications").add({
-          type:'newGame',
-          game:game.data(),
+          type: 'newGame',
+          game: game.data(),
           from: this.state.user,
           to: this.state.user.followers,
-          action:"joined",
+          action: "joined",
           time: moment().toDate(),
           date: moment().toDate(),
           expire: moment().add(1, 'h').toDate()
         })
           .then(() => {
-            if(team == "home") {
+            Promuse.all([
               firebase.firestore().collection("games").doc(gameId).update({
-                "teams.home": firebase.firestore.FieldValue.arrayUnion({
+                players: firebase.firestore.FieldValue.arrayUnion({
                   id: firebase.auth().currentUser.uid,
                   name: this.state.user.name,
                   username: this.state.user.username,
-                  record: `${this.state.user.wins}-${this.state.user.losses}`,
-                  dob:this.state.user.dob
+                  dob: this.state.user.dob
                 }),
                 updated: new Date()
+              }),
+              firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).update({
+                currentGame: gameId
               })
-                .then(() => {
-                  firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).update({
-                    currentGame: gameId
-                  })
-                  this.props.navigation.navigate("Lobby");
-                })
-            } else if (team == 'away') {
-              firebase.firestore().collection("games").doc(gameId).update({
-                "teams.away": firebase.firestore.FieldValue.arrayUnion({
-                  id: firebase.auth().currentUser.uid,
-                  name: this.state.user.name,
-                  username: this.state.user.username,
-                  record: `${this.state.user.wins}-${this.state.user.losses}`,
-                  dob:this.state.user.dob
-                }),
-                updated: new Date()
-              })
-                .then(() => {
-                  firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).update({
-                    currentGame: gameId
-                  })
-                    .then(() => {
-                      this.props.navigation.navigate("Lobby");                 
-                    })
-        
-                })
-            }
+            ])
+            .then(() => {
+              this.props.navigation.navigate("Lobby");
+            })
           })
       })
-   }
+  }
 
-   onClusterPress = (cluster) => {
-     this.mapView.animateToRegion({
-       longitude:cluster.longitude,
-       latitude: cluster.latitude,
-       longitudeDelta: this.state.region.longitudeDelta / 3,
-       latitudeDelta: this.state.region.latitudeDelta / 3,
-     },500)
-   }
+  onClusterPress = (cluster) => {
+    this.mapView.animateToRegion({
+      longitude: cluster.longitude,
+      latitude: cluster.latitude,
+      longitudeDelta: this.state.region.longitudeDelta / 3,
+      latitudeDelta: this.state.region.latitudeDelta / 3,
+    }, 500)
+  }
 
-   navToUserProfile = (id) => {
-    if(id != firebase.auth().currentUser.uid){
-    this.props.navigation.navigate("UserProfile", {userId:id});
+  navToUserProfile = (id) => {
+    if (id != firebase.auth().currentUser.uid) {
+      this.props.navigation.navigate("UserProfile", { userId: id });
     } else {
-    this.props.navigation.navigate('Profile')
+      this.props.navigation.navigate('Profile')
     }
   }
 
   onMenuDismiss = () => {
-    this.setState({menuVisible:false})
+    this.setState({ menuVisible: false })
   }
 
   onFilterDismiss = () => {
-    this.setState({filterVisible:false})
+    this.setState({ filterVisible: false })
   }
 
   setMenuVisible = () => {
-    this.setState({menuVisible:true})
+    this.setState({ menuVisible: true })
   }
 
   closeMenu = () => {
-    this.setState({menuVisible:false})
+    this.setState({ menuVisible: false })
   }
 
   onNewGamePress = (notification) => {
@@ -292,7 +269,7 @@ class MapScreen extends React.Component {
 
   onFollowerPress = (notification) => {
     this.closeMenu();
-    this.props.navigation.navigate('UserProfile', {userId:notification.from.id})
+    this.props.navigation.navigate('UserProfile', { userId: notification.from.id })
     this.removeNotification(notification);
   }
 
@@ -303,71 +280,65 @@ class MapScreen extends React.Component {
   }
 
   switchDirectionsVisible = () => {
-    this.setState({directionsVisible:!this.state.directionsVisible});
+    this.setState({ directionsVisible: !this.state.directionsVisible });
   }
 
   setFilterVisible = () => {
-    this.setState({filterVisible:true})
+    this.setState({ filterVisible: true })
   }
 
   render() {
-    if(this.props.navigation.getParam("marker",null) != null){
-      this.setState({focusMarker:this.props.navigation.getParam("marker",null)}, () => {
-        this.props.navigation.navigate('MapScreen',{marker:null});
-        this.mapView.animateToRegion({longitude:this.state.focusMarker.longitude,latitude:this.state.focusMarker.latitude, latitudeDelta:this.state.region.latitudeDelta,longitudeDelta:this.state.region.longitudeDelta},500);
-      })
-    }
     const colors = this.props.theme.colors
-    if(this.state.complete == true){
-      if(this.state.locationEnabled){
+    if (this.state.complete == true) {
+      if (this.state.locationEnabled) {
         return (
           <>
             <Portal>
-              <Modal contentContainerStyle={{ marginLeft:"auto", marginRight:"auto",width:'100%', padding:32}} visible={this.state.gameModalVisible} onDismiss={() => {this.setGameModalVisible(false)}}>
-                <GameForm navToGame={this.navToGame} closeModal={() => this.setGameModalVisible(false)}/>
+              <Modal contentContainerStyle={{ marginLeft: "auto", marginRight: "auto", width: '100%', padding: 32 }} visible={this.state.gameModalVisible} onDismiss={() => { this.setGameModalVisible(false) }}>
+                <GameForm navToGame={this.navToGame} closeModal={() => this.setGameModalVisible(false)} />
               </Modal>
             </Portal>
             <SlideModal
               animationType="slide"
               isVisible={this.state.lobbyModalVisible}
-              onBackdropPress={() => {this.setState({lobbyModalVisible:false})}}
+              onBackdropPress={() => { this.setState({ lobbyModalVisible: false }) }}
               backdropOpacity={0}
               coverScreen={false}
-              style={{width:width, margin:0,justifyContent:'flex-end'}}
+              style={{ width: width, margin: 0, justifyContent: 'flex-end' }}
             >
-              <LobbyModal closeModal={() => {this.setState({lobbyModalVisible:false})}} navToUserProfile={this.navToUserProfile} userLoc={this.state.userLoc} user={this.state.user} addToTeam={this.addToTeam} marker={this.state.markers[this.state.modalGameId]} />
+              <LobbyModal closeModal={() => { this.setState({ lobbyModalVisible: false }) }} navToUserProfile={this.navToUserProfile} userLoc={this.state.userLoc} user={this.state.user} addToTeam={this.addToTeam} marker={this.state.markers[this.state.modalGameId]} />
             </SlideModal>
-                <MapView
-                  onRegionChangeComplete={(region) => {
-                    this.setState({region});
-                  }}
-                  ref={mapView => this.mapView = mapView}
-                  customMapStyle={mapStyles}
-                  provider={PROVIDER_GOOGLE}
-                  style={{flex: 1}}
-                  // clusterColor = {colors.dBlue}
-                  // clusterTextColor = {colors.orange}
-                  // clusterBorderColor = {colors.orange}
-                  // clusterBorderWidth = {1}
-                  initialRegion={this.state.region}
-                  showsUserLocation
-                  // onClusterPress={this.onClusterPress}
-              >
-                {
-                  Object.keys(this.state.markers).map((markerId,index) => {
-                    let marker = this.state.markers[markerId];
-                    return (
-                      <Marker
-                        key={index}
-                        coordinate={{longitude:marker.location.longitude,latitude:marker.location.latitude}}
-                        onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0622,longitudeDelta: 0.0221},500); this.setLobbyModalVisible(true,marker.id)}}
-                      >
-                        <Image source={sportMarkers[marker.sport]} style={{height:50, width:50}}/>
-                      </Marker>
-                    );
-                  })
-                }
-                {
+            <MapView
+              onRegionChangeComplete={(region) => {
+                this.setState({ region });
+              }}
+              ref={mapView => this.mapView = mapView}
+              customMapStyle={mapStyles}
+              provider={PROVIDER_GOOGLE}
+              style={{ flex: 1 }}
+              // clusterColor = {colors.dBlue}
+              // clusterTextColor = {colors.orange}
+              // clusterBorderColor = {colors.orange}
+              // clusterBorderWidth = {1}
+              initialRegion={this.state.region}
+              showsUserLocation
+            // onClusterPress={this.onClusterPress}
+            >
+              {
+                Object.keys(this.state.markers).map((markerId, index) => {
+                  let marker = this.state.markers[markerId];
+                  return (
+                    <Marker
+                      key={index}
+                      coordinate={{ longitude: marker.location.longitude, latitude: marker.location.latitude }}
+                      onPress={() => { this.mapView.animateToRegion({ longitude: marker.location.longitude, latitude: marker.location.latitude, latitudeDelta: 0.0622, longitudeDelta: 0.0221 }, 500); this.setLobbyModalVisible(true, marker.id) }}
+                    >
+                      <Image source={sportMarkers[marker.sport]} style={{ height: 50, width: 50 }} />
+                    </Marker>
+                  );
+                })
+              }
+              {
                 //  this.state.nearbyLocations.map((location,index) => {
                 //     return (
                 //       <Marker
@@ -379,34 +350,34 @@ class MapScreen extends React.Component {
                 //       </Marker>
                 //     );
                 //   })
-                }
-                {
-                  this.state.directionsVisible
+              }
+              {
+                this.state.directionsVisible
                   ? <MapViewDirections
-                      origin={this.state.userLoc}
-                      destination={this.state.currentGame.location}
-                      apikey={'AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE'}
-                      strokeWidth={5}
-                      strokeColor={colors.orange}
-                    />
+                    origin={this.state.userLoc}
+                    destination={this.state.currentGame.location}
+                    apikey={'AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE'}
+                    strokeWidth={5}
+                    strokeColor={colors.orange}
+                  />
                   : null
-                }
+              }
             </MapView>
             {
               this.state.lobbyModalVisible
-              ? null
-              : <Block style={{position:'absolute',bottom:8, right:8}}>
-                  <Block style={{marginLeft:'auto',marginBottom:8}}>
+                ? null
+                : <Block style={{ position: 'absolute', bottom: 8, right: 8 }}>
+                  <Block style={{ marginLeft: 'auto', marginBottom: 8 }}>
                     <IconButton
                       icon='directions-fork'
                       color={colors.dBlue}
                       size={28}
-                      style={{backgroundColor:colors.white,margin:0}}
+                      style={{ backgroundColor: colors.white, margin: 0 }}
                       onPress={this.switchDirectionsVisible}
                       disabled={this.state.user.currentGame == null}
                     />
                   </Block>
-                  <Block style={{marginLeft:'auto'}}>
+                  <Block style={{ marginLeft: 'auto' }}>
                     <Menu
                       visible={this.state.menuVisible}
                       anchor={
@@ -415,72 +386,72 @@ class MapScreen extends React.Component {
                             icon='bell'
                             color={colors.dBlue}
                             size={28}
-                            style={{backgroundColor:colors.white,margin:0}}
+                            style={{ backgroundColor: colors.white, margin: 0 }}
                             onPress={this.setMenuVisible}
                           />
                           {
                             this.state.userNotifications.length > 0
-                            ? <Block style={{height:.29*(3/2)*28,width:.29*(3/2)*28,borderRadius:'50%',position:'absolute',left:0,top:0,backgroundColor:colors.orange}}></Block>
-                            : null
+                              ? <Block style={{ height: .29 * (3 / 2) * 28, width: .29 * (3 / 2) * 28, borderRadius: '50%', position: 'absolute', left: 0, top: 0, backgroundColor: colors.orange }}></Block>
+                              : null
                           }
                         </>
                       }
                       onDismiss={this.onMenuDismiss}
-                      contentStyle={{marginBottom:28*1.5+8,backgroundColor:colors.dBlue,padding:16,borderRadius:8,borderWidth:2,borderColor:colors.orange, width:width-16}}
+                      contentStyle={{ marginBottom: 28 * 1.5 + 8, backgroundColor: colors.dBlue, padding: 16, borderRadius: 8, borderWidth: 2, borderColor: colors.orange, width: width - 16 }}
                     >
-                        <HeaderBlock text='Notifications' backButton={true} backPress={this.onMenuDismiss}/>
-                        <ScrollView style={{maxHeight:height*.5}}>
+                      <HeaderBlock text='Notifications' backButton={true} backPress={this.onMenuDismiss} />
+                      <ScrollView style={{ maxHeight: height * .5 }}>
                         {
                           this.state.userNotifications.length > 0
-                          ? this.state.userNotifications.map((notification, index) => {
-                            if(notification.type == 'newGame'){
-                              return (
-                                <NewGame notification={notification} action={() => this.onNewGamePress(notification)} key={index} navToUserProfile={this.navToUserProfile} closeMenu={this.closeMenu} />
-                              )
-                            } else if(notification.type == 'invite'){
-                              return (
-                                <Invite notification={notification} action={() => this.onInvitePress(notification)} key={index} navToUserProfile={this.navToUserProfile} closeMenu={this.closeMenu} />
-                              )
-                            } 
-                            else if(notification.type == 'follower'){
-                              return (
-                                <Follower notification={notification} action={() => this.onFollowerPress(notification)} key={index} navToUserProfile={this.navToUserProfile} closeMenu={this.closeMenu} />
-                              )
-                            }
-                          })
-                          : <Block row style={{borderWidth:1, borderColor:colors.orange, borderRadius: 8, padding:10,marginBottom:12,alignItems:'center',justifyContent:"space-between",height:50}}>
+                            ? this.state.userNotifications.map((notification, index) => {
+                              if (notification.type == 'newGame') {
+                                return (
+                                  <NewGame notification={notification} action={() => this.onNewGamePress(notification)} key={index} navToUserProfile={this.navToUserProfile} closeMenu={this.closeMenu} />
+                                )
+                              } else if (notification.type == 'invite') {
+                                return (
+                                  <Invite notification={notification} action={() => this.onInvitePress(notification)} key={index} navToUserProfile={this.navToUserProfile} closeMenu={this.closeMenu} />
+                                )
+                              }
+                              else if (notification.type == 'follower') {
+                                return (
+                                  <Follower notification={notification} action={() => this.onFollowerPress(notification)} key={index} navToUserProfile={this.navToUserProfile} closeMenu={this.closeMenu} />
+                                )
+                              }
+                            })
+                            : <Block row style={{ borderWidth: 1, borderColor: colors.orange, borderRadius: 8, padding: 10, marginBottom: 12, alignItems: 'center', justifyContent: "space-between", height: 50 }}>
                               <Block center middle flex>
-                                <Text style={{color:colors.white}}>No New Notifications</Text>
+                                <Text style={{ color: colors.white }}>No New Notifications</Text>
                               </Block>
-                          </Block>
+                            </Block>
                         }
-                        </ScrollView>
+                      </ScrollView>
                     </Menu>
                   </Block>
                   <FAB
                     icon="plus"
                     label="Create Game"
-                    onPress={() => {this.setGameModalVisible(true)}}
-                    style={[styles.fab,{backgroundColor:colors.orange,color:colors.white},this.state.user.currentGame != null ? styles.disabled:null]}
+                    onPress={() => { this.setGameModalVisible(true) }}
+                    style={[styles.fab, { backgroundColor: colors.orange, color: colors.white }, this.state.user.currentGame != null ? styles.disabled : null]}
                     disabled={this.state.user.currentGame != null}
                   />
                 </Block>
-              
+
             }
           </>
         );
       } else {
         return (
-          <Block flex center middle style={{width,backgroundColor:colors.dBlue, padding:16}}>
-            <Block center middle style={{borderColor:colors.orange, borderWidth:1, borderRadius:8, padding:16}}>
-              <Headline style={{color:colors.white,fontSize:20,textAlign:'center'}}>You must have your location enabled to use the map.</Headline>
+          <Block flex center middle style={{ width, backgroundColor: colors.dBlue, padding: 16 }}>
+            <Block center middle style={{ borderColor: colors.orange, borderWidth: 1, borderRadius: 8, padding: 16 }}>
+              <Headline style={{ color: colors.white, fontSize: 20, textAlign: 'center' }}>You must have your location enabled to use the map.</Headline>
             </Block>
           </Block>
         )
       }
     } else {
       return (
-        <Block style={{height,width,backgroundColor:colors.dBlue}}>
+        <Block style={{ height, width, backgroundColor: colors.dBlue }}>
 
         </Block>
       )
@@ -488,14 +459,16 @@ class MapScreen extends React.Component {
   }
 }
 
+MapScreen.contextType = UserContext;
+
 const styles = StyleSheet.create({
   disabled: {
-    opacity: .3, 
-    backgroundColor:'#E68A54'
+    opacity: .3,
+    backgroundColor: '#E68A54'
   },
   fab: {
-    marginTop:8,
-    zIndex:2
+    marginTop: 8,
+    zIndex: 2
   }
 });
 

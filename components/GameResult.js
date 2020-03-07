@@ -25,17 +25,28 @@ class GameResult extends React.Component {
   }
 
   componentDidMount(){
-    this.setState({home:this.props.game.teams.home,away:this.props.game.teams.away, userId:this.props.user})
+    this.setState({players:this.props.game.players, userId:this.props.user})
   }
 
   render(){
     return (
       <Block column style={{}}>
         <Subheading style={{textAlign:'center',color:"white"}}>{`${this.props.game.intensity[0].toUpperCase()+this.props.game.intensity.substring(1)} ${this.props.game.sport[0].toUpperCase()}${this.props.game.sport.substring(1)}`}</Subheading>
-        <Block row>
-          <Block flex column style={{padding:10}}>
-            <Text style={{color:this.props.game.winningTeam == "home" ? '#E68A54' : 'white',textAlign:"center"}}>Home</Text>
-            <Subheading style={{color:this.props.game.winningTeam == "home" ? '#E68A54' : 'white',textAlign:"center",fontSize:20,marginBottom:10}}>{this.props.game.result.home}</Subheading>
+        <Block row style={{flexWrap:'wrap',alignItem:'flex-start'}}>
+          {
+            this.state.players.map((player, index) => {
+              <Block style={styles.userContainer}>
+                <TouchableOpacity onPress={() => this.props.navToUserProfile(player.id)}>
+                  <Block column style={player.id==this.state.userId ? this.styles.currentUser : this.styles.otherUser} key={index}>
+                    <Text style={{color:"white"}}>{player.name}</Text>
+                    <Text style={{color:"white"}}>@{player.username}</Text>
+                  </Block>
+                </TouchableOpacity>
+              </Block>
+            })
+          }
+          {/* <Block flex column style={{padding:10}}>
+            <Text style={{color:this.props.game.teams.home.map((user) => {return user.id}).includes(firebase.auth().currentUser.uid) ? '#E68A54' : 'white',textAlign:"center", marginBottom:10}}>Home</Text>
             <Block column>
               {
                 this.state.home.map((player, index) => {
@@ -52,23 +63,17 @@ class GameResult extends React.Component {
             </Block>
           </Block>
           <Block flex column style={{padding:10}}>
-            <Text style={{color:this.props.game.winningTeam == "away" ? '#E68A54' : 'white',textAlign:"center"}}>Away</Text>
-            <Subheading style={{color:this.props.game.winningTeam == "away" ? '#E68A54' : 'white',textAlign:"center",fontSize:20,marginBottom:10}}>{this.props.game.result.away}</Subheading>
+            <Text style={{color:this.props.game.teams.away.map((user) => {return user.id}).includes(firebase.auth().currentUser.uid) ? '#E68A54' : 'white',textAlign:"center",marginBottom:10}}>Away</Text>
             <Block column>
               {
                 this.state.away.map((player, index) => {
                   return (
-                    <TouchableOpacity onPress={() => this.props.navToUserProfile(player.id)}>
-                      <Block column style={player.id==this.state.userId ? this.styles.currentUser : this.styles.otherUser} key={index}>
-                        <Text style={{color:"white"}}>{player.name}</Text>
-                        <Text style={{color:"white"}}>@{player.username}</Text>
-                      </Block>
-                    </TouchableOpacity>
+                    
                   )
                 })
               }
             </Block>
-          </Block>
+          </Block> */}
         </Block>
       </Block>
     );
@@ -89,6 +94,11 @@ class GameResult extends React.Component {
       padding:5,
       marginBottom:10
     },
+    userContainer: {
+      flexBasis:"50%",
+      padding:8,
+      color:"white"
+    }
   })
 }
 

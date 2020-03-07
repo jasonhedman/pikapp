@@ -2248,6 +2248,1511 @@
                     "filename": "screens/SignIn.js"
                 }
             ]
+        },
+        {
+            "version": "0.1.7",
+            "counttime": "2020-02-27 13:26:43",
+            "filesum": 232,
+            "codesum": 37283,
+            "commentsum": 404,
+            "blanksum": 763,
+            "filelist": [
+                {
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0,
+                    "filename": ".com.greenworldsoft.syncfolderspro"
+                },
+                {
+                    "blank": 0,
+                    "code": 24,
+                    "comment": 0,
+                    "filename": ".expo-shared/assets.json"
+                },
+                {
+                    "blank": 0,
+                    "code": 9,
+                    "comment": 0,
+                    "filename": ".expo/packager-info.json"
+                },
+                {
+                    "blank": 0,
+                    "code": 8,
+                    "comment": 0,
+                    "filename": ".expo/settings.json"
+                },
+                {
+                    "blank": 0,
+                    "code": 5,
+                    "comment": 0,
+                    "filename": ".firebaserc"
+                },
+                {
+                    "blank": 0,
+                    "code": 2,
+                    "comment": 11,
+                    "filename": ".gitignore"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": ".watchmanconfig"
+                },
+                {
+                    "blank": 2,
+                    "code": 19,
+                    "comment": 1,
+                    "filename": "__tests__/__snapshots__/App-test.js.snap"
+                },
+                {
+                    "blank": 7,
+                    "code": 22,
+                    "comment": 0,
+                    "filename": "__tests__/App-test.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 10,
+                    "comment": 0,
+                    "filename": "_DelSyncFiles/.expo/packager-info.json"
+                },
+                {
+                    "blank": 0,
+                    "code": 7,
+                    "comment": 0,
+                    "filename": "_DelSyncFiles/.expo/settings.json"
+                },
+                {
+                    "blank": 8,
+                    "code": 82,
+                    "comment": 16,
+                    "filename": "_DelSyncFiles/App 3.js"
+                },
+                {
+                    "blank": 7,
+                    "code": 67,
+                    "comment": 13,
+                    "filename": "_DelSyncFiles/App.js"
+                },
+                {
+                    "blank": 1,
+                    "code": 13,
+                    "comment": 0,
+                    "filename": "_DelSyncFiles/constants/Colors.js"
+                },
+                {
+                    "blank": 2,
+                    "code": 10,
+                    "comment": 0,
+                    "filename": "_DelSyncFiles/constants/Layout.js"
+                },
+                {
+                    "blank": 2,
+                    "code": 17,
+                    "comment": 2,
+                    "filename": "_DelSyncFiles/navigation/AppNavigator 3.js"
+                },
+                {
+                    "blank": 14,
+                    "code": 64,
+                    "comment": 0,
+                    "filename": "_DelSyncFiles/navigation/MainTabNavigator 3.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 40,
+                    "comment": 0,
+                    "filename": "_DelSyncFiles/package 2.json"
+                },
+                {
+                    "blank": 1,
+                    "code": 45,
+                    "comment": 0,
+                    "filename": "_DelSyncFiles/package.json"
+                },
+                {
+                    "blank": 11,
+                    "code": 249,
+                    "comment": 117,
+                    "filename": "_DelSyncFiles/screens/Profile.js"
+                },
+                {
+                    "blank": 21,
+                    "code": 344,
+                    "comment": 3,
+                    "filename": "_DelSyncFiles/screens/Register 2.js"
+                },
+                {
+                    "blank": 2,
+                    "code": 22,
+                    "comment": 7,
+                    "filename": "_DelSyncFiles/screens/SettingsScreen 2.js"
+                },
+                {
+                    "blank": 12,
+                    "code": 170,
+                    "comment": 0,
+                    "filename": "_DelSyncFiles/screens/SignIn.js"
+                },
+                {
+                    "blank": 12,
+                    "code": 101,
+                    "comment": 53,
+                    "filename": "App.js"
+                },
+                {
+                    "blank": 2,
+                    "code": 38,
+                    "comment": 0,
+                    "filename": "app.json"
+                },
+                {
+                    "filename": "assets/fonts/Lato-Black.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Lato-BlackItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Lato-Bold.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Lato-BoldItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Lato-Light.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Lato-LightItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Lato-Regular.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Lato-RegularItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Lato-Thin.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Lato-ThinItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-Black.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-BlackItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-Bold.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-BoldItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-ExtraLight.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-ExtraLightItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-Light.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-LightItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-Medium.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-MediumItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-Regular.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-RegularItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-SemiBold.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-SemiBoldItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-Thin.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Livvic-ThinItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 18,
+                    "code": 75,
+                    "comment": 1,
+                    "filename": "assets/fonts/OFL.txt"
+                },
+                {
+                    "filename": "assets/fonts/OpenSans-Bold.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/OpenSans-BoldItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/OpenSans-ExtraBold.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/OpenSans-ExtraBoldItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/OpenSans-Light.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/OpenSans-LightItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/OpenSans-Regular.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/OpenSans-RegularItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/OpenSans-SemiBold.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/OpenSans-SemiBoldItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-Black.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-BlackItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-Bold.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-BoldItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-ExtraBold.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-ExtraBoldItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-ExtraLight.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-ExtraLightItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-Light.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-LightItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-Medium.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-MediumItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-Regular.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-RegularItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-SemiBold.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-SemiBoldItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-Thin.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/Raleway-ThinItalic.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/fonts/SpaceMono-Regular.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/icon.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/Basketball.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/Basketball_focused.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/bball_map.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/defaultUser.jpg",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/fball_map.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/Football.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/Football_focused.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/fullLogo.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/icon 2.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/icon.jpg",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/icon.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/letterLogo.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/park_marker_dark.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/park_marker_light.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/robot-dev.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/robot-prod.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/sball_map.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/Soccer.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/Soccer_focused.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/soccer_map.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/Spikeball.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/Spikeball_focused.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/splash.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/userLocation.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/vball_map.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/Volleyball.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/images/Volleyball_focused.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/android.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/argon-logo-onboarding.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/argon-logo-onboarding@2x.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/argon-logo.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/argon-logo@2x.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/argonlogo.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/bg.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/getPro-bg.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/getPro-bg@2x.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/icon.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/ios.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/profile-screen-bg.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/register-bg.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "assets/imgs/splash.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/bag-17.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/basket.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/bell.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/calendar-date.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/chart-pie-35.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/diamond.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/engine-start.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/g-check.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/hat-3.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 5,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/ic_mail_24px.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/map-big.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/menu-8.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/nav-down.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/nav-left.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/nav-right.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/padlock-unlocked.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/palette.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/search-zoom-in.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/shop.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/spaceship.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/support.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/switches.svg"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "assets/nucleo icons/svg/ungroup.svg"
+                },
+                {
+                    "blank": 18,
+                    "code": 75,
+                    "comment": 2,
+                    "filename": "assets/OFL.txt"
+                },
+                {
+                    "filename": "assets/splash.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 6,
+                    "comment": 0,
+                    "filename": "babel.config.js"
+                },
+                {
+                    "blank": 1,
+                    "code": 14,
+                    "comment": 1,
+                    "filename": "components/__tests__/__snapshots__/StyledText-test.js.snap"
+                },
+                {
+                    "blank": 3,
+                    "code": 7,
+                    "comment": 0,
+                    "filename": "components/__tests__/StyledText-test.js"
+                },
+                {
+                    "blank": 11,
+                    "code": 100,
+                    "comment": 0,
+                    "filename": "components/AgeAndIntensity.js"
+                },
+                {
+                    "blank": 8,
+                    "code": 49,
+                    "comment": 0,
+                    "filename": "components/Button.js"
+                },
+                {
+                    "blank": 6,
+                    "code": 36,
+                    "comment": 0,
+                    "filename": "components/ButtonBlock.js"
+                },
+                {
+                    "blank": 8,
+                    "code": 89,
+                    "comment": 1,
+                    "filename": "components/Card.js"
+                },
+                {
+                    "blank": 8,
+                    "code": 115,
+                    "comment": 0,
+                    "filename": "components/DrawerItem.js"
+                },
+                {
+                    "blank": 16,
+                    "code": 224,
+                    "comment": 1,
+                    "filename": "components/EditProfile.js"
+                },
+                {
+                    "blank": 11,
+                    "code": 159,
+                    "comment": 0,
+                    "filename": "components/EmailAndPassword.js"
+                },
+                {
+                    "filename": "components/fonts/SpaceMono-Regular.ttf",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 7,
+                    "code": 39,
+                    "comment": 0,
+                    "filename": "components/Form.js"
+                },
+                {
+                    "blank": 13,
+                    "code": 180,
+                    "comment": 2,
+                    "filename": "components/GameForm.js"
+                },
+                {
+                    "blank": 9,
+                    "code": 86,
+                    "comment": 0,
+                    "filename": "components/GameResult.js"
+                },
+                {
+                    "blank": 6,
+                    "code": 33,
+                    "comment": 0,
+                    "filename": "components/HeaderBlock.js"
+                },
+                {
+                    "blank": 3,
+                    "code": 25,
+                    "comment": 0,
+                    "filename": "components/HelperText.js"
+                },
+                {
+                    "blank": 6,
+                    "code": 31,
+                    "comment": 0,
+                    "filename": "components/Icon.js"
+                },
+                {
+                    "filename": "components/images/icon.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "components/images/robot-dev.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "components/images/robot-prod.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "components/images/splash.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 1,
+                    "code": 18,
+                    "comment": 0,
+                    "filename": "components/index.js"
+                },
+                {
+                    "blank": 9,
+                    "code": 67,
+                    "comment": 0,
+                    "filename": "components/Input.js"
+                },
+                {
+                    "blank": 4,
+                    "code": 36,
+                    "comment": 0,
+                    "filename": "components/InputBlock.js"
+                },
+                {
+                    "blank": 15,
+                    "code": 233,
+                    "comment": 8,
+                    "filename": "components/InvitePlayers.js"
+                },
+                {
+                    "blank": 3,
+                    "code": 15,
+                    "comment": 0,
+                    "filename": "components/LoadingOverlay.js"
+                },
+                {
+                    "blank": 13,
+                    "code": 116,
+                    "comment": 0,
+                    "filename": "components/LobbyMember.js"
+                },
+                {
+                    "blank": 8,
+                    "code": 102,
+                    "comment": 0,
+                    "filename": "components/LobbyModal.js"
+                },
+                {
+                    "blank": 3,
+                    "code": 28,
+                    "comment": 0,
+                    "filename": "components/MemberLobbyStatus.js"
+                },
+                {
+                    "blank": 3,
+                    "code": 37,
+                    "comment": 0,
+                    "filename": "components/MenuBlock.js"
+                },
+                {
+                    "blank": 11,
+                    "code": 147,
+                    "comment": 0,
+                    "filename": "components/NameAndUsername.js"
+                },
+                {
+                    "blank": 6,
+                    "code": 26,
+                    "comment": 0,
+                    "filename": "components/Notification.js"
+                },
+                {
+                    "blank": 7,
+                    "code": 40,
+                    "comment": 0,
+                    "filename": "components/Notifications/Follower.js"
+                },
+                {
+                    "blank": 8,
+                    "code": 45,
+                    "comment": 0,
+                    "filename": "components/Notifications/Invite.js"
+                },
+                {
+                    "blank": 8,
+                    "code": 45,
+                    "comment": 0,
+                    "filename": "components/Notifications/NewGame.js"
+                },
+                {
+                    "blank": 3,
+                    "code": 27,
+                    "comment": 0,
+                    "filename": "components/OwnerLobbyButton.js"
+                },
+                {
+                    "blank": 6,
+                    "code": 52,
+                    "comment": 7,
+                    "filename": "components/ProfilePic.js"
+                },
+                {
+                    "blank": 12,
+                    "code": 321,
+                    "comment": 0,
+                    "filename": "components/ScoreForm.js"
+                },
+                {
+                    "blank": 10,
+                    "code": 88,
+                    "comment": 0,
+                    "filename": "components/Select.js"
+                },
+                {
+                    "blank": 6,
+                    "code": 59,
+                    "comment": 0,
+                    "filename": "components/SportInfo.js"
+                },
+                {
+                    "blank": 10,
+                    "code": 90,
+                    "comment": 0,
+                    "filename": "components/SportsBreakdown.js"
+                },
+                {
+                    "blank": 6,
+                    "code": 97,
+                    "comment": 0,
+                    "filename": "components/SportsTabs.js"
+                },
+                {
+                    "blank": 1,
+                    "code": 7,
+                    "comment": 0,
+                    "filename": "components/StyledText.js"
+                },
+                {
+                    "blank": 4,
+                    "code": 20,
+                    "comment": 0,
+                    "filename": "components/Switch.js"
+                },
+                {
+                    "blank": 2,
+                    "code": 13,
+                    "comment": 0,
+                    "filename": "components/TabBarIcon.js"
+                },
+                {
+                    "blank": 21,
+                    "code": 136,
+                    "comment": 2,
+                    "filename": "components/Tabs.js"
+                },
+                {
+                    "blank": 8,
+                    "code": 70,
+                    "comment": 3,
+                    "filename": "components/TeamMember.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 29,
+                    "comment": 0,
+                    "filename": "constants/articles.js"
+                },
+                {
+                    "blank": 1,
+                    "code": 13,
+                    "comment": 0,
+                    "filename": "constants/Colors.js"
+                },
+                {
+                    "blank": 4,
+                    "code": 35,
+                    "comment": 2,
+                    "filename": "constants/Images.js"
+                },
+                {
+                    "blank": 1,
+                    "code": 10,
+                    "comment": 0,
+                    "filename": "constants/index.js"
+                },
+                {
+                    "blank": 2,
+                    "code": 10,
+                    "comment": 0,
+                    "filename": "constants/Layout.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 8,
+                    "comment": 0,
+                    "filename": "constants/tabs.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 31,
+                    "comment": 3,
+                    "filename": "constants/Theme.js"
+                },
+                {
+                    "blank": 1,
+                    "code": 5,
+                    "comment": 0,
+                    "filename": "constants/utils.js"
+                },
+                {
+                    "blank": 1,
+                    "code": 17,
+                    "comment": 2,
+                    "filename": "firebase-debug.log"
+                },
+                {
+                    "blank": 1,
+                    "code": 6,
+                    "comment": 0,
+                    "filename": "firebase.json"
+                },
+                {
+                    "blank": 37,
+                    "code": 47,
+                    "comment": 39,
+                    "filename": "functions/.eslintrc.json"
+                },
+                {
+                    "blank": 0,
+                    "code": 8,
+                    "comment": 0,
+                    "filename": "functions/.expo/settings.json"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "functions/.gitignore"
+                },
+                {
+                    "blank": 9,
+                    "code": 318,
+                    "comment": 22,
+                    "filename": "functions/index.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 2721,
+                    "comment": 0,
+                    "filename": "functions/package-lock.json"
+                },
+                {
+                    "blank": 0,
+                    "code": 28,
+                    "comment": 0,
+                    "filename": "functions/package.json"
+                },
+                {
+                    "blank": 3,
+                    "code": 19,
+                    "comment": 2,
+                    "filename": "navigation/AppNavigator.js"
+                },
+                {
+                    "blank": 3,
+                    "code": 8,
+                    "comment": 2,
+                    "filename": "navigation/AppNavigator.web.js"
+                },
+                {
+                    "blank": 25,
+                    "code": 173,
+                    "comment": 0,
+                    "filename": "navigation/MainTabNavigator.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 13864,
+                    "comment": 0,
+                    "filename": "package-lock 2.json"
+                },
+                {
+                    "blank": 0,
+                    "code": 12277,
+                    "comment": 0,
+                    "filename": "package-lock.json"
+                },
+                {
+                    "blank": 1,
+                    "code": 74,
+                    "comment": 0,
+                    "filename": "package.json"
+                },
+                {
+                    "blank": 0,
+                    "code": 3,
+                    "comment": 1,
+                    "filename": "react-native.config.js"
+                },
+                {
+                    "blank": 7,
+                    "code": 68,
+                    "comment": 0,
+                    "filename": "screens/AuthLoading.js"
+                },
+                {
+                    "blank": 13,
+                    "code": 143,
+                    "comment": 0,
+                    "filename": "screens/ChangeEmail.js"
+                },
+                {
+                    "blank": 13,
+                    "code": 152,
+                    "comment": 0,
+                    "filename": "screens/ChangePassword.js"
+                },
+                {
+                    "blank": 11,
+                    "code": 66,
+                    "comment": 0,
+                    "filename": "screens/ForgotPassword.js"
+                },
+                {
+                    "blank": 22,
+                    "code": 399,
+                    "comment": 11,
+                    "filename": "screens/GameLobby.js"
+                },
+                {
+                    "blank": 17,
+                    "code": 181,
+                    "comment": 0,
+                    "filename": "screens/HomeScreen.js"
+                },
+                {
+                    "blank": 32,
+                    "code": 639,
+                    "comment": 19,
+                    "filename": "screens/MapScreen.js"
+                },
+                {
+                    "blank": 27,
+                    "code": 413,
+                    "comment": 5,
+                    "filename": "screens/Profile.js"
+                },
+                {
+                    "blank": 22,
+                    "code": 175,
+                    "comment": 13,
+                    "filename": "screens/Register.js"
+                },
+                {
+                    "blank": 18,
+                    "code": 212,
+                    "comment": 0,
+                    "filename": "screens/SearchPlayers.js"
+                },
+                {
+                    "blank": 2,
+                    "code": 21,
+                    "comment": 7,
+                    "filename": "screens/SettingsScreen.js"
+                },
+                {
+                    "blank": 14,
+                    "code": 99,
+                    "comment": 0,
+                    "filename": "screens/SignIn.js"
+                },
+                {
+                    "blank": 11,
+                    "code": 77,
+                    "comment": 0,
+                    "filename": "screens/UserList.js"
+                },
+                {
+                    "blank": 21,
+                    "code": 259,
+                    "comment": 25,
+                    "filename": "screens/UserProfile.js"
+                }
+            ]
         }
     ]
 }
