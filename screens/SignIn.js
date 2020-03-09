@@ -42,7 +42,6 @@ class Register extends React.Component {
       .then(() => {
         firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
           .then(() => {
-            this.props.navigation.navigate('Main');
           })
           .catch((err) => {
             this.setState({error:true})

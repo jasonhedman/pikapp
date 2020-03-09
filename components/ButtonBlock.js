@@ -28,9 +28,6 @@ class ButtonBlock extends React.Component {
 
 const styles = StyleSheet.create({
     createButton: {
-        padding:4,
-        alignItems: "center",
-        justifyContent: "center",
         marginBottom:8
     },
     buttonBlock:{

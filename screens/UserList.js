@@ -40,7 +40,7 @@ class UserList extends React.Component {
         if(id != firebase.auth().currentUser.uid){
           this.props.navigation.push("UserProfile", {userId:id});
          } else {
-          this.props.navigation.navigate('Profile')
+          this.props.navigation.navigate('ProfileStack')
          }
       }
 

@@ -101,7 +101,7 @@ class LobbyMember extends React.Component{
     } else {
       return (
         <Block center middle style={styles.containerAvailable}>
-          <Text style={{color:this.props.theme.colors.grey}}>Available Spot</Text>
+          <Text style={{color:this.props.theme.colors.grey}}>Invite More Players</Text>
         </Block>
       );
     }

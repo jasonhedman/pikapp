@@ -39,21 +39,6 @@ class Register extends React.Component {
     }
   }
 
-  // componentDidMount() {
-  //   this.getPermissionAsync();
-    
-  // }
-
-
-  // getPermissionAsync = async () => {
-  //   if (Constants.platform.ios) {
-  //     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-  //     if (status !== 'granted') {
-  //       alert('Sorry, we need camera roll permissions to make this work!');
-  //     }
-  //   }
-  // }
-
   setNameAndUsername = (name,username,image) => {
     this.setState({name,username,image});
   }

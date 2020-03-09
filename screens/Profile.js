@@ -229,9 +229,6 @@ class Profile extends React.Component {
 
   signOut = () => {
     firebase.auth().signOut()
-      .then(() => {
-        this.props.navigation.navigate('AuthLoading');
-      })
   }
 
   toChangePassword = () => {

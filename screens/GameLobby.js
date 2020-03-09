@@ -71,7 +71,7 @@ class GameScreen extends React.Component {
   }
 
   navToProfile = () => {
-    this.props.navigation.navigate('Profile');
+    this.props.navigation.navigate('ProfileStack');
   }
 
   navToUserProfile = (id) => {
@@ -128,7 +128,7 @@ class GameScreen extends React.Component {
   }
 
   endGame = () => {
-    users = this.state.game.teams.home.concat(this.state.game.teams.away);
+    users = this.state.game.players;
     users.forEach((user) => {
       firebase.firestore().collection("users").doc(user.id).update({
         currentGame: null
@@ -159,28 +159,25 @@ class GameScreen extends React.Component {
   }
 
   navToMap = () => {
-    this.props.navigation.navigate("MapScreen");
+    this.props.navigation.navigate("MapStack");
   }
 
-  makePlayers(team) {
+  makePlayers() {
     let items = [];
-    for (let i = 0; i < Math.min(this.state.game.teamSize, 3); i++) {
-      if (i < this.state.game.teams[team].length) {
-        items.push(<LobbyMember game={this.state.game} key={i} user={this.state.game.teams[team][i]} navToUserProfile={this.navToUserProfile} navToProfile={this.navToProfile} bringingEquipment={this.state.game.equipment.includes(this.state.game.teams[team][i].id)} />);
-      } else {
-        items.push(<LobbyMember key={i} user={null} />);
-      }
+    console.log(this.state.game.players.length)
+    for (let i = 0; i < Math.min(this.state.game.players.length, 6); i++) {
+      items.push(<LobbyMember game={this.state.game} key={i} user={this.state.game.players[i]} navToUserProfile={this.navToUserProfile} navToProfile={this.navToProfile} bringingEquipment={this.state.game.equipment.includes(this.state.game.players[i].id)} />);
     }
     return (
       <Block style={{ width: '100%' }}>
         <Block row style={{ justifyContent: 'space-between' }}>
-          <Text style={{ color: this.props.theme.colors.white }}>{team[0].toUpperCase() + team.substring(1)}</Text>
+          <Text style={{ color: this.props.theme.colors.white }}>Players</Text>
           <Text style={{ color: this.props.theme.colors.white }}>Equipment</Text>
         </Block>
         <Block column style={{ width: '100%' }}>
           {items}
           {
-            this.state.game.teamSize > 3
+            this.state.game.players.length > 6
               ? <Button
                 mode='text'
                 theme={{ colors: { primary: this.props.theme.colors.orange }, fonts: { medium: this.props.theme.fonts.regular } }}
@@ -189,7 +186,7 @@ class GameScreen extends React.Component {
               >
                 See More
               </Button>
-              : null
+              : <LobbyMember key={this.state.game.players.length} user={null} />
           }
         </Block>
       </Block>
@@ -198,13 +195,8 @@ class GameScreen extends React.Component {
 
   makePlayersFull = () => {
     let items = [];
-    this.state
-    for (let i = 0; i < this.state.game.teamSize; i++) {
-      if (i < this.state.teamData.length) {
-        items.push(<LobbyMember key={i} user={this.state.teamData[i]} navToUserProfile={this.props.navToUserProfile} navToProfile={this.props.navToProfile} />);
-      } else {
-        items.push(<LobbyMember key={i} user={null} />);
-      }
+    for (let i = 0; i < this.state.game.players.length; i++) {
+      items.push(<LobbyMember key={i} user={this.state.teamData[i]} navToUserProfile={this.props.navToUserProfile} navToProfile={this.props.navToProfile} />);
     }
     return (
       <>
@@ -219,7 +211,7 @@ class GameScreen extends React.Component {
   }
 
   deleteGame = (gameId) => {
-    let users = this.state.game.teams.home.concat(this.state.game.teams.away);
+    let users = this.state.game.players;
     users.forEach((user) => {
       firebase.firestore().collection("users").doc(user.id).update({
         currentGame: null
@@ -231,7 +223,7 @@ class GameScreen extends React.Component {
           game: null,
           complete: true
         });
-        this.props.navigation.navigate("MapScreen");
+        this.props.navigation.navigate("MapStack");
       });
   }
 
@@ -251,7 +243,7 @@ class GameScreen extends React.Component {
   }
 
   toSocialScreen = () => {
-    this.props.navigation.navigate('SocialScreen');
+    this.props.navigation.navigate('SocialStack');
   }
 
   completeGame = () => {
@@ -321,8 +313,7 @@ class GameScreen extends React.Component {
           <Block column flex center middle style={{ backgroundColor: colors.dBlue, width, height, padding: 16 }}>
             <Headline style={{ color: colors.white, textAlign: "center" }}>{`${this.state.game.intensity[0].toUpperCase() + this.state.game.intensity.substring(1)} ${this.state.game.sport[0].toUpperCase() + this.state.game.sport.substring(1)}`}</Headline>
             <Subheading style={{ color: colors.grey, textAlign: "center" }}>{`Owner: @${this.state.game.owner.username}`}</Subheading>
-            {this.state.complete ? this.makePlayers('home') : null}
-            {this.state.complete ? this.makePlayers('away') : null}
+            {this.state.complete ? this.makePlayers() : null}
             {
               firebase.auth().currentUser.uid == this.state.game.owner.id
                 ? (
@@ -335,7 +326,7 @@ class GameScreen extends React.Component {
                         </Button>
                     {
                       this.state.game.gameState == "created"
-                        ? <Button disabled={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0 || this.state.game.equipment.length == 0} dark={true} mode="contained" onPress={() => this.changeGameState('inProgress')} theme={{ colors: { primary: colors.lGreen }, fonts: { medium: this.props.theme.fonts.regular } }} style={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0 ? { opacity: .3, backgroundColor: colors.lGreen } : {}}>
+                        ? <Button disabled={this.state.game.players.length < 2 || this.state.game.equipment.length == 0} dark={true} mode="contained" onPress={() => this.changeGameState('inProgress')} theme={{ colors: { primary: colors.lGreen }, fonts: { medium: this.props.theme.fonts.regular } }} style={this.state.game.players.length < 2 || this.state.game.equipment.length == 0 ? { opacity: .3, backgroundColor: colors.lGreen } : {}}>
                           Start
                             </Button>
                         : <Button dark={true} mode="contained" onPress={() => this.setModalVisible(true)} theme={{ colors: { primary: colors.lGreen }, fonts: { medium: this.props.theme.fonts.regular } }}>
@@ -356,7 +347,7 @@ class GameScreen extends React.Component {
                 )
             }
             <HelperText text="A player must bring equipment to start the game." visible={!(this.state.game.equipment.length > 0)} />
-            <HelperText text="More players must join to start the game." visible={this.state.game.teams.home.length == 0 || this.state.game.teams.away.length == 0} />
+            <HelperText text="More players must join to start the game." visible={this.state.game.players.length > 2} />
           </Block>
         </>
       );
