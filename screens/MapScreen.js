@@ -176,7 +176,7 @@ class MapScreen extends React.Component {
     this.props.navigation.navigate("Lobby");
   }
 
-  addToTeam = (gameId, team) => {
+  addToTeam = (game) => {
     this.setLobbyModalVisible(false);
     firebase.firestore().collection('games').doc(gameId).get()
       .then(game => {
@@ -191,7 +191,7 @@ class MapScreen extends React.Component {
           expire: moment().add(1, 'h').toDate()
         })
           .then(() => {
-            Promuse.all([
+            Promise.all([
               firebase.firestore().collection("games").doc(gameId).update({
                 players: firebase.firestore.FieldValue.arrayUnion({
                   id: firebase.auth().currentUser.uid,
