@@ -17,11 +17,12 @@ class GameForm extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      sport: null,
-      intensity: null,
+      sport: this.props.sport,
+      intensity: this.props.intensity,
       user:null,
-      bringingEquipment:true,
-      locationModalVisible:false
+      bringingEquipment:this.props.bringingEquipment,
+      locationModalVisible:false,
+      location: this.props.location
     }
   }
 
@@ -35,15 +36,13 @@ class GameForm extends React.Component {
   }
 
   onSportMenuClick = (sport) => {
+    this.props.setCreateGameState(sport, this.state.intensity, this.state.bringingEquipment);
     this.setState({sport:sport,sportVisible:false})
   }
 
   onIntensityMenuClick = (intensity) => {
+    this.props.setCreateGameState(this.state.sport, intensity, this.state.bringingEquipment);
     this.setState({intensity:intensity,intensityVisible:false})
-  }
-
-  setLocationModalVisible = (locationModalVisible) => {
-    this.setState({locationModalVisible})
   }
 
 
@@ -114,13 +113,6 @@ class GameForm extends React.Component {
     const colors = this.props.theme.colors;
     return (
       <>
-        <Portal>
-          <Modal contentContainerStyle={{ marginLeft: "auto", marginRight: "auto", width: '100%', padding: 32 }} visible={this.state.locationModalVisible}>
-            <Block style={{height:500,width:300,backgroundColor:'white'}}>
-
-            </Block>
-          </Modal>
-        </Portal>
         <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
           <HeaderBlock text='Create Game' backButton={true} backPress={this.props.closeModal} />
           <MenuBlock
@@ -147,18 +139,25 @@ class GameForm extends React.Component {
             <Button 
               icon="map-search-outline" 
               mode="text" 
-              onPress={() => this.setLocationModalVisible(true)} 
+              onPress={() => this.props.navToLocationScreen()} 
               color="#fff"
               theme={{dark:true}}
             >
-              Choose Location
+              {
+                this.state.location != null
+                ? this.state.location.name
+                : "Choose Location"
+              }
+              
             </Button>
           </Block>
           <Block center middle>
             <Switch
               value={this.state.bringingEquipment}
-              onValueChange={() =>
-                { this.setState({ bringingEquipment: !this.state.bringingEquipment }); }
+              onValueChange={() =>{
+                  this.props.setCreateGameState(this.state.sport, this.state.intensity, !this.state.bringingEquipment);
+                  this.setState({ bringingEquipment: !this.state.bringingEquipment }); 
+                }
               }
               color={colors.orange}
               style={{marginBottom:8}}

@@ -16,6 +16,7 @@ import {UserContext} from '../UserContext';
 
 import firebase from 'firebase';
 import 'firebase/firestore';
+import ChooseLocation from '../screens/ChooseLocation';
 
 const Tab = createMaterialBottomTabNavigator();
 const MapStackNav = createStackNavigator();
@@ -32,6 +33,7 @@ function MapStack(){
       <MapStackNav.Screen name="MapScreen" component={MapScreen} />
       <MapStackNav.Screen name="UserProfile" component={UserProfile} />
       <MapStackNav.Screen name="UserList" component={UserList} />
+      <MapStackNav.Screen name="LocationSelect" component={ChooseLocation} />
     </MapStackNav.Navigator>
   );
 }

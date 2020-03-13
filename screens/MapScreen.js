@@ -65,7 +65,8 @@ class MapScreen extends React.Component {
       nearbyLocations: new Array(),
       sport: null,
       intensity: null,
-      bringingEquipment: true
+      bringingEquipment: true,
+      location:null
     }
   }
 
@@ -174,7 +175,13 @@ class MapScreen extends React.Component {
     .then(() => {
       this.setState({complete:true})
     })
-    
+    this.props.navigation.addListener('focus', () => {
+      if(this.props.route.params != undefined){
+        this.setState({location: this.props.route.params.location}, () => {
+          this.props.route.params = undefined;
+        });
+      }
+    })
   }
 
   navToGame = () => {
@@ -289,9 +296,12 @@ class MapScreen extends React.Component {
     this.setState({ directionsVisible: !this.state.directionsVisible });
   }
 
-  setFilterVisible = () => {
-    this.setState({ filterVisible: true })
+  navToLocationScreen = () => {
+    this.setGameModalVisible(false);
+    this.props.navigation.navigate('LocationSelect');
   }
+
+
 
   render() {
     const colors = this.props.theme.colors
@@ -301,7 +311,7 @@ class MapScreen extends React.Component {
           <>
             <Portal>
               <Modal contentContainerStyle={{ marginLeft: "auto", marginRight: "auto", width: '100%', padding: 32 }} visible={this.state.gameModalVisible} onDismiss={() => { this.setGameModalVisible(false) }}>
-                <GameForm navToGame={this.navToGame} closeModal={() => this.setGameModalVisible(false)} navigate={this.props.navigation.navigate} sport={}/>
+                <GameForm navToGame={this.navToGame} closeModal={() => this.setGameModalVisible(false)} navigate={this.props.navigation.navigate} sport={this.state.sport} intensity={this.state.intensity} bringingEquipment={this.state.bringingEquipment} setCreateGameState={this.setCreateGameState} navToLocationScreen={this.navToLocationScreen} location={this.state.location}/>
               </Modal>
             </Portal>
             <SlideModal
