@@ -1,13 +1,9 @@
 import React from "react";
 import {
   StyleSheet,
-  Dimensions,
 } from "react-native";
 import { Block} from "galio-framework";
-
-import { argonTheme } from "../constants";
-
-import {withTheme,Headline,Button,Menu,IconButton,Switch,Text} from 'react-native-paper';
+import {withTheme,Switch,Text,Button, Portal, Modal} from 'react-native-paper';
 import * as Location from 'expo-location';
 import HeaderBlock from './HeaderBlock';
 import MenuBlock from './MenuBlock';
@@ -24,7 +20,8 @@ class GameForm extends React.Component {
       sport: null,
       intensity: null,
       user:null,
-      bringingEquipment:true
+      bringingEquipment:true,
+      locationModalVisible:false
     }
   }
 
@@ -43,6 +40,10 @@ class GameForm extends React.Component {
 
   onIntensityMenuClick = (intensity) => {
     this.setState({intensity:intensity,intensityVisible:false})
+  }
+
+  setLocationModalVisible = (locationModalVisible) => {
+    this.setState({locationModalVisible})
   }
 
 
@@ -112,59 +113,62 @@ class GameForm extends React.Component {
   render() {
     const colors = this.props.theme.colors;
     return (
-      <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
-        <HeaderBlock text='Create Game' backButton={true} backPress={this.props.closeModal} />
-        <MenuBlock
-          visible={this.state.sportVisible}
-          onDismiss={() => this.setState({sportVisible:false})}
-          value={this.state.sport}
-          title='Sport'
-          items={['Basketball', 'Soccer', 'Spikeball', 'Football', 'Volleyball']}
-          onAnchorPress={() => this.setState({sportVisible:true})}
-          onMenuItemPress={this.onSportMenuClick}
-        />
-        <MenuBlock
-          visible={this.state.intensityVisible}
-          onDismiss={() => this.setState({intensityVisible:false})}
-          value={this.state.intensity}
-          title='Intensity'
-          items={['Casual', 'Intermediate', 'Competitive']}
-          onAnchorPress={() => this.setState({intensityVisible:true})}
-          onMenuItemPress={this.onIntensityMenuClick}
-        />
-        {/* <Menu
-          visible={this.state.tsVisible}
-          onDismiss={() => {this.setState({tsVisible:false})}}
-          style={{}}
-          anchor={
-            <Block style={{ marginBottom: 12 }}>
-              <Button style={{display:"flex",justifyContent:"center",alignItems:"center"}} dark={false} icon="menu-down" mode="text" onPress={() => {this.setState({tsVisible:true})}} theme={{colors:{primary:colors.white},fonts:{medium:this.props.theme.fonts.regular}}}>
-                      {this.state.teamSize != null ? this.state.teamSize : "Team Size"}
-              </Button>
+      <>
+        <Portal>
+          <Modal contentContainerStyle={{ marginLeft: "auto", marginRight: "auto", width: '100%', padding: 32 }} visible={this.state.locationModalVisible}>
+            <Block style={{height:500,width:300,backgroundColor:'white'}}>
+
             </Block>
-          }
-        >
-          {
-            this.state.sport != null
-            ? teamSizes[this.state.sport].map((item, index) => {
-              return <Menu.Item onPress={() => {this.setState({teamSize:item,tsVisible:false})}} title={''+item} key={index} />
-            }) 
-            : <Menu.Item title="Choose a Sport" disabled={true} theme={{colors:{text:colors.dBlue}}}  />
-          }
-        </Menu> */}
-        <Block center middle>
-          <Switch
-            value={this.state.bringingEquipment}
-            onValueChange={() =>
-              { this.setState({ bringingEquipment: !this.state.bringingEquipment }); }
-            }
-            color={colors.orange}
-            style={{marginBottom:8}}
+          </Modal>
+        </Portal>
+        <Block center middle style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
+          <HeaderBlock text='Create Game' backButton={true} backPress={this.props.closeModal} />
+          <MenuBlock
+            visible={this.state.sportVisible}
+            onDismiss={() => this.setState({sportVisible:false})}
+            value={this.state.sport}
+            title='Sport'
+            items={['Basketball', 'Soccer', 'Spikeball', 'Football', 'Volleyball']}
+            onAnchorPress={() => this.setState({sportVisible:true})}
+            onMenuItemPress={this.onSportMenuClick}
           />
-          <Text style={{color:"#fff",marginBottom:8}}>{this.state.bringingEquipment ? "I am providing equipment" : "I am not providing equipment"}</Text>
+          <MenuBlock
+            visible={this.state.intensityVisible}
+            onDismiss={() => this.setState({intensityVisible:false})}
+            value={this.state.intensity}
+            title='Intensity'
+            items={['Casual', 'Intermediate', 'Competitive']}
+            onAnchorPress={() => this.setState({intensityVisible:true})}
+            onMenuItemPress={this.onIntensityMenuClick}
+          />
+          <Block
+            style={{borderWidth:.5,borderColor:'white', borderRadius:8,marginBottom:12}}
+          >
+            <Button 
+              icon="map-search-outline" 
+              mode="text" 
+              onPress={() => this.setLocationModalVisible(true)} 
+              color="#fff"
+              theme={{dark:true}}
+            >
+              Choose Location
+            </Button>
+          </Block>
+          <Block center middle>
+            <Switch
+              value={this.state.bringingEquipment}
+              onValueChange={() =>
+                { this.setState({ bringingEquipment: !this.state.bringingEquipment }); }
+              }
+              color={colors.orange}
+              style={{marginBottom:8}}
+            />
+            <Text style={{color:"#fff",marginBottom:8}}>{this.state.bringingEquipment ? "I am providing equipment" : "I am not providing equipment"}</Text>
+          </Block>
+          
+          <ButtonBlock text='Create Game' onPress={this.onCreate} disabled={this.state.sport == null || this.state.intensity == null} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} />
         </Block>
-        <ButtonBlock text='Create Game' onPress={this.onCreate} disabled={this.state.sport == null || this.state.intensity == null} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} />
-      </Block>
+      </>
     );
   }
 }
