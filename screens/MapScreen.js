@@ -55,7 +55,6 @@ class MapScreen extends React.Component {
       },
       userLoc: {},
       modalGameId: "",
-      userLoc: null,
       locationEnabled: false,
       focusMarker: null,
       menuVisible: false,
@@ -63,12 +62,19 @@ class MapScreen extends React.Component {
       currentGame: {},
       directionsVisible: false,
       filterVisible: false,
-      nearbyLocations: new Array()
+      nearbyLocations: new Array(),
+      sport: null,
+      intensity: null,
+      bringingEquipment: true
     }
   }
 
-  setGameModalVisible = (Visible) => {
-    this.setState({ gameModalVisible: Visible });
+  setGameModalVisible = (visible) => {
+    this.setState({ gameModalVisible: visible });
+  }
+
+  setCreateGameState = (sport, intensity, bringingEquipment) => {
+    this.setState({sport, intensity, bringingEquipment})
   }
 
   setLobbyModalVisible = (visible, gameId) => {
@@ -295,7 +301,7 @@ class MapScreen extends React.Component {
           <>
             <Portal>
               <Modal contentContainerStyle={{ marginLeft: "auto", marginRight: "auto", width: '100%', padding: 32 }} visible={this.state.gameModalVisible} onDismiss={() => { this.setGameModalVisible(false) }}>
-                <GameForm navToGame={this.navToGame} closeModal={() => this.setGameModalVisible(false)} />
+                <GameForm navToGame={this.navToGame} closeModal={() => this.setGameModalVisible(false)} navigate={this.props.navigation.navigate} sport={}/>
               </Modal>
             </Portal>
             <SlideModal
@@ -316,13 +322,8 @@ class MapScreen extends React.Component {
               customMapStyle={mapStyles}
               provider={PROVIDER_GOOGLE}
               style={{ flex: 1 }}
-              // clusterColor = {colors.dBlue}
-              // clusterTextColor = {colors.orange}
-              // clusterBorderColor = {colors.orange}
-              // clusterBorderWidth = {1}
               initialRegion={this.state.region}
               showsUserLocation
-            // onClusterPress={this.onClusterPress}
             >
               {
                 Object.keys(this.state.markers).map((markerId, index) => {

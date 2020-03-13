@@ -122,7 +122,7 @@ class EmailAndPassword extends React.Component {
         <Block row style={styles.buttonBlock}>
           <Button
             mode="contained"
-            disabled={!this.state.password.length >= 8 || !this.state.email.includes("@") || this.state.emailTaken}
+            disabled={!this.state.password.length >= 8 || !this.state.email.includes("@") || this.state.emailTaken || this.state.matchError || this.state.passwordConfirm.length == 0}
             onPress={() => {
                 if(this.state.password == this.state.passwordConfirm){
                   this.props.saveState(0,this.state);
@@ -134,7 +134,7 @@ class EmailAndPassword extends React.Component {
                 
               }
             }
-            style={[{marginLeft:"auto"}, this.state.password.length < 8 || !this.state.email.includes("@") || this.state.emailTaken ? {opacity: .3, backgroundColor:colors.orange} : null]} 
+            style={[{marginLeft:"auto"}, this.state.password.length < 8 || !this.state.email.includes("@") || this.state.emailTaken || this.state.matchError || this.state.passwordConfirm.length == 0 ? {opacity: .3, backgroundColor:colors.orange} : null]} 
             theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}>
               Next
           </Button>
