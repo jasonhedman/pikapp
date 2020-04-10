@@ -1,7 +1,7 @@
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import React from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
@@ -13,7 +13,7 @@ import * as Permissions from 'expo-permissions';
 
 import AppNavigator from './navigation/AppNavigator';
 import { user } from 'firebase-functions/lib/providers/auth';
-
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const {height,width} = Dimensions.get('window')
 
@@ -35,11 +35,6 @@ let theme = {
 
 export default class App extends React.Component {
   //todo
-  //change member screen when owner deletes game --> test this with dad
-  //time limit on games
-  //only get games within on screen --> onmapchange
-  //only get games within map View
-  //friend system!!!!
   constructor(){
     super();
 
@@ -70,14 +65,20 @@ export default class App extends React.Component {
       theme.fonts.medium = {
         fontFamily: 'raleway'
       };
+      theme.fonts.bold = {
+        fontFamily: 'ralewayBold'
+      }
       return (
-        <AppearanceProvider>
-          <PaperProvider theme={theme}>
-            <View style={styles.container}>
-              <AppNavigator />
-            </View>
-          </PaperProvider>
-        </AppearanceProvider>
+        <SafeAreaProvider>
+          <AppearanceProvider>
+            <PaperProvider theme={theme}>
+              <StatusBar barStyle="light-content" /> 
+              <View style={styles.container}>
+                <AppNavigator />
+              </View>
+            </PaperProvider>
+          </AppearanceProvider>
+        </SafeAreaProvider>
       );
     }
   }
@@ -98,6 +99,7 @@ async function loadResourcesAsync() {
     Font.loadAsync({
       ...Ionicons.font,
       "raleway": require('./assets/fonts/Raleway-Regular.ttf'),
+      'ralewayBold': require('./assets/fonts/Raleway-Bold.ttf'),
     }),
     Permissions.askAsync(Permissions.LOCATION),
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL),
@@ -114,7 +116,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:theme.colors.dBlue,
-    height,
-    width
   },
 });

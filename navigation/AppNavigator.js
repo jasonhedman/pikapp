@@ -1,8 +1,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 
-import { MainNavigation } from './MainTabNavigator';
-import { AuthNavigation } from './AuthNavigation';
+import MainNavigation from './MainTabNavigator';
+import AuthNavigation from './AuthNavigation';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 import * as Permissions from 'expo-permissions';

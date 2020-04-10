@@ -5,19 +5,27 @@ const moment = require('moment');
 const fetch = require('node-fetch');
 const Chance = require('chance');
 
-exports.clearGamesSchedule = functions.pubsub.schedule('every 1 hours').onRun((context) => {
+exports.clearGamesSchedule = functions.pubsub.schedule('every 5 minutes').onRun((context) => {
     return Promise.all([
         admin.firestore().collection('games').where('gameState','==','created').get()
         .then((games) => {
             games.forEach((game) => {
-                if(moment().diff(moment.unix(parseInt(game.data().updated.seconds)),'hours',false) >= 1){
+                if(moment().diff(moment.unix(parseInt(game.data().startTime.time.seconds)),'hours',false) >= 1){
                     admin.firestore().collection('games').doc(game.id).update({
-                        gameState:"incomplete"
+                        gameState:"complete"
                     })
-                    let users = game.data().players;
-                    users.forEach((user) => {
+                    game.data().players.forEach((user) => {
                         admin.firestore().collection('users').doc(user.id).update({
-                            currentGame:null
+                            gamesPlayed: admin.firestore.FieldValue.increment(1),
+                            points: admin.firestore.FieldValue.increment(3),
+                            calendar: admin.firestore.FieldValue.arrayRemove(game.id),
+                            "sports.basketball.gamesPlayed": admin.firestore.FieldValue.increment(game.data().sport === 'basketball' ? 1 : 0),
+                            "sports.football.gamesPlayed": admin.firestore.FieldValue.increment(game.data().sport ==='football' ? 1 : 0),
+                            "sports.frisbee.gamesPlayed": admin.firestore.FieldValue.increment(game.data().sport ==='frisbee' ? 1 : 0),
+                            "sports.volleyball.gamesPlayed": admin.firestore.FieldValue.increment(game.data().sport === 'volleyball' ? 1 : 0),
+                            "sports.soccer.gamesPlayed": admin.firestore.FieldValue.increment(game.data().sport === 'soccer' ? 1 : 0),
+                            "sports.spikeball.gamesPlayed": admin.firestore.FieldValue.increment(game.data().sport === 'spikeball' ? 1 : 0),
+                            gameHistory: admin.firestore.FieldValue.arrayUnion(game.id)
                         })
                     })
                 }
@@ -27,27 +35,6 @@ exports.clearGamesSchedule = functions.pubsub.schedule('every 1 hours').onRun((c
         .catch((err) => {
             console.error(err);
         }),
-    admin.firestore().collection('games').where('gameState','==','inProgress').get()
-        .then((games) => {
-            games.forEach((game) => {
-                if(moment().diff(moment.unix(parseInt(game.data().updated.seconds)),'hours',false) >= 1){
-                    admin.firestore().collection('games').doc(game.id).update({
-                        gameState:"incomplete"
-                    })
-                    let users = game.data().players;
-                    users.forEach((user) => {
-                        admin.firestore().collection('users').doc(user.id).update({
-                            currentGame:null
-                        })
-                    })
-                }
-            })
-            return;
-
-        })
-        .catch((err) => {
-            console.error(err);
-        })
     ])
 })
 
@@ -89,12 +76,83 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
                 return messages;
             })
     } 
+    if(notification.type === 'newGameNearby'){
+        let tokens = [];
+        notification.to.forEach((user) => {
+            admin.firestore().collection('users').doc(user).update({
+                'notifications':admin.firestore.FieldValue.arrayUnion(snap.id)
+            })
+            tokens.push(
+                admin.firestore().collection('users').doc(user).get().then((user) => {
+                    return user.data().pushToken;
+                })
+            )
+        })
+        return Promise.all(tokens)
+            .then((pushTokens) => {
+                let messages = [];
+                pushTokens.forEach((token) => {
+                    if(token !== undefined){
+                        messages.push({
+                            to: token,
+                            data: notification.game.location,
+                            title: "New Game",
+                            body: `${notification.from.name} (@${notification.from.username}) ${notification.action} a game nearby!`,
+                        })
+                    }
+                })
+                fetch('https://exp.host/--/api/v2/push/send', {
+                    method:"POST",
+                    headers:{
+                        "Accept":"application/json",
+                        "Content-Type":"application/json",
+                    },
+                    body:JSON.stringify(messages)
+                })
+                return messages;
+            })
+    } 
+    if(notification.type === 'newPlayer'){
+        let tokens = [];
+        notification.to.forEach((user) => {
+            admin.firestore().collection('users').doc(user.id).update({
+                'notifications':admin.firestore.FieldValue.arrayUnion(snap.id)
+            })
+            tokens.push(
+                admin.firestore().collection('users').doc(user.id).get().then((user) => {
+                    return user.data().pushToken;
+                })
+            )
+        })
+        return Promise.all(tokens)
+            .then((pushTokens) => {
+                let messages = [];
+                pushTokens.forEach((token) => {
+                    if(token !== undefined){
+                        messages.push({
+                            to: token,
+                            data: notification.game.location,
+                            title: "New Player",
+                            body: `${notification.from.name} (@${notification.from.username}) ${notification.action} your ${notification.game.sport} game!`,
+                        })
+                    }
+                })
+                fetch('https://exp.host/--/api/v2/push/send', {
+                    method:"POST",
+                    headers:{
+                        "Accept":"application/json",
+                        "Content-Type":"application/json",
+                    },
+                    body:JSON.stringify(messages)
+                })
+                return messages;
+            })
+    } 
     if(notification.type === 'invite'){
         admin.firestore().collection('users').doc(notification.to.id).update({
             'notifications':admin.firestore.FieldValue.arrayUnion(snap.id)
         })
         if(notification.to.pushToken !== undefined){
-            console.log(`${notification.from.name} (@${notification.from.username}) just invited you to play ${notification.game.sport}`);
             fetch('https://exp.host/--/api/v2/push/send', {
                 method:"POST",
                 headers:{
@@ -116,7 +174,6 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
         admin.firestore().collection('users').doc(notification.to.id).update({
             'notifications':admin.firestore.FieldValue.arrayUnion(snap.id)
         })
-        console.log(notification.to.pushToken);
         if(notification.to.pushToken !== undefined){
             fetch('https://exp.host/--/api/v2/push/send', {
                 method:"POST",
@@ -129,6 +186,28 @@ exports.sendPushNotification = functions.firestore.document('notifications/{id}'
                     data: notification,
                     title: "New Follower",
                     body: `${notification.from.name} (@${notification.from.username}) just added you as a friend. Click to see more.`,
+                })
+            })
+        } else {
+            return null
+        }
+    }
+    if(notification.type === 'groupInvite'){
+        admin.firestore().collection('users').doc(notification.to.id).update({
+            'notifications':admin.firestore.FieldValue.arrayUnion(snap.id)
+        })
+        if(notification.to.pushToken !== undefined){
+            fetch('https://exp.host/--/api/v2/push/send', {
+                method:"POST",
+                headers:{
+                    "Accept":"application/json",
+                    "Content-Type":"application/json",
+                },
+                body:JSON.stringify({
+                    to: notification.to.pushToken,
+                    data: notification,
+                    title: "New Group Invite",
+                    body: `${notification.from.name} (@${notification.from.username}) just invited you to join ${notification.group.title}`,
                 })
             })
         } else {
