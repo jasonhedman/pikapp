@@ -20,6 +20,7 @@ import SlideModal from "react-native-modal";
 const { width, height } = Dimensions.get("screen");
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
+import { HeaderHeightContext } from "@react-navigation/stack";
 import ProfilePic from "../../components/Utility/ProfilePic";
 import Form from "../../components/Utility/Form";
 import ButtonBlock from "../../components/Utility/ButtonBlock";
@@ -105,7 +106,7 @@ class EditProfile extends React.Component {
         users.forEach(user => {
           i++;
         });
-        if (i > 0) {
+        if (i > 0 && this.state.username != this.props.route.params.user.username) {
           this.setState({ usernameTaken: true });
         } else {
           this.setState({ usernameTaken: false });
@@ -223,72 +224,82 @@ class EditProfile extends React.Component {
             </Button>
           </Block>
         </SlideModal>
-        <Block
-          flex
-          style={{ paddingTop: Header.HEIGHT, backgroundColor: colors.dBlue }}
-        >
-          <Form>
-            <TouchableOpacity
-              onPress={() => this.setState({ visible: true })}
-              style={{ marginBottom: 12 }}
+        <HeaderHeightContext.Consumer>
+          {headerHeight => (
+            <Block
+              flex
+              style={{
+                paddingTop: headerHeight,
+                backgroundColor: colors.dBlue,
+              }}
             >
-              {this.state.imageLoaded ? (
-                <ProfilePic
-                  size={80}
-                  proPicUrl={this.state.image}
-                  addEnabled={true}
-                />
-              ) : null}
-            </TouchableOpacity>
-            <InputBlock
-              value={this.state.name}
-              placeholder='Name'
-              onChange={this.onNameChange}
-              onBlur={() => this.setState({ nameBlur: true })}
-            >
-              <HelperText
-                visible={!this.state.name.length > 0 && this.state.nameBlur}
-                text='Please enter your name.'
-              />
-            </InputBlock>
-            <InputBlock
-              value={this.state.username}
-              placeholder='Username'
-              onChange={val => {
-                this.onUsernameChange(val.toLowerCase(), () => {
-                  if (this.state.usernameBlur) {
+              <Form>
+                <TouchableOpacity
+                  onPress={() => this.setState({ visible: true })}
+                  style={{ marginBottom: 12 }}
+                >
+                  {this.state.imageLoaded ? (
+                    <ProfilePic
+                      size={80}
+                      proPicUrl={this.state.image}
+                      addEnabled={true}
+                    />
+                  ) : null}
+                </TouchableOpacity>
+                <InputBlock
+                  value={this.state.name}
+                  placeholder='Name'
+                  onChange={this.onNameChange}
+                  onBlur={() => this.setState({ nameBlur: true })}
+                >
+                  <HelperText
+                    visible={!this.state.name.length > 0 && this.state.nameBlur}
+                    text='Please enter your name.'
+                  />
+                </InputBlock>
+                <InputBlock
+                  value={this.state.username}
+                  placeholder='Username'
+                  onChange={val => {
+                    this.onUsernameChange(val.toLowerCase(), () => {
+                      if (this.state.usernameBlur) {
+                        this.checkUsername();
+                      }
+                    });
+                  }}
+                  onBlur={() => {
                     this.checkUsername();
-                  }
-                });
-              }}
-              onBlur={() => {
-                this.checkUsername();
-                this.setState({ usernameBlur: true });
-              }}
-            >
-              <HelperText
-                visible={
-                  (!this.state.username.length > 0 ||
-                    this.state.usernameTaken) &&
-                  this.state.usernameBlur
-                }
-                text={
-                  this.state.username.length <= 0
-                    ? "Please enter a username."
-                    : this.state.usernameTaken
-                    ? "This username is taken. Please try another."
-                    : null
-                }
-              />
-            </InputBlock>
-            <ButtonBlock
-              text='Save Changes'
-              disabled={this.state.usernameTaken}
-              disabledStyles={{ opacity: 0.3, backgroundColor: colors.orange }}
-              onPress={this.onSubmit}
-            ></ButtonBlock>
-          </Form>
-        </Block>
+                    this.setState({ usernameBlur: true });
+                  }}
+                >
+                  <HelperText
+                    visible={
+                      (!this.state.username.length > 0 ||
+                        this.state.usernameTaken) &&
+                      this.state.usernameBlur
+                    }
+                    text={
+                      this.state.username.length <= 0
+                        ? "Please enter a username."
+                        : this.state.usernameTaken
+                        ? "This username is taken. Please try another."
+                        : null
+                    }
+                  />
+                </InputBlock>
+                <ButtonBlock
+                  text='Save Changes'
+                  disabled={this.state.usernameTaken}
+                  disabledStyles={{
+                    opacity: 0.3,
+                    backgroundColor: colors.orange,
+                  }}
+                  onPress={this.onSubmit}
+                ></ButtonBlock>
+              </Form>
+            </Block>
+          )}
+        </HeaderHeightContext.Consumer>
       </>
     );
   }
@@ -306,7 +317,7 @@ const styles = StyleSheet.create({
   },
   button: {
     borderWidth: 1,
-    marginBottom:8
+    marginBottom: 8,
   },
 });
 

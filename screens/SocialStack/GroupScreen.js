@@ -2,9 +2,9 @@ import React from "react";
 import { SafeAreaView, ScrollView, KeyboardAvoidingView } from "react-native";
 import { withTheme } from "react-native-paper";
 import { Block } from "galio-framework";
-
 import firebase from "firebase";
 import firestore from "firebase/firestore";
+import { HeaderHeightContext } from "@react-navigation/stack";
 import HeaderBlock from "../../components/Utility/HeaderBlock";
 import GroupInput from "../../components/Groups/GroupInput";
 import UserMessage from "../../components/Groups/UserMessage";
@@ -83,50 +83,61 @@ class GroupScreen extends React.Component {
   render() {
     const colors = this.props.theme.colors;
     if (this.state.complete) {
-      console.log(this.state.group)
       return (
-        <Block
-          style={{
-            flex: 1,
-            backgroundColor: colors.dBlue,
-            paddingTop: Header.HEIGHT,
-          }}
-        >
-          <KeyboardAvoidingView behavior='padding' style={{ flex: 1 }}>
-            {Object.keys(this.state.group).length > 0 && this.state.group.admins.includes(firebase.auth().currentUser.uid) && this.state.group.requests.length > 0 ? (
-              <PendingRequestsPreview requests={this.state.group.requests} navigate={this.props.navigation.navigate} groupId={this.state.group.id}/>
-            ) : null}
-            <ScrollView
-              contentContainerStyle={{
-                marginTop: "auto",
-                flexDirection: "column-reverse",
+        <HeaderHeightContext.Consumer>
+          {headerHeight => (
+            <Block
+              style={{
                 flex: 1,
-                paddingHorizontal: 8,
+                backgroundColor: colors.dBlue,
+                paddingTop: headerHeight,
               }}
             >
-              {this.state.messages.map((message, index) => {
-                if (message.type == "message") {
-                  return (
-                    <UserMessage
-                      key={index}
-                      message={message}
-                      messageAbove={this.state.messages[index + 1]}
-                      messageBelow={this.state.messages[index - 1]}
-                      picture={this.state.pictures[message.senderId]}
-                    />
-                  );
-                } else if (message.type == "admin") {
-                  return <AdminMessage key={index} message={message} />;
-                }
-              })}
-            </ScrollView>
-            <GroupInput
-              collection='groups'
-              doc={this.props.route.params.groupId}
-              user={this.state.user}
-            />
-          </KeyboardAvoidingView>
-        </Block>
+              <KeyboardAvoidingView behavior='padding' style={{ flex: 1 }}>
+                {Object.keys(this.state.group).length > 0 &&
+                this.state.group.admins.includes(
+                  firebase.auth().currentUser.uid
+                ) &&
+                this.state.group.requests.length > 0 ? (
+                  <PendingRequestsPreview
+                    requests={this.state.group.requests}
+                    navigate={this.props.navigation.navigate}
+                    groupId={this.state.group.id}
+                  />
+                ) : null}
+                <ScrollView
+                  contentContainerStyle={{
+                    marginTop: "auto",
+                    flexDirection: "column-reverse",
+                    flex: 1,
+                    paddingHorizontal: 8,
+                  }}
+                >
+                  {this.state.messages.map((message, index) => {
+                    if (message.type == "message") {
+                      return (
+                        <UserMessage
+                          key={index}
+                          message={message}
+                          messageAbove={this.state.messages[index + 1]}
+                          messageBelow={this.state.messages[index - 1]}
+                          picture={this.state.pictures[message.senderId]}
+                        />
+                      );
+                    } else if (message.type == "admin") {
+                      return <AdminMessage key={index} message={message} />;
+                    }
+                  })}
+                </ScrollView>
+                <GroupInput
+                  collection='groups'
+                  doc={this.props.route.params.groupId}
+                  user={this.state.user}
+                />
+              </KeyboardAvoidingView>
+            </Block>
+          )}
+        </HeaderHeightContext.Consumer>
       );
     } else {
       return <Block flex style={{ backgroundColor: colors.dBlue }}></Block>;

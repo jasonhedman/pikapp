@@ -67,18 +67,15 @@ class MapScreen extends React.Component {
       userLoc: {},
       modalGameId: "",
       locationEnabled: false,
-      focusMarker: null,
       menuVisible: false,
       userNotifications: new Array(),
-      directionsVisible: false,
-      filterVisible: false,
-      nearbyLocations: new Array(),
       sport: null,
       intensity: null,
       bringingEquipment: true,
       location: null,
       time: null,
       joinGameLoading: false,
+      locationComplete: false,
     };
   }
 
@@ -99,28 +96,26 @@ class MapScreen extends React.Component {
   };
 
   componentDidMount() {
-    firebase.firestore().collection('users').get()
-    .then(users => {
-      users.forEach(user => {
-      })
-    })
+    // firebase.firestore().collection('users').get()
+    // .then(users => {
+    //   users.forEach(user => {
+    //   })
+    // })
     Promise.all([
       firebase
         .firestore()
         .collection("users")
         .doc(firebase.auth().currentUser.uid)
         .onSnapshot(user => {
-          let userData = user.data();
-          userData.id = user.id;
-          this.setState({ user: userData }, () => {
-            let notifications = new Array();
-            if (userData.notifications != undefined) {
-              for (let i = userData.notifications.length - 1; i > -1; i--) {
+          this.setState({ user: user.data() }, () => {
+            let notifications = [];
+            if (user.data().notifications != undefined) {
+              for (let i = user.data().notifications.length - 1; i > -1; i--) {
                 notifications.push(
                   firebase
                     .firestore()
                     .collection("notifications")
-                    .doc(userData.notifications[i])
+                    .doc(user.data().notifications[i])
                     .get()
                     .then(doc => {
                       let docData = doc.data();
@@ -149,11 +144,6 @@ class MapScreen extends React.Component {
                 this.setState({ userNotifications: nots });
               });
             }
-            // fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?&key=AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE&location=${userData.location.latitude},${userData.location.longitude}&radius=1000.72&type=park`)
-            //   .then((res) => res.json())
-            //   .then((json) => {
-            //     this.setState({ nearbyLocations: json.results })
-            //   })
           });
         }),
       Location.hasServicesEnabledAsync().then(locationEnabled => {
@@ -166,18 +156,21 @@ class MapScreen extends React.Component {
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             };
-            this.setState({ region, userLoc: pos.coords }, () => {
-              Location.watchPositionAsync({}, pos => {
-                this.setState({ userPos: pos.coords });
-              });
-              firebase
-                .firestore()
-                .collection("users")
-                .doc(firebase.auth().currentUser.uid)
-                .update({
-                  location: pos.coords,
+            this.setState(
+              { region, userLoc: pos.coords, locationComplete: true },
+              () => {
+                Location.watchPositionAsync({}, pos => {
+                  this.setState({ userLoc: pos.coords });
                 });
-            });
+                firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(firebase.auth().currentUser.uid)
+                  .update({
+                    location: pos.coords,
+                  });
+              }
+            );
           });
         } else {
           Location.requestPermissionsAsync().then(permission => {
@@ -198,7 +191,7 @@ class MapScreen extends React.Component {
               markers[doc.id].id = doc.id;
             }
           });
-          this.setState({ markers: markers });
+          this.setState({ markers });
         }),
     ]).then(() => {
       this.setState({ complete: true });
@@ -284,18 +277,6 @@ class MapScreen extends React.Component {
           this.props.navigation.navigate("GameStack");
         });
       });
-  };
-
-  onClusterPress = cluster => {
-    this.mapView.animateToRegion(
-      {
-        longitude: cluster.longitude,
-        latitude: cluster.latitude,
-        longitudeDelta: this.state.region.longitudeDelta / 3,
-        latitudeDelta: this.state.region.latitudeDelta / 3,
-      },
-      500
-    );
   };
 
   navToUserProfile = id => {
@@ -492,69 +473,58 @@ class MapScreen extends React.Component {
             >
               <ChooseTime onPress={this.selectTime} />
             </SlideModal>
-            <MapView
-              onRegionChangeComplete={region => {
-                this.setState({ region });
-              }}
-              ref={mapView => (this.mapView = mapView)}
-              customMapStyle={mapStyles}
-              provider={PROVIDER_GOOGLE}
-              style={{ flex: 1 }}
-              initialRegion={this.state.region}
-              showsUserLocation
-            >
-              {Object.keys(this.state.markers).map((markerId, index) => {
-                let marker = this.state.markers[markerId];
-                return (
-                  <Marker
-                    key={index}
-                    coordinate={{
-                      longitude: marker.location.longitude,
-                      latitude: marker.location.latitude,
-                    }}
-                    onPress={() => {
-                      this.mapView.animateToRegion(
-                        {
-                          longitude: marker.location.longitude,
-                          latitude: marker.location.latitude,
-                          latitudeDelta: 0.0622,
-                          longitudeDelta: 0.0221,
-                        },
-                        500
-                      );
-                      this.setLobbyModalVisible(true, marker.id);
-                    }}
-                  >
-                    <Image
-                      source={sportMarkers[marker.sport]}
-                      style={{ height: 50, width: 50 }}
-                    />
-                  </Marker>
-                );
-              })}
-              {
-                //  this.state.nearbyLocations.map((location,index) => {
-                //     return (
-                //       <Marker
-                //         key={index}
-                //         coordinate={{longitude:location.geometry.location.lng,latitude:location.geometry.location.lat}}
-                //         // onPress={()=>{this.mapView.animateToRegion({longitude:marker.location.longitude,latitude:marker.location.latitude, latitudeDelta: 0.0922,longitudeDelta: 0.0421},500); this.setLobbyModalVisible(true,marker.id)}}
-                //       >
-                //         <Image source={parkMarkerLight} style={{height:50, width:50}}/>
-                //       </Marker>
-                //     );
-                //   })
-              }
-              {this.state.directionsVisible ? (
-                <MapViewDirections
-                  origin={this.state.userLoc}
-                  destination={this.state.currentGame.location}
-                  apikey={"AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE"}
-                  strokeWidth={5}
-                  strokeColor={colors.orange}
-                />
-              ) : null}
-            </MapView>
+            {this.state.locationComplete ? (
+              <MapView
+                onRegionChangeComplete={region => {
+                  this.setState({ region });
+                }}
+                ref={mapView => (this.mapView = mapView)}
+                customMapStyle={mapStyles}
+                provider={PROVIDER_GOOGLE}
+                style={{ flex: 1 }}
+                initialRegion={this.state.region}
+                showsUserLocation
+              >
+                {Object.keys(this.state.markers).map((markerId, index) => {
+                  let marker = this.state.markers[markerId];
+                  return (
+                    <Marker
+                      key={index}
+                      coordinate={{
+                        longitude: marker.location.longitude,
+                        latitude: marker.location.latitude,
+                      }}
+                      onPress={() => {
+                        this.mapView.animateToRegion(
+                          {
+                            longitude: marker.location.longitude,
+                            latitude: marker.location.latitude,
+                            latitudeDelta: 0.0622,
+                            longitudeDelta: 0.0221,
+                          },
+                          500
+                        );
+                        this.setLobbyModalVisible(true, marker.id);
+                      }}
+                    >
+                      <Image
+                        source={sportMarkers[marker.sport]}
+                        style={{ height: 50, width: 50 }}
+                      />
+                    </Marker>
+                  );
+                })}
+                {this.state.directionsVisible ? (
+                  <MapViewDirections
+                    origin={this.state.userLoc}
+                    destination={this.state.currentGame.location}
+                    apikey={"AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE"}
+                    strokeWidth={5}
+                    strokeColor={colors.orange}
+                  />
+                ) : null}
+              </MapView>
+            ) : <Block style={{backgroundColor:colors.dBlue}} flex></Block>}
             {this.state.lobbyModalVisible ? null : (
               <Block style={{ position: "absolute", bottom: 8, right: 8 }}>
                 {/* <Block style={{ marginLeft: 'auto', marginBottom: 8 }}>
@@ -747,9 +717,7 @@ class MapScreen extends React.Component {
         );
       }
     } else {
-      return (
-        <Block style={{ height, width, backgroundColor: colors.dBlue }}></Block>
-      );
+      return <Block style={{ flex: 1, backgroundColor: colors.dBlue }}></Block>;
     }
   }
 }
