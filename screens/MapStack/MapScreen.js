@@ -8,7 +8,6 @@ require("firebase/functions");
 const moment = require("moment");
 const fetch = require("node-fetch");
 import MapViewDirections from "react-native-maps-directions";
-import { UserContext } from "../../UserContext";
 import { Block } from "galio-framework";
 import {
   withTheme,
@@ -722,7 +721,6 @@ class MapScreen extends React.Component {
   }
 }
 
-MapScreen.contextType = UserContext;
 
 const styles = StyleSheet.create({
   disabled: {
