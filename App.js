@@ -1,120 +1,140 @@
-import { AppLoading } from 'expo';
-import * as Font from 'expo-font';
-import React from 'react';
-import { StyleSheet, View, Dimensions, StatusBar } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as firebase from 'firebase';
-import 'firebase/firestore';
-import 'firebase/functions';
-import { Appearance, AppearanceProvider } from 'react-native-appearance';
+import React from "react";
+import { StyleSheet, View, Dimensions, StatusBar } from "react-native";
+import { Appearance } from "react-native-appearance";
+import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 
-import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
-import * as Permissions from 'expo-permissions';
+import { AppLoading } from "expo";
+import { Ionicons } from "@expo/vector-icons";
+import * as Font from "expo-font";
+import * as Permissions from "expo-permissions";
+import * as firebase from "firebase";
 
-import AppNavigator from './navigation/AppNavigator';
-import { user } from 'firebase-functions/lib/providers/auth';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import LogglyProvider from "./contexts/loggingContext/LogglyProvider";
+import ignoreWarnings from "react-native-ignore-warnings";
+import AppNavigator from "./navigation/AppNavigator";
 
-const {height,width} = Dimensions.get('window')
+const { height, width } = Dimensions.get("window");
 
 let theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    dBlue: '#121D28',
-    orange: '#E68A54',
+    dBlue: "#121D28",
+    orange: "#E68A54",
     dGreen: "#008162",
     lGreen: "#56B49E",
     grey: "#83838A",
     lBlue: "#263644",
     white: "#FFFFFF",
-    primary: '#121D28',
-    background: '#121D28',
-  }
+    primary: "#121D28",
+    background: "#121D28",
+  },
 };
 
-export default class App extends React.Component {
-  //todo
-  constructor(){
+class App extends React.Component {
+  constructor() {
     super();
 
     this.state = {
-      isLoadingComplete: false
-    }
-  }
-  
-  render(){
-    if(Appearance.getColorScheme() == 'light'){
+      isLoadingComplete: false,
+    };
+
+    ignoreWarnings(["componentWillMount has been renamed"]);
+
+    this.loadResourcesAsync = this.loadResourcesAsync.bind(this);
+    this.handleLoadingError = this.handleLoadingError.bind(this);
+
+    if (Appearance.getColorScheme() == "light") {
       theme.colors.iosBackground = "#fff";
-    } else if(Appearance.getColorScheme() == 'dark'){
+    } else if (Appearance.getColorScheme() == "dark") {
       theme.colors.iosBackground = theme.colors.dBlue;
     }
+    theme.fonts.regular = {
+      fontFamily: "raleway",
+    };
+    theme.fonts.medium = {
+      fontFamily: "raleway",
+    };
+    theme.fonts.bold = { fontFamily: "ralewayBold" };
+  }
+
+  render() {
     if (!this.state.isLoadingComplete) {
       return (
         <AppLoading
-          style={{height,width,backgroundColor:theme.colors.dBlue,padding:0}}
-          startAsync={loadResourcesAsync}
-          onError={handleLoadingError}
-          onFinish={() => this.setState({isLoadingComplete:true})}
+          style={{
+            height,
+            width,
+            backgroundColor: theme.colors.dBlue,
+            padding: 0,
+          }}
+          startAsync={this.loadResourcesAsync}
+          onError={this.handleLoadingError}
+          onFinish={() => this.setState({ isLoadingComplete: true })}
         />
       );
     } else {
-      theme.fonts.regular = {
-        fontFamily: 'raleway'
-      };
-      theme.fonts.medium = {
-        fontFamily: 'raleway'
-      };
-      theme.fonts.bold = {
-        fontFamily: 'ralewaySemiBold'
-      }
       return (
-        <SafeAreaProvider>
-          <AppearanceProvider>
+        <View style={styles.container}>
+          <LogglyProvider
+            token="59059019-605b-4aee-8c56-614fd989cab7"
+            logToConsole={true}
+          >
             <PaperProvider theme={theme}>
-              <StatusBar barStyle="light-content" /> 
-              <View style={styles.container}>
-                <AppNavigator />
-              </View>
+              <StatusBar barStyle="light-content" />
+              <AppNavigator />
             </PaperProvider>
-          </AppearanceProvider>
-        </SafeAreaProvider>
+          </LogglyProvider>
+        </View>
       );
     }
   }
-}
 
-async function loadResourcesAsync() {
-  const firebaseConfig = {
-    apiKey: "AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE",
-    authDomain: "pickapp-4dcc0.firebaseapp.com",
-    databaseURL: "https://pickapp-4dcc0.firebaseio.com",
-    projectId: "pickapp-4dcc0",
-    storageBucket: "pickapp-4dcc0.appspot.com",
-    messagingSenderId: "322765285697",
-    appId: "1:322765285697:web:ecd162e09c8d5a3f"
-  };
-  await Promise.all([
-    firebase.initializeApp(firebaseConfig),
-    Font.loadAsync({
-      ...Ionicons.font,
-      "raleway": require('./assets/fonts/Raleway-Regular.ttf'),
-      'ralewaySemiBold': require('./assets/fonts/Raleway-SemiBold.ttf'),
-    }),
-    Permissions.askAsync(Permissions.LOCATION),
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL),
-  ])
-  .then(() => {
-  });
-}
+  async loadResourcesAsync() {
+    const firebaseConfig = {
+      apiKey: "AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE",
+      authDomain: "pickapp-4dcc0.firebaseapp.com",
+      databaseURL: "https://pickapp-4dcc0.firebaseio.com",
+      projectId: "pickapp-4dcc0",
+      storageBucket: "pickapp-4dcc0.appspot.com",
+      messagingSenderId: "322765285697",
+      appId: "1:322765285697:web:ecd162e09c8d5a3f",
+    };
 
-function handleLoadingError(error: Error) {
-  console.warn(error);
+    await Promise.all([
+      Font.loadAsync({
+        ...Ionicons.font,
+        raleway: require("./assets/fonts/Raleway-Regular.ttf"),
+        ralewayBold: require("./assets/fonts/Raleway-Bold.ttf"),
+      }),
+
+      Permissions.askAsync(Permissions.LOCATION),
+
+      new Promise((resolve) => {
+        if (firebase.apps.length === 0) {
+          firebase.initializeApp(firebaseConfig);
+          firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        }
+        resolve();
+      }),
+    ]).catch((err) => {
+      // have to do something here. This is an app failure that should be
+      // handled in the UI somehow AND should notify Pikapp that it happened
+      // becuase it could be fatal.
+      console.log("app: ***** loadResourcesAsync PROMISE ERROR ***");
+      console.log(err);
+    });
+  }
+
+  handleLoadingError(error) {
+    console.warn(error);
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:theme.colors.dBlue,
   },
 });
+
+export default App;

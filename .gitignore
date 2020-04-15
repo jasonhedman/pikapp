@@ -10,3 +10,8 @@ web-build/
 web-report/
 _DelSyncFiles/
 .DS_Store
+out/
+package-lock.json
+firebase-debug.log
+.vscode
+.expo/*
