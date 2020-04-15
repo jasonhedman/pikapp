@@ -15,3 +15,5 @@ package-lock.json
 firebase-debug.log
 .vscode
 .expo/*
+_DelSyncFiles/**/*
+.com.greenworldsoft.syncfolderspro
