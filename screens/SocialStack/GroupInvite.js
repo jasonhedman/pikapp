@@ -1,27 +1,20 @@
 import React from "react";
 import {
-  Dimensions,
   Keyboard,
   TouchableWithoutFeedback,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { Block } from "galio-framework";
-
-import {
-  withTheme,
-  TextInput,
-  Text,
-  ActivityIndicator,
-  Subheading,
-} from "react-native-paper";
+import { TabView, TabBar } from "react-native-tab-view";
+import { withTheme, TextInput, Text, Subheading } from "react-native-paper";
 import { getDistance } from "geolib";
-import HeaderBlock from "../../components/Utility/HeaderBlock";
+const moment = require('moment')
 
 import * as firebase from "firebase";
 import "firebase/firestore";
-
-const { height, width } = Dimensions.get("window");
+import NearbyUsers from "../../components/Utility/NearbyUsers";
+import FriendsList from "../../components/Utility/FriendsList";
 
 class GroupInvite extends React.Component {
   constructor(props) {
@@ -39,12 +32,15 @@ class GroupInvite extends React.Component {
       nearbyComplete: false,
       nearby: {},
       nearbySortedKeys: new Array(),
+      index: 0,
+      routes: [
+        { key: "friends", title: "Friends" },
+        { key: "nearby", title: "Nearby" },
+      ],
     };
   }
 
   componentDidMount() {
-    let nearbyLat = {};
-    let nearbyLng = {};
     let currentUser;
     firebase
       .firestore()
@@ -123,13 +119,13 @@ class GroupInvite extends React.Component {
   }
 
   onSearch = search => {
-    let filteredUsers = this.state.users.filter(user => {
-      return user.username.includes(search.toLowerCase());
+    let filteredUsers = Object.keys(this.state.users).filter(user => {
+      return this.state.users[user].username.includes(search.toLowerCase());
     });
     filteredUsers.sort((a, b) => {
       return (
-        a.username.indexOf(search.toLowerCase()) -
-        b.username.indexOf(search.toLowerCase())
+        this.state.users[a].username.indexOf(search.toLowerCase()) -
+        this.state.users[b].username.indexOf(search.toLowerCase())
       );
     });
     this.setState({ search, filteredUsers });
@@ -154,6 +150,55 @@ class GroupInvite extends React.Component {
       this.props.navigation.navigate("ProfileStack");
     }
   };
+
+  onIndexChange = index => this.setState({ index });
+
+  renderScene = ({ route }) => {
+    switch (route.key) {
+      case 'nearby':
+        return <NearbyUsers onPress={this.invite} />;
+      case 'friends':
+        return <FriendsList onPress={this.invite} />;
+      default:
+        return null;
+    }
+  };
+
+  renderTabBar = props => {
+    return (
+      <TabBar
+        {...props}
+        renderLabel={({ route, focused, color }) => (
+          <Text style={{ color }}>{route.title}</Text>
+        )}
+        activeColor={colors.orange}
+        inactiveColor={colors.grey}
+        indicatorStyle={{ backgroundColor: colors.orange }}
+        style={{ backgroundColor: null }}
+      />
+    );
+  };
+
+  invite = (user) => {
+      Promise.all([
+        firebase.firestore().collection('notifications').add({
+            type: 'groupInvite',
+            group: this.props.route.params.group,
+            from: this.state.user,
+            to: user,
+            time: moment().toDate(),
+        }),
+        firebase.firestore().collection('users').doc(user.id).collection('groupInvitations').add({
+            group: this.props.route.params.group,
+            from: this.state.user,
+            time: new Date(),
+        }),
+        firebase.firestore().collection('groups').doc(this.props.route.params.group.id).update({
+            invites: firebase.firestore.FieldValue.arrayUnion(user.id)
+        }),
+      ])
+   
+  }
 
   render() {
     const colors = this.props.theme.colors;
@@ -200,10 +245,11 @@ class GroupInvite extends React.Component {
                     Search Results
                   </Subheading>
                   <ScrollView style={{ width: "100%" }}>
-                    {this.state.filteredUsers.map((user, key) => {
+                    {this.state.filteredUsers.map((userId, key) => {
+                      let user = this.state.users[userId];
                       return (
                         <TouchableOpacity
-                          onPress={() => this.navToUserProfile(user.id)}
+                          onPress={() => this.invite(user)}
                           key={key}
                           style={{ width: "100%" }}
                         >
@@ -236,112 +282,13 @@ class GroupInvite extends React.Component {
                 </>
               ) : (
                 <>
-                  <Subheading
-                    style={{
-                      color: colors.white,
-                      textAlign: "center",
-                      marginBottom: 16,
-                    }}
-                  >
-                    {this.state.mutualFriends.length > 0
-                      ? "Recommended Friends"
-                      : "Nearby Players"}
-                  </Subheading>
-                  <ScrollView style={{ width: "100%" }}>
-                    {this.state.nearbyComplete ? (
-                      this.state.mutualFriends.length > 0 ? (
-                        this.state.mutualFriends.map((user, key) => {
-                          return (
-                            <TouchableOpacity
-                              onPress={() => this.navToUserProfile(user.id)}
-                              key={key}
-                              style={{ width: "100%" }}
-                            >
-                              <Block
-                                row
-                                middle
-                                style={{
-                                  justifyContent: "space-between",
-                                  borderColor: colors.orange,
-                                  borderWidth: 1,
-                                  borderRadius: 8,
-                                  padding: 10,
-                                  marginBottom: 10,
-                                }}
-                              >
-                                <Block column>
-                                  <Text style={{ color: "#fff" }}>
-                                    {user.name}
-                                  </Text>
-                                  <Text style={{ color: "#fff" }}>
-                                    @{user.username}
-                                  </Text>
-                                </Block>
-                                <Text style={{ color: "#fff" }}>{`${
-                                  user.mutualFriends
-                                } Mutual Friend${
-                                  user.mutualFriends > 1 ? "s" : ""
-                                }`}</Text>
-                              </Block>
-                            </TouchableOpacity>
-                          );
-                        })
-                      ) : (
-                        this.state.nearby.map((userId, key) => {
-                            let user = this.state.users[userId];
-                            let distance = Math.round(
-                              getDistance(
-                                user.location,
-                                this.state.user.location
-                              ) * 0.000621371
-                            );
-                            return (
-                              <TouchableOpacity
-                                onPress={() => this.navToUserProfile(user.id)}
-                                key={key}
-                                style={{ width: "100%" }}
-                              >
-                                <Block
-                                  row
-                                  center
-                                  middle
-                                  style={{
-                                    justifyContent: "space-between",
-                                    borderColor: colors.orange,
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    padding: 10,
-                                    width: "100%",
-                                    marginBottom: 10,
-                                  }}
-                                >
-                                  <Block column>
-                                    <Text style={{ color: "#fff" }}>
-                                      {user.name}
-                                    </Text>
-                                    <Text style={{ color: "#fff" }}>
-                                      @{user.username}
-                                    </Text>
-                                  </Block>
-                                  <Text style={{ color: "#fff" }}>{`${
-                                    distance < 1 ? "<1" : distance
-                                  } ${
-                                    distance < 2 ? "Mile" : "Miles"
-                                  } Away`}</Text>
-                                </Block>
-                              </TouchableOpacity>
-                            );
-                        })
-                      )
-                    ) : (
-                      <ActivityIndicator
-                        style={{ opacity: 1 }}
-                        animating={true}
-                        color={this.props.theme.colors.orange}
-                        size={"small"}
-                      />
-                    )}
-                  </ScrollView>
+                  <TabView
+                    navigationState={this.state}
+                    renderScene={this.renderScene}
+                    renderTabBar={this.renderTabBar}
+                    onIndexChange={this.onIndexChange}
+                    sceneContainerStyle={{paddingVertical:8}}
+                  />
                 </>
               )}
             </Block>

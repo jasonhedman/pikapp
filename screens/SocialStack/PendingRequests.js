@@ -14,6 +14,7 @@ class PendingRequests extends React.Component {
       requests: new Array(),
       images: new Object(),
       imagesComplete: false,
+      group: {},
     };
   }
 
@@ -22,60 +23,90 @@ class PendingRequests extends React.Component {
       .firestore()
       .collection("groups")
       .doc(this.props.route.params.groupId)
-      .onSnapshot(group => {
+      .onSnapshot((group) => {
         Promise.all(
-          group.data().requests.map(request => {
+          group.data().requests.map((request) => {
             return firebase
               .firestore()
               .collection("users")
               .doc(request)
               .get()
-              .then(request => {
+              .then((request) => {
                 return request.data();
               });
           })
-        ).then(requests => {
-          this.setState({ requests });
+        ).then((requests) => {
+          this.setState({ requests, group: group.data() });
         });
         let images = {};
         Promise.all(
-          group.data().requests.map(request => {
+          group.data().requests.map((request) => {
             return firebase
               .storage()
               .ref("profilePictures/" + request)
               .getDownloadURL()
-              .then(url => {
+              .then((url) => {
                 images[request] = url;
               })
-              .catch(err => {
+              .catch((err) => {
                 images[request] = null;
               });
           })
-        ).then(images => {
+        ).then((images) => {
           this.setState({ images, imagesComplete: true });
         });
       });
   }
 
-  accept = id => {
-    firebase
-      .firestore()
-      .collection("groups")
-      .doc(this.props.route.params.groupId)
-      .update({
-        requests: firebase.firestore.FieldValue.arrayRemove(id),
-        users: firebase.firestore.FieldValue.arrayUnion(id),
-      });
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(id)
-      .update({
-        groups: firebase.firestore.FieldValue.arrayUnion(id),
-      });
+  accept = (request) => {
+    Promise.all(
+      this.state.group.users
+        .map((user) => {
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(user)
+            .collection("social")
+            .add({
+              type: "groupMember",
+              from: request,
+              group: this.state.group,
+              time: new Date(),
+            });
+        })
+        .concat([
+          firebase
+            .firestore()
+            .collection("groups")
+            .doc(this.props.route.params.groupId)
+            .update({
+              requests: firebase.firestore.FieldValue.arrayRemove(request.id),
+              users: firebase.firestore.FieldValue.arrayUnion(request.id),
+            }),
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(request.id)
+            .update({
+              groups: firebase.firestore.FieldValue.arrayUnion(
+                this.props.route.params.groupId
+              ),
+            }),
+          firebase
+            .firestore()
+            .collection("groups")
+            .doc(this.props.route.params.groupId)
+            .collection("messages")
+            .add({
+              content: `${request.name} (@${request.username}) joined the group.`,
+              created: new Date(),
+              type: "admin",
+            }),
+        ])
+    );
   };
 
-  decline = id => {
+  decline = (id) => {
     firebase
       .firestore()
       .collection("groups")
@@ -98,7 +129,7 @@ class PendingRequests extends React.Component {
                     userId: request.id,
                   })
                 }
-                style={{marginBottom:8}}
+                style={{ marginBottom: 8 }}
               >
                 <Block
                   key={index}
@@ -127,7 +158,7 @@ class PendingRequests extends React.Component {
                     <Button
                       mode='contained'
                       dark={true}
-                      onPress={() => this.accept(request.id)}
+                      onPress={() => this.accept(request)}
                       theme={{
                         colors: { primary: colors.orange },
                         fonts: { medium: this.props.theme.fonts.regular },

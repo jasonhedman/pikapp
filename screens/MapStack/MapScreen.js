@@ -40,7 +40,7 @@ import LobbyModal from "../../components/Map/LobbyModal";
 import NewGameNearby from "../../components/Notifications/NewGameNearby";
 import NewGame from "../../components/Notifications/NewGame";
 import Invite from "../../components/Notifications/Invite";
-import Follower from "../../components/Notifications/Follower";
+import Follower from "../../components/Notifications/Social/Follower";
 import NewPlayer from "../../components/Notifications/NewPlayer";
 
 const sportMarkers = {
@@ -99,6 +99,9 @@ class MapScreen extends React.Component {
     // firebase.firestore().collection('users').get()
     // .then(users => {
     //   users.forEach(user => {
+    //     firebase.firestore().collection('users').doc(user.id).collection('groupInvitations').doc('init').set({
+    //       message: 'init'
+    //     })
     //   })
     // })
     Promise.all([

@@ -66,7 +66,7 @@ export default class App extends React.Component {
         fontFamily: 'raleway'
       };
       theme.fonts.bold = {
-        fontFamily: 'ralewayBold'
+        fontFamily: 'ralewaySemiBold'
       }
       return (
         <SafeAreaProvider>
@@ -99,7 +99,7 @@ async function loadResourcesAsync() {
     Font.loadAsync({
       ...Ionicons.font,
       "raleway": require('./assets/fonts/Raleway-Regular.ttf'),
-      'ralewayBold': require('./assets/fonts/Raleway-Bold.ttf'),
+      'ralewaySemiBold': require('./assets/fonts/Raleway-SemiBold.ttf'),
     }),
     Permissions.askAsync(Permissions.LOCATION),
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL),

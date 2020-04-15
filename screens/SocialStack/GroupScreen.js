@@ -29,22 +29,22 @@ class GroupScreen extends React.Component {
         .firestore()
         .collection("groups")
         .doc(this.props.route.params.groupId)
-        .onSnapshot(group => {
+        .onSnapshot((group) => {
           this.props.navigation.setOptions({
             headerTitle: group.data().title,
           });
           this.setState({ group: group.data() }, () => {
             let pictures = {};
             Promise.all(
-              group.data().users.map(user => {
+              group.data().users.map((user) => {
                 return firebase
                   .storage()
                   .ref("profilePictures/" + user)
                   .getDownloadURL()
-                  .then(url => {
+                  .then((url) => {
                     pictures[user] = url;
                   })
-                  .catch(err => {
+                  .catch((err) => {
                     pictures[user] = null;
                   });
               })
@@ -60,9 +60,9 @@ class GroupScreen extends React.Component {
         .collection("messages")
         .orderBy("created", "desc")
         .limit(50)
-        .onSnapshot(allMessages => {
+        .onSnapshot((allMessages) => {
           let messages = [];
-          allMessages.forEach(message => {
+          allMessages.forEach((message) => {
             messages.push(message.data());
           });
           this.setState({ messages });
@@ -72,7 +72,7 @@ class GroupScreen extends React.Component {
         .collection("users")
         .doc(firebase.auth().currentUser.uid)
         .get()
-        .then(user => {
+        .then((user) => {
           this.setState({ user: user.data() });
         }),
     ]).then(() => {
@@ -85,7 +85,7 @@ class GroupScreen extends React.Component {
     if (this.state.complete) {
       return (
         <HeaderHeightContext.Consumer>
-          {headerHeight => (
+          {(headerHeight) => (
             <Block
               style={{
                 flex: 1,
@@ -95,9 +95,13 @@ class GroupScreen extends React.Component {
             >
               <KeyboardAvoidingView behavior='padding' style={{ flex: 1 }}>
                 {Object.keys(this.state.group).length > 0 &&
-                this.state.group.admins.includes(
-                  firebase.auth().currentUser.uid
-                ) &&
+                (this.state.group.owner == firebase.auth().currentUser.uid ||
+                  this.state.group.admins.includes(
+                    firebase.auth().currentUser.uid
+                  ) ||
+                  this.state.group.coOwners.includes(
+                    firebase.auth().currentUser.uid
+                  )) &&
                 this.state.group.requests.length > 0 ? (
                   <PendingRequestsPreview
                     requests={this.state.group.requests}

@@ -8,11 +8,12 @@ import {
 } from "react-native";
 import { withTheme, Text, Button, Portal, Modal } from "react-native-paper";
 import { Block } from "galio-framework";
-
+import { default as SlideModal } from "react-native-modal";
 import firebase from "firebase";
 import "firebase/firestore";
 import GroupMember from "../../components/Groups/GroupMember";
 import SportInfo from "../../components/Groups/SportInfo";
+import ActionsModal from "../../components/Groups/ActionsModal";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -24,31 +25,162 @@ class GroupInfo extends React.Component {
       pictures: {},
       complete: false,
       modalVisible: false,
+      actionsVisible: false,
       deleted: false,
+      user: {},
+      actionsUser: {},
     };
   }
 
-  joinGroup = () => {
+  componentDidMount() {
     Promise.all([
       firebase
         .firestore()
         .collection("groups")
         .doc(this.props.route.params.groupId)
-        .update({
-          users: firebase.firestore.FieldValue.arrayUnion(
-            firebase.auth().currentUser.uid
-          ),
+        .onSnapshot((group) => {
+          if (group.exists) {
+            this.setState({ group: group.data() }, () => {
+              this.props.navigation.setOptions({
+                headerTitle: group.data().title,
+              });
+              if (
+                group.data().users.includes(firebase.auth().currentUser.uid)
+              ) {
+                this.props.navigation.setOptions({
+                  headerRight: () => (
+                    <Button
+                      mode='text'
+                      color={this.props.theme.colors.orange}
+                      onPress={this.leaveGroup}
+                      compact={true}
+                      uppercase={false}
+                    >
+                      Leave
+                    </Button>
+                  ),
+                });
+              } else {
+                if (
+                  group.data().private == true &&
+                  !group
+                    .data()
+                    .invites.includes(firebase.auth().currentUser.uid)
+                ) {
+                  this.props.navigation.setOptions({
+                    headerRight: () => (
+                      <Button
+                        mode='text'
+                        color={this.props.theme.colors.orange}
+                        onPress={this.requestGroup}
+                        compact={true}
+                        uppercase={false}
+                        disabled={this.state.group.requests.includes(
+                          firebase.auth().currentUser.uid
+                        )}
+                      >
+                        Request
+                      </Button>
+                    ),
+                  });
+                } else {
+                  this.props.navigation.setOptions({
+                    headerRight: () => (
+                      <Button
+                        mode='text'
+                        color={this.props.theme.colors.orange}
+                        onPress={this.joinGroup}
+                        compact={true}
+                        uppercase={false}
+                      >
+                        Join
+                      </Button>
+                    ),
+                  });
+                }
+              }
+              let pictures = {};
+              Promise.all(
+                group.data().users.map((user) => {
+                  return firebase
+                    .storage()
+                    .ref("profilePictures/" + user)
+                    .getDownloadURL()
+                    .then((url) => {
+                      pictures[user] = url;
+                    })
+                    .catch((err) => {
+                      pictures[user] = null;
+                    });
+                })
+              ).then(() => {
+                this.setState({ pictures });
+              });
+            });
+          }
         }),
       firebase
         .firestore()
         .collection("users")
         .doc(firebase.auth().currentUser.uid)
-        .update({
-          groups: firebase.firestore.FieldValue.arrayUnion(
-            this.props.route.params.groupId
-          ),
+        .onSnapshot((user) => {
+          this.setState({ user: user.data() });
         }),
-    ]);
+    ]).then(() => {
+      this.setState({ complete: true });
+    });
+  }
+
+  joinGroup = () => {
+    Promise.all(
+      this.state.group.users
+        .map((user) => {
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(user)
+            .collection("social")
+            .add({
+              type: "groupMember",
+              from: this.state.user,
+              group: this.state.group,
+              time: new Date(),
+            });
+        })
+        .concat([
+          firebase
+            .firestore()
+            .collection("groups")
+            .doc(this.props.route.params.groupId)
+            .update({
+              users: firebase.firestore.FieldValue.arrayUnion(
+                firebase.auth().currentUser.uid
+              ),
+              invites: firebase.firestore.FieldValue.arrayRemove(
+                firebase.auth().currentUser.uid
+              ),
+            }),
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(firebase.auth().currentUser.uid)
+            .update({
+              groups: firebase.firestore.FieldValue.arrayUnion(
+                this.props.route.params.groupId
+              ),
+            }),
+          firebase
+            .firestore()
+            .collection("groups")
+            .doc(this.props.route.params.groupId)
+            .collection("messages")
+            .add({
+              content: `${this.state.user.name} (@${this.state.user.username}) joined the group.`,
+              created: new Date(),
+              type: "admin",
+            }),
+        ])
+    );
   };
 
   requestGroup = () => {
@@ -75,6 +207,12 @@ class GroupInfo extends React.Component {
           users: firebase.firestore.FieldValue.arrayRemove(
             firebase.auth().currentUser.uid
           ),
+          coOwners: firebase.firestore.FieldValue.arrayRemove(
+            firebase.auth().currentUser.uid
+          ),
+          admins: firebase.firestore.FieldValue.arrayRemove(
+            firebase.auth().currentUser.uid
+          ),
         }),
       firebase
         .firestore()
@@ -85,6 +223,16 @@ class GroupInfo extends React.Component {
             this.props.route.params.groupId
           ),
         }),
+      firebase
+        .firestore()
+        .collection("groups")
+        .doc(this.props.route.params.groupId)
+        .collection("messages")
+        .add({
+          content: `${this.state.user.name} (@${this.state.user.username}) left the group.`,
+          created: new Date(),
+          type: "admin",
+        }),
     ]).then(() => {
       this.props.navigation.popToTop();
     });
@@ -92,7 +240,7 @@ class GroupInfo extends React.Component {
 
   deleteGroup = () => {
     Promise.all([
-      this.state.group.users.map(user => {
+      this.state.group.users.map((user) => {
         return firebase
           .firestore()
           .collection("users")
@@ -115,100 +263,16 @@ class GroupInfo extends React.Component {
     });
   };
 
-  componentDidMount() {
-    Promise.all([
-      firebase
-        .firestore()
-        .collection("groups")
-        .doc(this.props.route.params.groupId)
-        .onSnapshot(group => {
-          if (group.exists) {
-            this.setState({ group: group.data() }, () => {
-              this.props.navigation.setOptions({
-                headerTitle: group.data().title,
-              });
-              if (
-                group.data().users.includes(firebase.auth().currentUser.uid)
-              ) {
-                this.props.navigation.setOptions({
-                  headerRight: () => (
-                    <Button
-                      mode='text'
-                      color={this.props.theme.colors.orange}
-                      onPress={this.leaveGroup}
-                      compact={true}
-                      uppercase={false}
-                    >
-                      Leave
-                    </Button>
-                  ),
-                });
-              } else {
-                if (group.data().private == true) {
-                  this.props.navigation.setOptions({
-                    headerRight: () => (
-                      <Button
-                        mode='text'
-                        color={this.props.theme.colors.orange}
-                        onPress={this.requestGroup}
-                        compact={true}
-                        uppercase={false}
-                        disabled={this.state.group.requests.includes(firebase.auth().currentUser.uid)}
-                      >
-                        Request
-                      </Button>
-                    ),
-                  });
-                } else {
-                  this.props.navigation.setOptions({
-                    headerRight: () => (
-                      <Button
-                        mode='text'
-                        color={this.props.theme.colors.orange}
-                        onPress={this.joinGroup}
-                        compact={true}
-                        uppercase={false}
-                      >
-                        Join
-                      </Button>
-                    ),
-                  });
-                }
-              }
-              let pictures = {};
-              Promise.all(
-                group.data().users.map(user => {
-                  return firebase
-                    .storage()
-                    .ref("profilePictures/" + user)
-                    .getDownloadURL()
-                    .then(url => {
-                      pictures[user] = url;
-                    })
-                    .catch(err => {
-                      pictures[user] = null;
-                    });
-                })
-              ).then(() => {
-                this.setState({ pictures });
-              });
-            });
-          }
-        }),
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .onSnapshot(user => {
-          this.setState({ user: user.data() });
-        }),
-    ]).then(() => {
-      this.setState({ complete: true });
-    });
-  }
-
-  navToUserProfile = id => {
+  navToUserProfile = (id) => {
     this.props.navigation.push("UserProfile", { userId: id });
+  };
+
+  openActionsModal = (user) => {
+    this.setState({ actionsVisible: true, actionsUser: user });
+  };
+
+  closeActionsModal = (func) => {
+    this.setState({ actionsVisible: false }, func);
   };
 
   render() {
@@ -258,6 +322,18 @@ class GroupInfo extends React.Component {
               </Block>
             </Modal>
           </Portal>
+          <SlideModal
+            isVisible={this.state.actionsVisible}
+            onBackdropPress={ () => this.closeActionsModal()}
+          >
+            <ActionsModal
+              user={this.state.actionsUser}
+              group={this.state.group}
+              currentUser={this.state.user}
+              closeModal={this.closeActionsModal}
+              navigate={this.props.navigation.navigate}
+            />
+          </SlideModal>
           <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
             <Block center middle>
               <Text style={{ color: colors.white, fontSize: 12 }}>
@@ -270,9 +346,24 @@ class GroupInfo extends React.Component {
                 style={{ justifyContent: "space-between", marginBottom: 8 }}
               >
                 <Text style={{ color: "white" }}>Members</Text>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('GroupInvite', {groupId:this.state.group.id})}>
-                  <Text style={{ color: colors.orange }}>Invite Users</Text>
-                </TouchableOpacity>
+                {this.state.group.private == false ||
+                this.state.group.owner == firebase.auth().currentUser.uid ||
+                this.state.group.admins.includes(
+                  firebase.auth().currentUser.uid
+                ) ||
+                this.state.group.coOwners.includes(
+                  firebase.auth().currentUser.uid
+                ) ? (
+                  <TouchableOpacity
+                    onPress={() =>
+                      this.props.navigation.navigate("GroupInvite", {
+                        group: this.state.group,
+                      })
+                    }
+                  >
+                    <Text style={{ color: colors.orange }}>Invite Users</Text>
+                  </TouchableOpacity>
+                ) : null}
               </Block>
               <Block>
                 {this.state.group.users.map((user, index) => {
@@ -283,6 +374,8 @@ class GroupInfo extends React.Component {
                       key={index}
                       navToUserProfile={this.navToUserProfile}
                       group={this.state.group}
+                      currentUser={this.state.user}
+                      openActionsModal={this.openActionsModal}
                     />
                   );
                 })}
@@ -310,7 +403,9 @@ class GroupInfo extends React.Component {
                   firebase.auth().currentUser.uid
                 ) ? (
                   <>
-                    {this.state.group.admins.includes(
+                    {this.state.group.owner ==
+                      firebase.auth().currentUser.uid ||
+                    this.state.group.coOwners.includes(
                       firebase.auth().currentUser.uid
                     ) ? (
                       <Button
@@ -327,15 +422,19 @@ class GroupInfo extends React.Component {
                         Edit Group
                       </Button>
                     ) : null}
-                    <Button
-                      mode='text'
-                      color={colors.orange}
-                      onPress={this.leaveGroup}
-                      compact={true}
-                      uppercase={false}
-                    >
-                      Leave Group
-                    </Button>
+                    {this.state.group.owner !=
+                    firebase.auth().currentUser.uid ? (
+                      <Button
+                        mode='text'
+                        color={colors.orange}
+                        onPress={this.leaveGroup}
+                        compact={true}
+                        uppercase={false}
+                      >
+                        Leave Group
+                      </Button>
+                    ) : null}
+
                     {this.state.group.owner ==
                     firebase.auth().currentUser.uid ? (
                       <Button
@@ -349,14 +448,19 @@ class GroupInfo extends React.Component {
                       </Button>
                     ) : null}
                   </>
-                ) : this.state.group.private ? (
+                ) : this.state.group.private &&
+                  !this.state.group.invites.includes(
+                    firebase.auth().currentUser.uid
+                  ) ? (
                   <Button
                     mode='text'
                     color={this.props.theme.colors.orange}
                     onPress={this.requestGroup}
                     compact={true}
                     uppercase={false}
-                    disabled={this.state.group.requests.includes(firebase.auth().currentUser.uid)}
+                    disabled={this.state.group.requests.includes(
+                      firebase.auth().currentUser.uid
+                    )}
                   >
                     Request
                   </Button>

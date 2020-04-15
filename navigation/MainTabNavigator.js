@@ -35,6 +35,8 @@ import EditGroup from "../screens/SocialStack/EditGroup";
 import EditProfile from "../screens/ProfileStack/EditProfile";
 import PendingRequests from "../screens/SocialStack/PendingRequests";
 import GroupInvite from "../screens/SocialStack/GroupInvite";
+import SocialNotifications from "../screens/SocialStack/SocialNotifications";
+import GroupInvitations from "../screens/SocialStack/GroupInvitations";
 
 const Tab = createMaterialBottomTabNavigator();
 const MapStackNav = createStackNavigator();
@@ -85,7 +87,7 @@ function MapStack() {
 
 function ProfileStack() {
   return (
-    <ProfileStackNav.Navigator 
+    <ProfileStackNav.Navigator
       initialRouteName='Profile'
       screenOptions={({ navigation, route }) => ({
         headerStyle: styles.header,
@@ -103,48 +105,48 @@ function ProfileStack() {
         ),
       })}
     >
-      <ProfileStackNav.Screen 
-        name='UserProfile' 
+      <ProfileStackNav.Screen
+        name='UserProfile'
         component={UserProfile}
         options={{
-          title:""
-        }} 
-      />
-      <ProfileStackNav.Screen 
-        name='EditProfile' 
-        component={EditProfile}
-        options={{
-          title:"Edit Profile",
-          headerTransparent: true
-        }} 
-      />
-      <ProfileStackNav.Screen 
-        name='Profile' 
-        component={Profile} 
-        options={{
           title: "",
-          headerLeft: null
         }}
       />
-      <ProfileStackNav.Screen 
-        name='UserList' 
+      <ProfileStackNav.Screen
+        name='EditProfile'
+        component={EditProfile}
+        options={{
+          title: "Edit Profile",
+          headerTransparent: true,
+        }}
+      />
+      <ProfileStackNav.Screen
+        name='Profile'
+        component={Profile}
+        options={{
+          title: "",
+          headerLeft: null,
+        }}
+      />
+      <ProfileStackNav.Screen
+        name='UserList'
         component={UserList}
         options={({ navigation, route }) => ({
           title: route.params.listType,
         })}
       />
-      <ProfileStackNav.Screen 
-        name='ChangeEmail' 
+      <ProfileStackNav.Screen
+        name='ChangeEmail'
         component={ChangeEmail}
         options={{
-          title: "Change Email"
+          title: "Change Email",
         }}
       />
       <ProfileStackNav.Screen
         name='ChangePassword'
         component={ChangePassword}
         options={{
-          title: "Change Password"
+          title: "Change Password",
         }}
       />
     </ProfileStackNav.Navigator>
@@ -172,7 +174,7 @@ function SocialStack(props) {
       })}
     >
       <SocialStackNav.Screen
-        name='SearchUsers'
+        name='SearchPlayers'
         component={SearchPlayers}
         options={({ navigation, route }) => ({
           title: "Search Users",
@@ -181,10 +183,32 @@ function SocialStack(props) {
       <SocialStackNav.Screen
         name='SocialScreen'
         component={SocialScreen}
-        options={{
+        options={({ navigation, route }) => ({
           title: "Social",
           headerLeft: null,
-        }}
+          headerRight: () => (
+            <Block row>
+              <IconButton
+                icon='account-group'
+                color='#E68A54'
+                size={30}
+                onPress={() =>
+                  navigation.navigate("SocialNotifications")
+                }
+                style={{ marginTop: 12, marginBottom: 12 }}
+              />
+              <IconButton
+                icon='email'
+                color='#E68A54'
+                size={30}
+                onPress={() =>
+                  navigation.navigate("GroupInvitations")
+                }
+                style={{ marginTop: 12, marginBottom: 12 }}
+              />
+            </Block>
+          ),
+        })}
       />
       <SocialStackNav.Screen
         name='GroupProfile'
@@ -208,8 +232,8 @@ function SocialStack(props) {
           headerTransparent: true,
         })}
       />
-      <SocialStackNav.Screen 
-        name='UserProfile' 
+      <SocialStackNav.Screen
+        name='UserProfile'
         component={UserProfile}
         options={({ navigation, route }) => ({
           title: "",
@@ -289,6 +313,20 @@ function SocialStack(props) {
           title: "Invite Users",
         })}
       />
+      <SocialStackNav.Screen
+        name='SocialNotifications'
+        component={SocialNotifications}
+        options={({ navigation, route }) => ({
+          title: "Activity",
+        })}
+      />
+      <SocialStackNav.Screen
+        name='GroupInvitations'
+        component={GroupInvitations}
+        options={({ navigation, route }) => ({
+          title: "Group Invitations",
+        })}
+      />
     </SocialStackNav.Navigator>
   );
 }
@@ -318,7 +356,7 @@ function GameStack() {
         component={GameScreen}
         options={{
           headerLeft: null,
-          title: ""
+          title: "",
         }}
       />
       <GameStackNav.Screen
@@ -326,30 +364,30 @@ function GameStack() {
         component={GameLobby}
         options={{
           headerRight: null,
-          title: ""
+          title: "",
         }}
       />
-      <GameStackNav.Screen 
-        name='UserProfile' 
+      <GameStackNav.Screen
+        name='UserProfile'
         component={UserProfile}
         options={({ navigation, route }) => ({
           title: "",
         })}
       />
-      <GameStackNav.Screen 
-        name='UserList' 
+      <GameStackNav.Screen
+        name='UserList'
         component={UserList}
         options={({ navigation, route }) => ({
           title: route.params.listType,
         })}
       />
-      <GameStackNav.Screen 
-        name='Messages' 
+      <GameStackNav.Screen
+        name='Messages'
         component={MessageBoard}
         options={({ navigation, route }) => ({
           title: "Messages",
-          headerTransparent:true
-        })} 
+          headerTransparent: true,
+        })}
       />
     </GameStackNav.Navigator>
   );

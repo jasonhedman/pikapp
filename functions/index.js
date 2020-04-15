@@ -38,6 +38,10 @@ exports.clearGamesSchedule = functions.pubsub.schedule('every 5 minutes').onRun(
     ])
 })
 
+exports.socialNotifications = functions.firestore.document('users/{userId}/social/{notificationId}').onCreate((doc) => {
+    console.log(doc.data());
+})
+
 exports.sendPushNotification = functions.firestore.document('notifications/{id}').onCreate((snap,context) => {
     let notification = snap.data();
     if(notification.type === 'newGame'){

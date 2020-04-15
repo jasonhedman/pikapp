@@ -166,33 +166,49 @@ class UserProfile extends React.Component {
     let user = this.state.user;
     user.followers.push(firebase.auth().currentUser.uid);
     this.setState({ user, following: true }, () => {
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .update({
-          friendsList: firebase.firestore.FieldValue.arrayUnion(
-            this.props.route.params.userId
-          ),
-        });
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(this.props.route.params.userId)
-        .update({
-          followers: firebase.firestore.FieldValue.arrayUnion(
-            firebase.auth().currentUser.uid
-          ),
-        });
-      firebase
-        .firestore()
-        .collection("notifications")
-        .add({
-          type: "follower",
-          from: this.state.currentUser,
-          to: this.state.user,
-          time: new Date(),
-        });
+      Promise.all([
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .update({
+            friendsList: firebase.firestore.FieldValue.arrayUnion(
+              this.props.route.params.userId
+            ),
+          }),
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(this.props.route.params.userId)
+          .update({
+            followers: firebase.firestore.FieldValue.arrayUnion(
+              firebase.auth().currentUser.uid
+            ),
+          }),
+        firebase
+          .firestore()
+          .collection("notifications")
+          .add({
+            type: "follower",
+            from: this.state.currentUser,
+            to: this.state.user,
+            time: new Date(),
+          }),
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(this.props.route.params.userId)
+          .collection('social')
+          .add({
+            type: "follower",
+            from: this.state.currentUser,
+            to: this.state.user,
+            time: new Date(),
+          })
+      ])
+      
+      
+      
     });
   };
 

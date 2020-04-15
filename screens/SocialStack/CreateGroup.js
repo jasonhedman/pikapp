@@ -45,7 +45,14 @@ class CreateGroup extends React.Component {
       spikeball: false,
       volleyball: false,
       football: false,
+      user: {}
     }
+  }
+
+  componentDidMount() {
+      firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).onSnapshot((user) => {
+          this.setState({user: user.data()});
+      })
   }
 
   onTitleChange = (title) => {
@@ -72,7 +79,8 @@ class CreateGroup extends React.Component {
         users: [currentUser],
         private: this.state.private,
         owner: currentUser,
-        admins: [currentUser],
+        admins: [],
+        coOwners: [],
         gameHistory: [],
         calendar: [],
         requests: [],
@@ -81,6 +89,16 @@ class CreateGroup extends React.Component {
         sports: sports
     })
     .then((group) => {
+        if(this.state.private == false){
+            this.state.user.followers.forEach((user) => {
+                firebase.firestore().collection('users').doc(user).collection('social').add({
+                    from: this.state.user,
+                    group: group.data(),
+                    type: 'newGroup',
+                    time: new Date()
+                })
+            })
+        }
         Promise.all([
             firebase.firestore().collection('groups').doc(group.id).collection('messages').doc().set({
                 content:"Group Created",
