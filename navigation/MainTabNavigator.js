@@ -6,7 +6,7 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 // import { NavigationContainer } from "@react-navigation/native";
 import TabBarIcon from "../components/Utility/TabBarIcon";
 
-import GameScreen from "../screens/GameStack/GameScreen";
+import GameLandingScreen from "../screens/GameStack/GameLandingScreen";
 import GameLobby from "../screens/GameStack/GameLobby";
 
 import MapScreen from "../screens/MapStack/MapScreen";
@@ -335,7 +335,7 @@ function SocialStack(props) {
 function GameStack() {
   return (
     <GameStackNav.Navigator
-      initialRouteName='GameScreen'
+      initialRouteName='GameLandingScreen'
       screenOptions={({ navigation, route }) => ({
         headerStyle: styles.header,
         headerTitleStyle: styles.headerText,
@@ -353,8 +353,8 @@ function GameStack() {
       })}
     >
       <GameStackNav.Screen
-        name='GameScreen'
-        component={GameScreen}
+        name='GameLandingScreen'
+        component={GameLandingScreen}
         options={{
           headerLeft: null,
           title: "",

@@ -34,7 +34,7 @@ const orange = "#E68A54";
 const green = "#56B49E";
 const grey = "#83838A";
 
-class GameScreen extends React.Component {
+class GameLobby extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -141,7 +141,7 @@ class GameScreen extends React.Component {
             });
           });
         } else {
-          this.props.navigation.navigate("GameScreen");
+          this.props.navigation.navigate("GameLandingScreen");
         }
       });
   }
@@ -241,7 +241,7 @@ class GameScreen extends React.Component {
           gameState: "cancelled",
         }),
     ]).then(() => {
-      this.props.navigation.navigate("GameScreen");
+      this.props.navigation.navigate("GameLandingScreen");
       this.navToMap();
     });
   };
@@ -284,7 +284,7 @@ class GameScreen extends React.Component {
           });
       })
       .then(() => {
-        this.props.navigation.navigate("GameScreen");
+        this.props.navigation.navigate("GameLandingScreen");
         this.navToMap();
       });
   };
@@ -342,7 +342,7 @@ class GameScreen extends React.Component {
         game: null,
         complete: false,
       });
-      this.props.navigation.navigate("GameScreen");
+      this.props.navigation.navigate("GameLandingScreen");
       this.setModalVisible(false);
       this.navToMap();
     });
@@ -645,4 +645,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(GameScreen);
+export default withTheme(GameLobby);
