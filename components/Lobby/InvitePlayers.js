@@ -10,6 +10,7 @@ require('firebase/functions')
 import HeaderBlock from '../Utility/HeaderBlock'
 import moment from 'moment';
 import {getDistance} from 'geolib';
+import onShare from "../../services/onShare";
 
 
 import {withTheme, Text, Headline, Subheading, Button, ActivityIndicator} from 'react-native-paper';
@@ -79,25 +80,6 @@ class InvitePlayers extends React.Component{
     this.props.toSocialScreen();
   }
 
-  onShare = async () => {
-    try {
-      const result = await Share.share({
-        message: 'Join me on PikApp Mobile, the newest way to organize and join pickup sports games.',
-        url: "https://apps.apple.com/us/app/pikapp-mobile/id1475855291"
-      });
-
-      if (result.action === Share.sharedAction) {
-        firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
-          points: firebase.firestore.FieldValue.increment(1)
-        })
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
   render(){
     const colors = this.props.theme.colors;
     return (
@@ -120,7 +102,7 @@ class InvitePlayers extends React.Component{
                                                 distance = Math.round(getDistance(user.location, this.props.user.location) * 0.000621371);
                                             } else {
                                                 distance = null
-                                            }                                            
+                                            }
                                             return (
                                                 <TouchableOpacity onPress={() => this.onPress(user.id,user)} key={key} style={{width:'100%'}}>
                                                     <Block row center middle style={{justifyContent:'space-between',borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%', marginBottom:10}}>
@@ -135,7 +117,7 @@ class InvitePlayers extends React.Component{
                                         }
                                     })
                                 }
-                                <TouchableOpacity onPress={this.onShare} style={{width:'100%',marginBottom:10}}>
+                                <TouchableOpacity onPress={onShare} style={{width:'100%',marginBottom:10}}>
                                     <Block center middle style={{borderColor:colors.orange,borderWidth:1,borderRadius:8, padding: 10, width:'100%'}}>
                                         <Text style={{color:"#fff"}}>Invite More Friends</Text>
                                     </Block>
@@ -144,16 +126,16 @@ class InvitePlayers extends React.Component{
                             :<Block center style={{ borderColor:colors.white, borderWidth:1, borderRadius:8, width:'100%', padding:16}}>
                                 <Headline style={{color:colors.grey,fontSize:20,textAlign:'center',marginBottom:8}}>No nearby players.</Headline>
                                 <Button
-                                    mode="contained" 
+                                    mode="contained"
                                     dark={true}
-                                    onPress={this.onShare}
+                                    onPress={onShare}
                                     theme={{colors:{primary:colors.orange},fonts:{medium:this.props.theme.fonts.regular}}}
-                                > 
+                                >
                                     Invite Friends
                                 </Button>
                             </Block>
                         : <ActivityIndicator style={{opacity:1}} animating={true} color={this.props.theme.colors.orange} size={'small'} />
-                        
+
                     }
             </Block>
         </TouchableWithoutFeedback>
