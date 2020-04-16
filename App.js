@@ -55,7 +55,7 @@ class App extends React.Component {
     theme.fonts.medium = {
       fontFamily: "raleway",
     };
-    theme.fonts.bold = { fontFamily: "ralewayBold" };
+    theme.fonts.bold = { fontFamily: "ralewaySemiBold" };
   }
 
   render() {
@@ -105,7 +105,7 @@ class App extends React.Component {
       Font.loadAsync({
         ...Ionicons.font,
         raleway: require("./assets/fonts/Raleway-Regular.ttf"),
-        ralewayBold: require("./assets/fonts/Raleway-Bold.ttf"),
+        ralewayBold: require("./assets/fonts/Raleway-SemiBold.ttf"),
       }),
 
       Permissions.askAsync(Permissions.LOCATION),
