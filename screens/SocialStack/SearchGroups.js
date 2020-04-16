@@ -69,9 +69,9 @@ class SerachGroups extends React.Component {
                             {
                                 this.state.search != ""
                                 ? <>
-                                    <Subheading style={{color:colors.white, textAlign:'center',marginBottom:16}}>Results</Subheading>
                                     <ScrollView style={{width:'100%'}}>
                                     {
+                                        this.state.filteredGroups.length > 0 ?
                                         this.state.filteredGroups.map((group,key) => {
                                             return (
                                                 <TouchableOpacity key={key} onPress={() => {this.props.navigation.navigate("GroupInfo", {groupId:group.id,groupTitle:group.title})}}>
@@ -98,7 +98,21 @@ class SerachGroups extends React.Component {
                                                     </Block>
                                                 </TouchableOpacity>
                                             )
-                                        })
+                                        }) : <Block
+                                        row
+                                        center
+                                        middle
+                                        style={{
+                                          borderColor: colors.grey,
+                                          borderWidth: 1,
+                                          borderRadius: 8,
+                                          padding: 10,
+                                          width: "100%",
+                                          marginBottom: 10,
+                                        }}
+                                      >
+                                        <Text style={{ color: "#fff" }}>No Results</Text>
+                                      </Block>
                                     }
                                     </ScrollView>
                                 </>

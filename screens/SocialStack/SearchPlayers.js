@@ -149,40 +149,58 @@ class SearchPlayers extends React.Component {
             />
             <Block flex>
               {this.state.search != "" ? (
-                <ScrollView style={{ width: "100%" }}>
-                  {this.state.filteredUsers.map((user, key) => {
-                    return (
-                      <TouchableOpacity
-                        onPress={() => this.navToUserProfile(user)}
-                        key={key}
-                        style={{ width: "100%" }}
-                      >
-                        <Block
-                          row
-                          middle
-                          style={{
-                            justifyContent: "space-between",
-                            borderColor: colors.orange,
-                            borderWidth: 1,
-                            borderRadius: 8,
-                            padding: 10,
-                            marginBottom: 10,
-                          }}
+                this.state.filteredUsers.length > 0 ? (
+                  <ScrollView style={{ width: "100%" }}>
+                    {this.state.filteredUsers.map((user, key) => {
+                      return (
+                        <TouchableOpacity
+                          onPress={() => this.navToUserProfile(user)}
+                          key={key}
+                          style={{ width: "100%" }}
                         >
-                          <Block column>
-                            <Text style={{ color: "#fff" }}>{user.name}</Text>
-                            <Text style={{ color: "#fff" }}>
-                              @{user.username}
-                            </Text>
+                          <Block
+                            row
+                            middle
+                            style={{
+                              justifyContent: "space-between",
+                              borderColor: colors.orange,
+                              borderWidth: 1,
+                              borderRadius: 8,
+                              padding: 10,
+                              marginBottom: 10,
+                            }}
+                          >
+                            <Block column>
+                              <Text style={{ color: "#fff" }}>{user.name}</Text>
+                              <Text style={{ color: "#fff" }}>
+                                @{user.username}
+                              </Text>
+                            </Block>
+                            <Text style={{ color: "#fff" }}>{`${
+                              user.points
+                            } point${user.points == 1 ? "" : "s"}`}</Text>
                           </Block>
-                          <Text style={{ color: "#fff" }}>{`${
-                            user.points
-                          } point${user.points == 1 ? "" : "s"}`}</Text>
-                        </Block>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </ScrollView>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                ) : (
+                  <Block
+                    row
+                    center
+                    middle
+                    style={{
+                      borderColor: colors.grey,
+                      borderWidth: 1,
+                      borderRadius: 8,
+                      padding: 10,
+                      width: "100%",
+                      marginBottom: 10,
+                    }}
+                  >
+                    <Text style={{ color: "#fff" }}>No Results</Text>
+                  </Block>
+                )
               ) : (
                 <TabView
                   navigationState={this.state}

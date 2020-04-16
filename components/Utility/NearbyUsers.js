@@ -47,11 +47,11 @@ class GroupInvite extends React.Component {
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
       .get()
-      .then(user => {
+      .then((user) => {
         this.setState({ user: user.data() });
         return user.data();
       })
-      .then(user => {
+      .then((user) => {
         let nearbyLatKeys = [];
         let nearbyLngKeys = [];
         let nearbyLng = {};
@@ -70,8 +70,8 @@ class GroupInvite extends React.Component {
               user.location.latitude - 5 * (1 / 69)
             )
             .get()
-            .then(users => {
-              users.forEach(user => {
+            .then((users) => {
+              users.forEach((user) => {
                 nearbyLatKeys.push(user.id);
               });
             }),
@@ -89,8 +89,8 @@ class GroupInvite extends React.Component {
               user.location.longitude - 5 * (1 / 69)
             )
             .get()
-            .then(users => {
-              users.forEach(user => {
+            .then((users) => {
+              users.forEach((user) => {
                 nearbyLngKeys.push(user.id);
                 nearbyLng[user.id] = user.data();
               });
@@ -98,7 +98,7 @@ class GroupInvite extends React.Component {
         ]).then(() => {
           let nearbySortedKeys = nearbyLatKeys
             .filter(
-              value =>
+              (value) =>
                 nearbyLngKeys.includes(value) &&
                 value != firebase.auth().currentUser.uid
             )
@@ -121,45 +121,63 @@ class GroupInvite extends React.Component {
     const colors = this.props.theme.colors;
     return (
       <>
-        <ScrollView style={{ flex:1 }}>
+        <ScrollView style={{ flex: 1 }}>
           {this.state.nearbyComplete ? (
-            this.state.nearbySortedKeys.map((userId, key) => {
-              let user = this.state.users[userId];
-              let distance = Math.round(
-                getDistance(user.location, this.state.user.location) *
-                  0.000621371
-              );
-              return (
-                <TouchableOpacity
-                  onPress={() => this.props.onPress(user)}
-                  key={key}
-                  style={{ width: "100%" }}
-                >
-                  <Block
-                    row
-                    center
-                    middle
-                    style={{
-                      justifyContent: "space-between",
-                      borderColor: colors.orange,
-                      borderWidth: 1,
-                      borderRadius: 8,
-                      padding: 10,
-                      width: "100%",
-                      marginBottom: 10,
-                    }}
+            this.state.nearbySortedKeys.length > 0 ? (
+              this.state.nearbySortedKeys.map((userId, key) => {
+                let user = this.state.users[userId];
+                let distance = Math.round(
+                  getDistance(user.location, this.state.user.location) *
+                    0.000621371
+                );
+                return (
+                  <TouchableOpacity
+                    onPress={() => this.props.onPress(user)}
+                    key={key}
+                    style={{ width: "100%" }}
                   >
-                    <Block column>
-                      <Text style={{ color: "#fff" }}>{user.name}</Text>
-                      <Text style={{ color: "#fff" }}>@{user.username}</Text>
+                    <Block
+                      row
+                      center
+                      middle
+                      style={{
+                        justifyContent: "space-between",
+                        borderColor: colors.orange,
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        padding: 10,
+                        width: "100%",
+                        marginBottom: 10,
+                      }}
+                    >
+                      <Block column>
+                        <Text style={{ color: "#fff" }}>{user.name}</Text>
+                        <Text style={{ color: "#fff" }}>@{user.username}</Text>
+                      </Block>
+                      <Text style={{ color: "#fff" }}>{`${
+                        distance < 1 ? "<1" : distance
+                      } ${distance < 2 ? "Mile" : "Miles"} Away`}</Text>
                     </Block>
-                    <Text style={{ color: "#fff" }}>{`${
-                      distance < 1 ? "<1" : distance
-                    } ${distance < 2 ? "Mile" : "Miles"} Away`}</Text>
-                  </Block>
-                </TouchableOpacity>
-              );
-            })
+                  </TouchableOpacity>
+                );
+              })
+            ) : (
+              <Block
+                row
+                center
+                middle
+                style={{
+                  borderColor: colors.grey,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  padding: 10,
+                  width: "100%",
+                  marginBottom: 10,
+                }}
+              >
+                <Text style={{ color: "#fff" }}>No Results</Text>
+              </Block>
+            )
           ) : (
             <ActivityIndicator
               style={{ opacity: 1 }}

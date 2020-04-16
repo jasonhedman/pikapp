@@ -4,6 +4,7 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import TabBarIcon from "../components/Utility/TabBarIcon";
+import StaticSafeAreaInsets from 'react-native-static-safe-area-insets';
 
 import GameScreen from "../screens/GameStack/GameScreen";
 import GameLobby from "../screens/GameStack/GameLobby";
@@ -37,6 +38,7 @@ import PendingRequests from "../screens/SocialStack/PendingRequests";
 import GroupInvite from "../screens/SocialStack/GroupInvite";
 import SocialNotifications from "../screens/SocialStack/SocialNotifications";
 import GroupInvitations from "../screens/SocialStack/GroupInvitations";
+import { useSafeArea } from "react-native-safe-area-view";
 
 const Tab = createMaterialBottomTabNavigator();
 const MapStackNav = createStackNavigator();
@@ -154,13 +156,15 @@ function ProfileStack() {
 }
 
 function SocialStack(props) {
+  const insets = useSafeArea();
   return (
     <SocialStackNav.Navigator
       initialRouteName='SocialScreen'
       screenOptions={({ navigation, route }) => ({
-        headerStyle: styles.header,
+        headerStyle: [styles.header,{height: insets.top+54}],
         headerTitleStyle: styles.headerText,
         headerTintColor: "#E68A54",
+        headerMode:'screen',
         headerBackTitle: null,
         headerTruncatedBackTitle: null,
         headerLeft: () => (
@@ -185,29 +189,6 @@ function SocialStack(props) {
         component={SocialScreen}
         options={({ navigation, route }) => ({
           title: "Social",
-          headerLeft: null,
-          headerRight: () => (
-            <Block row>
-              <IconButton
-                icon='account-group'
-                color='#E68A54'
-                size={30}
-                onPress={() =>
-                  navigation.navigate("SocialNotifications")
-                }
-                style={{ marginTop: 12, marginBottom: 12 }}
-              />
-              <IconButton
-                icon='email'
-                color='#E68A54'
-                size={30}
-                onPress={() =>
-                  navigation.navigate("GroupInvitations")
-                }
-                style={{ marginTop: 12, marginBottom: 12 }}
-              />
-            </Block>
-          ),
         })}
       />
       <SocialStackNav.Screen

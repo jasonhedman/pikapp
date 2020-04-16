@@ -45,22 +45,8 @@ class GroupInfo extends React.Component {
                 headerTitle: group.data().title,
               });
               if (
-                group.data().users.includes(firebase.auth().currentUser.uid)
+                !group.data().users.includes(firebase.auth().currentUser.uid)
               ) {
-                this.props.navigation.setOptions({
-                  headerRight: () => (
-                    <Button
-                      mode='text'
-                      color={this.props.theme.colors.orange}
-                      onPress={this.leaveGroup}
-                      compact={true}
-                      uppercase={false}
-                    >
-                      Leave
-                    </Button>
-                  ),
-                });
-              } else {
                 if (
                   group.data().private == true &&
                   !group
