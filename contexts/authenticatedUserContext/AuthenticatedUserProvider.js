@@ -3,32 +3,50 @@ import PropTypes from "prop-types";
 import * as firebase from "firebase";
 
 import AuthenticatedUserContext from "./AuthenticatedUserContext";
+import withLogging from "../loggingContext/withLogging";
 
 class AuthenticatedUserProvider extends React.Component {
   constructor(props) {
     super(props);
+    this.props._trace(this,"create component", "constructor");
+
+    this.unsubscribe = null;
 
     this.state = {
       currentUserId: props.currentUserId,
       currentUser: firebase.auth().currentUser,
       currentUserProfile: null,
     };
+    this.props._trace(this,`current user guid: ${props.currentUserId}`, "constructor");
+  }
 
-    console.log("**** setup profile");
-    firebase
+  componentDidMount() {
+    this.props._trace(this,"component mounted", "componentDidMount");
+    this.props._trace(this,"setup user snapshot", "componentDidMount");
+
+    const unsubscribe = firebase
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
       .onSnapshot((userProfile) => {
-        console.log("**** got user data");
+        this.props._trace(this,"received user snapshot", "componentDidMount");
         const newUserProfile = userProfile.data();
-        newUserProfile.id = userProfile.id;         // EJH: Verify this. taken from something jason did. is id not in profile? perhaps not.
-          this.setState({ currentUserProfile: newUserProfile });
+        newUserProfile.id = userProfile.id; // EJH: Verify this. taken from something jason did. is id not in profile? perhaps not.
+        this.setState({ currentUserProfile: newUserProfile });
       });
+    this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount() {
+    this.props._trace(this,"unmount component", "componentWillUnmount");
+    if (this.unsubscribe) {
+      this.props._trace(this,"unsubscribe user snapshot listener", "componentWillUnmount");
+      this.unsubscribe();
+    }
   }
 
   render() {
-    console.log("render user provider");
+    this.props._trace(this,"render component", "render");
     const contextValue = {
       currentUserId: this.state.currentUserId,
       currentUser: this.state.currentUser,
@@ -60,4 +78,4 @@ AuthenticatedUserProvider.defaultProps = {
   children: null,
 };
 
-export default AuthenticatedUserProvider;
+export default withLogging(AuthenticatedUserProvider);
