@@ -31,7 +31,6 @@ class AuthenticatedUserProvider extends React.Component {
       .onSnapshot((userProfile) => {
         this.props._trace(this,"received user snapshot", "componentDidMount");
         const newUserProfile = userProfile.data();
-        newUserProfile.id = userProfile.id; // EJH: Verify this. taken from something jason did. is id not in profile? perhaps not.
         this.setState({ currentUserProfile: newUserProfile });
       });
     this.unsubscribe = unsubscribe;

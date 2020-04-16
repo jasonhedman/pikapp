@@ -13,6 +13,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import LogglyProvider from "./contexts/loggingContext/LogglyProvider";
 import ignoreWarnings from "react-native-ignore-warnings";
 import AppNavigator from "./navigation/AppNavigator";
+import { SafeAreaProvider } from "react-native-safe-area-view";
 
 const { height, width } = Dimensions.get("window");
 
@@ -77,16 +78,23 @@ class App extends React.Component {
     } else {
       return (
         <View style={styles.container}>
-          <LogglyProvider
-            token="59059019-605b-4aee-8c56-614fd989cab7"
-            logToConsole={true}
-          >
-            <PaperProvider theme={theme}>
-              <StatusBar barStyle="light-content" />
-              <ErrorBoundary onError={ (error, stack) => { console.log("==== AN ERROR HAPPENED =====")} }>
-              <AppNavigator /></ErrorBoundary>
-            </PaperProvider>
-          </LogglyProvider>
+          <SafeAreaProvider>
+            <LogglyProvider
+              token='59059019-605b-4aee-8c56-614fd989cab7'
+              logToConsole={true}
+            >
+              <PaperProvider theme={theme}>
+                <StatusBar barStyle='light-content' />
+                <ErrorBoundary
+                  onError={(error, stack) => {
+                    console.log("==== AN ERROR HAPPENED =====");
+                  }}
+                >
+                  <AppNavigator />
+                </ErrorBoundary>
+              </PaperProvider>
+            </LogglyProvider>
+          </SafeAreaProvider>
         </View>
       );
     }

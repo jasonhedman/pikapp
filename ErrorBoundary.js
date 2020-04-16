@@ -5,7 +5,7 @@ import FallbackComponent from "./FallbackComponent";
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { error: null, hasError: true };
+    this.state = { error: null, hasError: false };
   }
 
   static defaultProps = {

@@ -12,13 +12,10 @@ import { Block } from "galio-framework";
 
 import GameResult from "../../components/Profile/GameResult";
 import SportsBreakdown from "../../components/Profile/SportsBreakdown";
-import EditProfile from "../../components/Profile/EditProfile";
 import ProfilePic from "../../components/Utility/ProfilePic";
 import SlideModal from "react-native-modal";
-import LoadingOverlay from "../../components/Utility/LoadingOverlay";
 
 const { width } = Dimensions.get("window");
-import Chance from "chance";
 
 import * as firebase from "firebase";
 import "firebase/firestore";
@@ -35,6 +32,7 @@ import {
   Portal,
   Modal,
 } from "react-native-paper";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 class Profile extends React.Component {
   constructor() {
@@ -51,13 +49,10 @@ class Profile extends React.Component {
   }
 
   componentDidMount() {
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .onSnapshot(user => {
+    let currentUserProfile = this.props._currentUserProfile;
+    console.log(currentUserProfile);
         this.props.navigation.setOptions({
-          title: `${user.data().username}`,
+          title: `${currentUserProfile.username}`,
           headerRight: () => (
             <IconButton
               color={this.props.theme.colors.white}
@@ -69,10 +64,10 @@ class Profile extends React.Component {
         });
         let lastThree = [];
         for (
-          let i = user.data().gameHistory.length - 1;
+          let i = currentUserProfile.gameHistory.length - 1;
           i >=
-          (user.data().gameHistory.length >= 3
-            ? user.data().gameHistory.length - 3
+          (currentUserProfile.gameHistory.length >= 3
+            ? currentUserProfile.gameHistory.length - 3
             : 0);
           i--
         ) {
@@ -80,7 +75,7 @@ class Profile extends React.Component {
             firebase
               .firestore()
               .collection("games")
-              .doc(user.data().gameHistory[i])
+              .doc(currentUserProfile.gameHistory[i])
               .get()
               .then(game => {
                 return game.data();
@@ -90,7 +85,7 @@ class Profile extends React.Component {
         Promise.all(lastThree).then(games => {
           this.setState({
             lastThree: games,
-            user: user.data(),
+            user: currentUserProfile,
             complete: true,
           });
         });
@@ -104,7 +99,6 @@ class Profile extends React.Component {
           .catch(() => {
             this.setState({ proPicUrl: null})
           });
-      });
   }
 
   setImage = (proPicUrl, func) => {
@@ -481,4 +475,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(Profile);
+export default withTheme(withAuthenticatedUser(Profile));

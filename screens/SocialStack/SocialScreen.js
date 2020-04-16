@@ -10,6 +10,7 @@ import { withTheme, FAB, Portal, Modal, TextInput } from "react-native-paper";
 import { Block } from "galio-framework";
 import firebase from "firebase";
 import SocialHeader from "../../components/Social/SocialHeader";
+import NearbyUsersWidget from "../../components/Social/NearbyUsersWidget";
 
 class SocialScreen extends React.Component {
   constructor() {
@@ -40,6 +41,7 @@ class SocialScreen extends React.Component {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
+          <NearbyUsersWidget />
           <FAB
             icon='plus'
             label='See Groups'
