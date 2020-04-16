@@ -31,7 +31,7 @@ import MessageBoard from "../screens/UtilityStack/MessageBoard";
 // import "firebase/firestore";
 import CreateGroup from "../screens/SocialStack/CreateGroup";
 import { withTheme, IconButton } from "react-native-paper";
-// import { Block } from "galio-framework";
+import { Block } from "galio-framework";
 import EditGroup from "../screens/SocialStack/EditGroup";
 import EditProfile from "../screens/ProfileStack/EditProfile";
 import PendingRequests from "../screens/SocialStack/PendingRequests";
