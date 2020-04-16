@@ -7,8 +7,6 @@ import LogglyContext from "./LogglyContext";
 // present it as a regular prop.
 function withLogging(WrappedComponent) {
   return class extends React.Component {
-    // static contextType = LogglyContext;
-
     constructor(props) {
       super(props);
     }
@@ -16,8 +14,12 @@ function withLogging(WrappedComponent) {
     render() {
       return (
         <LogglyContext.Consumer>
-          {(value) => (
-            <WrappedComponent _logger={value.logger} {...this.props} />
+          {(context) => (
+            <WrappedComponent
+              _log={context.log}
+              _trace={context.trace}
+              {...this.props}
+            />
           )}
         </LogglyContext.Consumer>
       );

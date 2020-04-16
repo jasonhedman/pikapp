@@ -3,7 +3,7 @@ import AuthenticatedUserContext from "./AuthenticatedUserContext";
 
 // This is a HOC (React High Order Component) that wraps an export such that it
 // takes the component argument and "wraps" it in the context consumer. The context
-// consume exposes the context "value" through the function inside the consumer.
+// consume exposes the context "context" through the function inside the consumer.
 // NOTE: The thing insidet he Consumer is NOT an element. It is a function.
 // the function generates the wrapped component and injects props for the context bits.
 function withAuthenticatedUser(WrappedComponent) {
@@ -15,11 +15,11 @@ function withAuthenticatedUser(WrappedComponent) {
     render() {
       return (
         <AuthenticatedUserContext.Consumer>
-          {(value) => (
+          {(context) => (
             <WrappedComponent
-              _currentUserId={value.currentUserId}
-              _currentUser={value.currentUser}
-              _currentUserProfile={value.currentUserProfile}
+              _currentUserId={context.currentUserId}
+              _currentUser={context.currentUser}
+              _currentUserProfile={context.currentUserProfile}
               {...this.props}
             />
           )}

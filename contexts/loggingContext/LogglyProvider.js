@@ -17,10 +17,15 @@ class LogglyProvider extends React.Component {
 
     this.consoleLog = this.consoleLog.bind(this);
     this.log = this.log.bind(this);
+    this.trace = this.trace.bind(this);
   }
 
   render() {
-    const contextValue = { logger: this.log };
+    const contextValue = {
+      log: this.log,
+      trace: this.trace
+    };
+
     return (
       <LogglyContext.Provider value={contextValue}>
         {this.props.children}
@@ -73,7 +78,9 @@ class LogglyProvider extends React.Component {
           method_name = `.${data.method}()`;
         }
 
-        this.consoleLog(`TRACE: ${component_name}${method_name}: ${data.trace}`);
+        this.consoleLog(
+          `TRACE: ${component_name}${method_name}: ${data.trace}`
+        );
       } else {
         this.consoleLog(data);
       }
@@ -125,6 +132,14 @@ class LogglyProvider extends React.Component {
       );
       this.consoleLog("Failed log data:", message);
     }
+  }
+
+  trace(me, trace, method = null) {
+    this.log({
+      component: me.constructor.name,
+      method: method,
+      trace: trace,
+    });
   }
 }
 
