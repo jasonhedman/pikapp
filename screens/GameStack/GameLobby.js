@@ -34,7 +34,7 @@ const orange = "#E68A54";
 const green = "#56B49E";
 const grey = "#83838A";
 
-class GameScreen extends React.Component {
+class GameLobby extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -60,30 +60,6 @@ class GameScreen extends React.Component {
 
   navToUserProfile = id => {
     this.props.navigation.navigate("UserProfile", { userId: id });
-  };
-
-  onShare = async () => {
-    try {
-      const result = await Share.share({
-        message:
-          "Join me on PikApp Mobile, the newest way to organize and join pickup sports games.",
-        url: "https://apps.apple.com/us/app/pikapp-mobile/id1475855291",
-      });
-
-      if (result.action === Share.sharedAction) {
-        firebase
-          .firestore()
-          .collection("users")
-          .doc(firebase.auth().currentUser.uid)
-          .update({
-            points: firebase.firestore.FieldValue.increment(1),
-          });
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error) {
-      alert(error.message);
-    }
   };
 
   componentDidMount() {
@@ -141,7 +117,7 @@ class GameScreen extends React.Component {
             });
           });
         } else {
-          this.props.navigation.navigate("GameScreen");
+          this.props.navigation.navigate("GameLandingScreen");
         }
       });
   }
@@ -241,7 +217,7 @@ class GameScreen extends React.Component {
           gameState: "cancelled",
         }),
     ]).then(() => {
-      this.props.navigation.navigate("GameScreen");
+      this.props.navigation.navigate("GameLandingScreen");
       this.navToMap();
     });
   };
@@ -284,7 +260,7 @@ class GameScreen extends React.Component {
           });
       })
       .then(() => {
-        this.props.navigation.navigate("GameScreen");
+        this.props.navigation.navigate("GameLandingScreen");
         this.navToMap();
       });
   };
@@ -342,7 +318,7 @@ class GameScreen extends React.Component {
         game: null,
         complete: false,
       });
-      this.props.navigation.navigate("GameScreen");
+      this.props.navigation.navigate("GameLandingScreen");
       this.setModalVisible(false);
       this.navToMap();
     });
@@ -645,4 +621,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(GameScreen);
+export default withTheme(GameLobby);

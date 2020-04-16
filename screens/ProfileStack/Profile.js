@@ -22,6 +22,7 @@ import Chance from "chance";
 
 import * as firebase from "firebase";
 import "firebase/firestore";
+import onShare from "../../services/onShare";
 
 import {
   withTheme,
@@ -48,30 +49,6 @@ class Profile extends React.Component {
       settingsVisible: false,
     };
   }
-
-  onShare = async () => {
-    try {
-      const result = await Share.share({
-        message:
-          "Join me on PikApp Mobile, the newest way to organize and join pickup sports games.",
-        url: "https://apps.apple.com/us/app/pikapp-mobile/id1475855291",
-      });
-
-      if (result.action === Share.sharedAction) {
-        firebase
-          .firestore()
-          .collection("users")
-          .doc(firebase.auth().currentUser.uid)
-          .update({
-            points: firebase.firestore.FieldValue.increment(1),
-          });
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error) {
-      alert(error.message);
-    }
-  };
 
   componentDidMount() {
     firebase
@@ -448,7 +425,7 @@ class Profile extends React.Component {
                 <Button
                   mode='contained'
                   dark={true}
-                  onPress={() => this.onShare()}
+                  onPress={() => onShare()}
                   theme={{
                     colors: { primary: colors.orange },
                     fonts: { medium: this.props.theme.fonts.regular },

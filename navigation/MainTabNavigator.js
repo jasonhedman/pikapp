@@ -1,12 +1,13 @@
 import React from "react";
-import { Platform, StyleSheet, SafeAreaView } from "react-native";
-import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+// import { Platform, StyleSheet, SafeAreaView } from "react-native";
+import { StyleSheet } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+// import { NavigationContainer } from "@react-navigation/native";
 import TabBarIcon from "../components/Utility/TabBarIcon";
 import StaticSafeAreaInsets from 'react-native-static-safe-area-insets';
 
-import GameScreen from "../screens/GameStack/GameScreen";
+import GameLandingScreen from "../screens/GameStack/GameLandingScreen";
 import GameLobby from "../screens/GameStack/GameLobby";
 
 import MapScreen from "../screens/MapStack/MapScreen";
@@ -26,9 +27,9 @@ import UserProfile from "../screens/UtilityStack/UserProfile";
 import UserList from "../screens/UtilityStack/UserList";
 import MessageBoard from "../screens/UtilityStack/MessageBoard";
 
-import { UserContext } from "../UserContext";
-import firebase from "firebase";
-import "firebase/firestore";
+// import { UserContext } from "../UserContext";
+// import firebase from "firebase";
+// import "firebase/firestore";
 import CreateGroup from "../screens/SocialStack/CreateGroup";
 import { withTheme, IconButton } from "react-native-paper";
 import { Block } from "galio-framework";
@@ -315,7 +316,7 @@ function SocialStack(props) {
 function GameStack() {
   return (
     <GameStackNav.Navigator
-      initialRouteName='GameScreen'
+      initialRouteName='GameLandingScreen'
       screenOptions={({ navigation, route }) => ({
         headerStyle: styles.header,
         headerTitleStyle: styles.headerText,
@@ -333,8 +334,8 @@ function GameStack() {
       })}
     >
       <GameStackNav.Screen
-        name='GameScreen'
-        component={GameScreen}
+        name='GameLandingScreen'
+        component={GameLandingScreen}
         options={{
           headerLeft: null,
           title: "",
@@ -374,30 +375,30 @@ function GameStack() {
   );
 }
 
-class MainNavigation extends React.Component {
-  constructor() {
+class MainTabNavigator extends React.Component {
+  constructor(props) {
     super();
-    this.state = {
-      user: {},
-    };
+    // this.state = {
+    //   user: {},
+    // };
   }
 
-  componentDidMount() {
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .get()
-      .then(user => {
-        let userData = user.data();
-        userData.id = user.id;
-        this.setState({ user: userData });
-      });
-  }
+  // componentDidMount() {
+  //   firebase
+  //     .firestore()
+  //     .collection("users")
+  //     .doc(firebase.auth().currentUser.uid)
+  //     .get()
+  //     .then(user => {
+  //       let userData = user.data();
+  //       userData.id = user.id;
+  //       this.setState({ user: userData });
+  //     });
+  // }
 
   render() {
     return (
-      <UserContext.Provider value={this.state}>
+      // <UserContext.Provider value={this.state}>
         <Tab.Navigator
           initialRouteName='SocialStack'
           activeColor='#E68A54'
@@ -460,7 +461,7 @@ class MainNavigation extends React.Component {
             }}
           />
         </Tab.Navigator>
-      </UserContext.Provider>
+      // </UserContext.Provider>
     );
   }
 }
@@ -481,4 +482,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(MainNavigation);
+export default withTheme(MainTabNavigator);

@@ -10,3 +10,11 @@ web-build/
 web-report/
 _DelSyncFiles/
 .DS_Store
+out/
+package-lock.json
+firebase-debug.log
+.vscode
+.expo/*
+_DelSyncFiles/**/*
+.com.greenworldsoft.syncfolderspro
+node_modules
