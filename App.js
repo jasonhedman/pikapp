@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import * as Permissions from "expo-permissions";
 import * as firebase from "firebase";
+import ErrorBoundary from "./ErrorBoundary";
 
 import LogglyProvider from "./contexts/loggingContext/LogglyProvider";
 import ignoreWarnings from "react-native-ignore-warnings";
@@ -82,7 +83,8 @@ class App extends React.Component {
           >
             <PaperProvider theme={theme}>
               <StatusBar barStyle="light-content" />
-              <AppNavigator />
+              <ErrorBoundary onError={ (error, stack) => { console.log("==== AN ERROR HAPPENED =====")} }>
+              <AppNavigator /></ErrorBoundary>
             </PaperProvider>
           </LogglyProvider>
         </View>
