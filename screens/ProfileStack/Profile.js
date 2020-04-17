@@ -60,7 +60,6 @@ class Profile extends React.Component {
   componentDidMount() {
     this.props._trace(this, "mount component", "componentDidMount");
     let currentUserProfile = this.props._currentUserProfile;
-    console.log(currentUserProfile);
         this.props.navigation.setOptions({
           title: `${currentUserProfile.username}`,
           headerRight: () => (

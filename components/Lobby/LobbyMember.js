@@ -13,13 +13,26 @@ class LobbyMember extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {},
+      user:{},
       complete: false,
     };
   }
 
   componentDidMount() {
-    this.setState({ user: this.props.user, complete: true });
+    const unsubscribe = firebase
+      .firestore()
+      .collection("users")
+      .doc(this.props.user.id)
+      .onSnapshot((user) => {
+        this.setState({user:user.data(), complete:true})
+      });
+    this.unsubscribe = unsubscribe
+  }
+
+  componentWillUnmount(){
+    if(this.unsubscribe){
+      this.unsubscribe()
+    }
   }
 
   onPress = () => {
@@ -48,14 +61,12 @@ class LobbyMember extends React.Component {
 
   render() {
     let colors = this.props.theme.colors;
-    if (this.state.complete != false) {
+    if(this.state.complete){
       return (
         <TouchableOpacity
           onPress={() => {
-            if (this.props.user.id == firebase.auth().currentUser.uid) {
-              this.props.navToProfile();
-            } else {
-              this.props.navToUserProfile(this.props.user.id);
+            if (this.state.user.id != firebase.auth().currentUser.uid) {
+              this.props.navToUserProfile(this.state.user.id);
             }
           }}
         >
@@ -63,18 +74,18 @@ class LobbyMember extends React.Component {
             <ProfilePic
               size={40}
               addEnabled={false}
-              proPicUrl={this.state.proPicUrl}
+              proPicUrl={this.state.user.proPicUrl}
             />
             <Block flex column style={{ marginLeft: 12 }}>
               <Text style={{ color: "#FFF" }}>{this.state.user.name}</Text>
               <Text style={{ color: "#FFF" }}>@{this.state.user.username}</Text>
               <Text style={{ color: "#FFF" }}>{`Age: ${moment().diff(
-                moment.unix(parseInt(this.props.user.dob.seconds)),
+                moment.unix(parseInt(this.state.user.dob.seconds)),
                 "years",
                 false
               )}`}</Text>
             </Block>
-            {this.props.user.id == firebase.auth().currentUser.uid ? (
+            {this.state.user.id == firebase.auth().currentUser.uid ? (
               <IconButton
                 icon={this.props.bringingEquipment ? "basketball" : "cancel"}
                 color={
@@ -99,14 +110,9 @@ class LobbyMember extends React.Component {
         </TouchableOpacity>
       );
     } else {
-      return (
-        <Block center middle style={styles.containerAvailable}>
-          <Text style={{ color: this.props.theme.colors.grey }}>
-            Invite More Players
-          </Text>
-        </Block>
-      );
+      return null
     }
+    
   }
 }
 

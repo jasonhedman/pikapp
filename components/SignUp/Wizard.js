@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Block } from "galio-framework";
+import { withTheme } from "react-native-paper";
 
-export default class MultiStep extends Component {
+class MultiStep extends Component {
   constructor(props) {
     super(props);
     this.next = this.next.bind(this);
@@ -55,9 +56,11 @@ export default class MultiStep extends Component {
   }
   render() {
     return (
-      <Block middle flex style={{ backgroundColor: "red" }}>
+      <Block middle flex style={{ backgroundColor: this.props.theme.colors.dBlue }}>
         {this.state.steplist[this.state.curState]}
       </Block>
     );
   }
 }
+
+export default withTheme(MultiStep)

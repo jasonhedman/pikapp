@@ -3,8 +3,6 @@ import { StyleSheet, KeyboardAvoidingView } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import TabBarIcon from "../components/Utility/TabBarIcon";
-
-import TabBarIcon from "../components/Utility/TabBarIcon";
 import GameLandingScreen from "../screens/GameStack/GameLandingScreen";
 import GameLobby from "../screens/GameStack/GameLobby";
 import MapScreen from "../screens/MapStack/MapScreen";
@@ -28,6 +26,7 @@ import PendingRequests from "../screens/SocialStack/PendingRequests";
 import GroupInvite from "../screens/SocialStack/GroupInvite";
 import SocialNotifications from "../screens/SocialStack/SocialNotifications";
 import GroupInvitations from "../screens/SocialStack/GroupInvitations";
+import { useSafeArea } from "react-native-safe-area-view";
 
 const Tab = createMaterialBottomTabNavigator();
 const MapStackNav = createStackNavigator();
@@ -379,7 +378,7 @@ class MainTabNavigator extends React.Component {
     return (
       // <UserContext.Provider value={this.state}>
       <Tab.Navigator
-        initialRouteName='SocialStack'
+        initialRouteName='MapStack'
         activeColor='#E68A54'
         inactiveColor='#fff'
         barStyle={{ backgroundColor: "#121D28" }}

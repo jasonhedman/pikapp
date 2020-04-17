@@ -5,6 +5,7 @@ import * as firebase from "firebase";
 import { withTheme, Text, IconButton } from "react-native-paper";
 import ProfilePic from "../Utility/ProfilePic";
 import FollowButton from "../Utility/FollowButton";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 class GroupMember extends React.Component {
   constructor(props) {
@@ -18,13 +19,20 @@ class GroupMember extends React.Component {
   }
 
   componentDidMount() {
-    firebase
+    const unsubscribe = firebase
       .firestore()
       .collection("users")
       .doc(this.props.user)
       .onSnapshot((user) => {
         this.setState({ user: user.data(), complete: true });
       });
+    this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount(){
+    if(this.unsubscribe){
+      this.unsubscribe();
+    }
   }
 
   render() {
