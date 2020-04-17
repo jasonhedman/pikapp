@@ -3,24 +3,9 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
-  View,
   TouchableOpacity,
-  Share,
   SafeAreaView,
 } from "react-native";
-import { Block } from "galio-framework";
-
-import GameResult from "../../components/Profile/GameResult";
-import SportsBreakdown from "../../components/Profile/SportsBreakdown";
-import ProfilePic from "../../components/Utility/ProfilePic";
-import SlideModal from "react-native-modal";
-
-const { width } = Dimensions.get("window");
-
-import * as firebase from "firebase";
-import "firebase/firestore";
-import onShare from "../../services/onShare";
-
 import {
   withTheme,
   Button,
@@ -29,76 +14,94 @@ import {
   IconButton,
   Caption,
   Text,
-  Portal,
-  Modal,
 } from "react-native-paper";
+import SlideModal from "react-native-modal";
+import { Block } from "galio-framework";
+import * as firebase from "firebase";
+import "firebase/firestore";
+
+import GameResult from "../../components/Profile/GameResult";
+import SportsBreakdown from "../../components/Profile/SportsBreakdown";
+import ProfilePic from "../../components/Utility/ProfilePic";
+import onShare from "../../services/onShare";
+
+const { width } = Dimensions.get("window");
+
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
+import withLogging from "../../contexts/loggingContext/withLogging";
 
 class Profile extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.props._trace(this, "construct component", "constructor");
     this.state = {
-      user: {},
       proPicUrl: null,
       lastThree: new Array(),
       complete: false,
-      editModalVisible: false,
-      loading: false,
       settingsVisible: false,
     };
   }
 
-  componentDidMount() {
+  renderHelper() {
     let currentUserProfile = this.props._currentUserProfile;
-    console.log(currentUserProfile);
-        this.props.navigation.setOptions({
-          title: `${currentUserProfile.username}`,
-          headerRight: () => (
-            <IconButton
-              color={this.props.theme.colors.white}
-              icon={"settings"}
-              onPress={() => this.setState({ settingsVisible: true })}
-              size={20}
-            ></IconButton>
-          ),
-        });
-        let lastThree = [];
-        for (
-          let i = currentUserProfile.gameHistory.length - 1;
-          i >=
-          (currentUserProfile.gameHistory.length >= 3
-            ? currentUserProfile.gameHistory.length - 3
-            : 0);
-          i--
-        ) {
-          lastThree.push(
-            firebase
-              .firestore()
-              .collection("games")
-              .doc(currentUserProfile.gameHistory[i])
-              .get()
-              .then(game => {
-                return game.data();
-              })
-          );
-        }
-        Promise.all(lastThree).then(games => {
-          this.setState({
-            lastThree: games,
-            user: currentUserProfile,
-            complete: true,
-          });
-        });
+    this.props.navigation.setOptions({
+      title: `${currentUserProfile.username}`,
+      headerRight: () => (
+        <IconButton
+          color={this.props.theme.colors.white}
+          icon={"settings"}
+          onPress={() => this.setState({ settingsVisible: true })}
+          size={20}
+        ></IconButton>
+      ),
+    });
+  }
+
+  componentDidMount() {
+    this.props._trace(this, "mount component", "componentDidMount");
+    let currentUserProfile = this.props._currentUserProfile;
+
+    // gets up to last 3 games for this user.
+    let lastThree = [];
+    for (
+      let i = currentUserProfile.gameHistory.length - 1;
+      i >=
+      (currentUserProfile.gameHistory.length >= 3
+        ? currentUserProfile.gameHistory.length - 3
+        : 0);
+      i--
+    ) {
+      // NOTE: lastThree is an array of promises, each pulling game data
+      lastThree.push(
         firebase
-          .storage()
-          .ref("profilePictures/" + firebase.auth().currentUser.uid)
-          .getDownloadURL()
-          .then(url => {
-            this.setState({ proPicUrl: url });
+          .firestore()
+          .collection("games")
+          .doc(currentUserProfile.gameHistory[i])
+          .get()
+          .then((game) => {
+            return game.data();
           })
-          .catch(() => {
-            this.setState({ proPicUrl: null})
-          });
+      );
+    }
+
+    // when all three are done, write the games to state
+    Promise.all(lastThree).then((games) => {
+      this.setState({
+        lastThree: games,
+        complete: true,
+      });
+    })
+
+    firebase
+      .storage()
+      .ref("profilePictures/" + firebase.auth().currentUser.uid)
+      .getDownloadURL()
+      .then((url) => {
+        this.setState({ proPicUrl: url });
+      })
+      .catch(() => {
+        this.setState({ proPicUrl: null });
+      });
   }
 
   setImage = (proPicUrl, func) => {
@@ -121,7 +124,7 @@ class Profile extends React.Component {
     });
   };
 
-  navToUserProfile = id => {
+  navToUserProfile = (id) => {
     if (id != firebase.auth().currentUser.uid) {
       this.props.navigation.navigate("UserProfile", { userId: id });
     } else {
@@ -134,12 +137,14 @@ class Profile extends React.Component {
   };
 
   render() {
+    this.props._trace(this, "render component", "render");
+    this.renderHelper();
     const colors = this.props.theme.colors;
     if (this.state.complete) {
       return (
         <>
           <SlideModal
-            animationIn='slideInUp'
+            animationIn="slideInUp"
             transparent={true}
             isVisible={this.state.settingsVisible}
             onBackdropPress={() => this.setState({ settingsVisible: false })}
@@ -167,7 +172,7 @@ class Profile extends React.Component {
               }}
             >
               <Button
-                mode='contained'
+                mode="contained"
                 dark={true}
                 style={[styles.button]}
                 onPress={this.toChangePassword}
@@ -180,7 +185,7 @@ class Profile extends React.Component {
                 Change Password
               </Button>
               <Button
-                mode='contained'
+                mode="contained"
                 dark={true}
                 style={[styles.button]}
                 onPress={this.toChangeEmail}
@@ -193,7 +198,7 @@ class Profile extends React.Component {
                 Change Email
               </Button>
               <Button
-                mode='text'
+                mode="text"
                 dark={true}
                 style={[
                   styles.button,
@@ -218,7 +223,10 @@ class Profile extends React.Component {
           <SafeAreaView style={{ backgroundColor: colors.dBlue, flex: 1 }}>
             <ScrollView
               style={{ flex: 1 }}
-              contentContainerStyle={{ backgroundColor: colors.dBlue, paddingHorizontal: 16 }}
+              contentContainerStyle={{
+                backgroundColor: colors.dBlue,
+                paddingHorizontal: 16,
+              }}
               snapToStart={false}
             >
               <Block middle style={{ marginBottom: 12 }}>
@@ -237,7 +245,7 @@ class Profile extends React.Component {
                     <TouchableOpacity
                       onPress={() =>
                         this.navToUserList(
-                          this.state.user.followers,
+                          this.props._currentUserProfile.followers,
                           "Followers"
                         )
                       }
@@ -247,14 +255,14 @@ class Profile extends React.Component {
                           Followers
                         </Subheading>
                         <Headline style={styles.stat}>
-                          {this.state.user.followers.length}
+                          {this.props._currentUserProfile.followers.length}
                         </Headline>
                       </Block>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() =>
                         this.navToUserList(
-                          this.state.user.friendsList,
+                          this.props._currentUserProfile.friendsList,
                           "Following"
                         )
                       }
@@ -264,7 +272,7 @@ class Profile extends React.Component {
                           Following
                         </Subheading>
                         <Headline style={styles.stat}>
-                          {this.state.user.friendsList.length}
+                          {this.props._currentUserProfile.friendsList.length}
                         </Headline>
                       </Block>
                     </TouchableOpacity>
@@ -278,19 +286,22 @@ class Profile extends React.Component {
                       fontSize: 14,
                     }}
                   >
-                    {this.state.user.name}
+                    {this.props._currentUserProfile.name}
                   </Text>
                 </Block>
                 <Block row style={{ marginBottom: 12 }}>
                   <Button
-                    mode='contained'
+                    mode="contained"
                     onPress={() =>
                       this.props.navigation.navigate("EditProfile", {
-                        user: this.state.user,
+                        user: this.props._currentUserProfile,
                       })
                     }
                     dark={true}
-                    style={[styles.button, { borderColor: colors.white, flex:1 }]}
+                    style={[
+                      styles.button,
+                      { borderColor: colors.white, flex: 1 },
+                    ]}
                     contentStyle={{}}
                     theme={{
                       colors: { primary: colors.dBlue },
@@ -313,7 +324,7 @@ class Profile extends React.Component {
                     </Subheading>
                     <Headline
                       style={styles.info}
-                    >{`${this.state.user.gamesPlayed}`}</Headline>
+                    >{`${this.props._currentUserProfile.gamesPlayed}`}</Headline>
                   </Block>
                   <Block
                     style={[styles.statContainer, { marginLeft: 8 }]}
@@ -323,7 +334,7 @@ class Profile extends React.Component {
                   >
                     <Subheading style={styles.subheading}>Points</Subheading>
                     <Headline style={styles.info}>
-                      {this.state.user.points}
+                      {this.props._currentUserProfile.points}
                     </Headline>
                   </Block>
                 </Block>
@@ -336,7 +347,7 @@ class Profile extends React.Component {
               >
                 Sports
               </Headline>
-              <SportsBreakdown user={this.state.user} />
+              <SportsBreakdown user={this.props._currentUserProfile} />
               <Headline
                 style={[
                   styles.header,
@@ -391,7 +402,7 @@ class Profile extends React.Component {
                       You have not completed any games.
                     </Headline>
                     <Button
-                      mode='contained'
+                      mode="contained"
                       dark={true}
                       onPress={() => this.props.navigation.navigate("MapStack")}
                       theme={{
@@ -417,7 +428,7 @@ class Profile extends React.Component {
               </Caption>
               <Block width={width}>
                 <Button
-                  mode='contained'
+                  mode="contained"
                   dark={true}
                   onPress={() => onShare()}
                   theme={{
@@ -445,7 +456,7 @@ const styles = StyleSheet.create({
   },
   button: {
     borderWidth: 1,
-    marginBottom:8
+    marginBottom: 8,
   },
   modalButton: {
     marginBottom: 12,
@@ -475,4 +486,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(withAuthenticatedUser(Profile));
+export default withLogging(withTheme(withAuthenticatedUser(Profile)));
