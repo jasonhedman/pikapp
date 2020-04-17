@@ -17,22 +17,20 @@ class GroupInput extends React.Component {
     this.setState({ message });
   };
 
-  sendMessage = () => {
-    firebase
-      .firestore()
-      .collection("groups")
-      .doc(this.props.doc)
-      .collection("messages")
-      .add({
-        type: "message",
-        content: this.state.message,
-        created: new Date(),
-        senderId: this.props.user.id,
-        senderName: this.props.user.username,
-      });
-    this.setState({ message: "" });
-    Keyboard.dismiss();
-  };
+    sendMessage = () => {
+        firebase.firestore().collection('groups').doc(this.props.doc).collection('messages').add({
+            type:'message',
+            content: this.state.message,
+            created: new Date(),
+            senderId: this.props.user.id,
+            sender: {
+                username: this.props.user.username,
+                proPicUrl: this.props.user.proPicUrl
+            }
+        })
+        this.setState({message:''})
+        Keyboard.dismiss()
+    }
 
   render() {
     colors = this.props.theme.colors;

@@ -92,14 +92,15 @@ class MapScreen extends React.Component {
   };
 
   componentDidMount() {
-    // firebase.firestore().collection('users').get()
-    // .then(users => {
-    //   users.forEach(user => {
-    //     firebase.firestore().collection('users').doc(user.id).collection('groupInvitations').doc('init').set({
-    //       message: 'init'
-    //     })
-    //   })
-    // })
+    // firebase
+    //   .firestore()
+    //   .collection("users")
+    //   .get()
+    //   .then((users) => {
+    //     users.forEach((user) => {
+    //     });
+    //   });
+
     Promise.all([
       firebase
         .firestore()

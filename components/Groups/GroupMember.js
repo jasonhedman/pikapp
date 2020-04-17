@@ -43,7 +43,7 @@ class GroupMember extends React.Component {
               <ProfilePic
                 size={40}
                 addEnabled={false}
-                proPicUrl={this.props.picture}
+                proPicUrl={this.state.user.proPicUrl}
               />
               <Block flex column style={{ marginLeft: 12 }}>
                 <Text style={{ color: "#FFF" }}>{this.state.user.name}</Text>

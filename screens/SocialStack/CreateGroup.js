@@ -3,8 +3,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
-  KeyboardAvoidingView,
-  SafeAreaView,
+  SafeAreaView
 } from "react-native";
 import { Block } from "galio-framework";
 import { withTheme, Switch, Text, Chip } from "react-native-paper";
@@ -142,95 +141,58 @@ class CreateGroup extends React.Component {
   render() {
     const colors = this.props.theme.colors;
     return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
-        <SafeAreaView
-          style={{
-            flex: 1,
-            backgroundColor: colors.dBlue,
-            justifyContent: "center",
-          }}
-        >
-          <KeyboardAvoidingView
-            style={{ flex: 1, justifyContent: "center", padding: 16 }}
-            behavior="padding"
-          >
-            <Block
-              center
-              style={[
-                styles.registerContainer,
-                { backgroundColor: colors.dBlue, borderColor: colors.orange },
-              ]}
-            >
-              <InputBlock
-                value={this.state.title}
-                placeholder="Title"
-                onChange={this.onTitleChange}
-                multiline={false}
-                dense={true}
-              />
-              <InputBlock
-                value={this.state.description}
-                placeholder="Description"
-                onChange={this.onDescriptionChange}
-                multiline={true}
-                dense={true}
-              />
-              <Text style={{ color: colors.white, marginBottom: 10 }}>
-                Sports
-              </Text>
-              <Block middle row style={{ flexWrap: "wrap", marginBottom: 10 }}>
-                {Object.keys(sports).map((sport, index) => {
-                  return (
-                    <Chip
-                      onPress={() => {
-                        this.setState({
-                          [sport.toLowerCase()]: !this.state[
-                            sport.toLowerCase()
-                          ],
-                        });
-                        Keyboard.dismiss();
-                      }}
-                      selected={this.state[sport.toLowerCase()]}
-                      mode={"outlined"}
-                      style={{ backgroundColor: colors.orange, margin: 2 }}
-                      textStyle={{ color: colors.white }}
-                      key={index}
-                    >
-                      {sport}
-                    </Chip>
-                  );
-                })}
-              </Block>
-              <Block center middle>
-                <Text style={{ color: "#fff", marginBottom: 12 }}>
-                  {this.state.private ? "Private Group" : "Open Group"}
-                </Text>
-                <Switch
-                  value={this.state.private}
-                  onValueChange={() => {
-                    this.setState({ private: !this.state.private });
-                    Keyboard.dismiss();
-                  }}
-                  color={colors.orange}
-                  style={{ marginBottom: 12 }}
-                />
-              </Block>
-              <ButtonBlock
-                text="Create Group"
-                onPress={this.onCreate}
-                disabled={
-                  this.state.title.length == 0 ||
-                  this.state.description.length == 0
-                }
-                disabledStyles={{
-                  opacity: 0.3,
-                  backgroundColor: colors.orange,
-                }}
-              />
-            </Block>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{flex:1}}>
+            <SafeAreaView style={{flex:1,backgroundColor:colors.dBlue,justifyContent:'center'}}>
+                <Block center style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
+                    <InputBlock
+                        value={this.state.title}
+                        placeholder='Title'
+                        onChange={this.onTitleChange}
+                        multiline={false}
+                        dense={true}
+                    />
+                    <InputBlock
+                        value={this.state.description}
+                        placeholder='Description'
+                        onChange={this.onDescriptionChange}
+                        multiline={true}
+                        dense={true}
+                    />
+                    <Text style={{color:colors.white,marginBottom:10}}>
+                        Sports
+                    </Text>
+                    <Block middle row style={{flexWrap:'wrap',marginBottom:10}}>
+                        {
+                            Object.keys(sports).map((sport, index) => {
+                                return (
+                                    <Chip
+                                        onPress={() => {this.setState({[sport.toLowerCase()]:!this.state[sport.toLowerCase()]});Keyboard.dismiss()}}
+                                        selected={this.state[sport.toLowerCase()]}
+                                        mode={'outlined'}
+                                        style={{backgroundColor:colors.orange,margin:2}}
+                                        textStyle={{color:colors.white}}
+                                        key={index}
+                                    >
+                                        {sport}
+                                    </Chip>
+                                )
+                            })
+                        }
+                        
+                    </Block>
+                    <Block center middle>
+                        <Text style={{color:"#fff",marginBottom:12}}>{this.state.private ? "Private Group" : "Open Group"}</Text>
+                        <Switch
+                            value={this.state.private}
+                            onValueChange={() =>{this.setState({ private: !this.state.private });Keyboard.dismiss()}}
+                            color={colors.orange}
+                            style={{marginBottom:12}}
+                        />
+                    </Block>
+                    <ButtonBlock text='Create Group' onPress={this.onCreate} disabled={this.state.title.length == 0 || this.state.description.length == 0} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} />
+                </Block>
+            </SafeAreaView>
+        </TouchableWithoutFeedback>
     );
   }
 }

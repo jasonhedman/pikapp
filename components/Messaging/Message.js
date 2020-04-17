@@ -14,7 +14,10 @@ class Message extends React.Component {
           {this.props.messageBelow == undefined ||
           this.props.messageBelow.senderId != this.props.message.senderId ? (
             <Block style={{ marginTop: "auto" }}>
-              <ProfilePic size={30} proPicUrl={this.props.picture} />
+              <ProfilePic
+                size={30}
+                proPicUrl={this.props.message.sender.proPicUrl}
+              />
             </Block>
           ) : null}
           <Block
@@ -37,7 +40,7 @@ class Message extends React.Component {
                     : 0,
                   paddingBottom: 4,
                 }}
-              >{`@${this.props.message.senderName}`}</Text>
+              >{`@${this.props.message.sender.username}`}</Text>
             ) : null}
             <Text
               style={[
@@ -84,7 +87,10 @@ class Message extends React.Component {
                 })
               }
             >
-              <ProfilePic size={30} proPicUrl={this.props.picture} />
+              <ProfilePic
+                size={30}
+                proPicUrl={this.props.message.sender.proPicUrl}
+              />
             </TouchableOpacity>
           ) : null}
           <Block
@@ -115,7 +121,7 @@ class Message extends React.Component {
                       : 0,
                     paddingBottom: 4,
                   }}
-                >{`@${this.props.message.senderName}`}</Text>
+                >{`@${this.props.message.sender.username}`}</Text>
               </TouchableOpacity>
             ) : null}
             <Text

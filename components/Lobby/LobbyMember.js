@@ -14,25 +14,12 @@ class LobbyMember extends React.Component {
     super(props);
     this.state = {
       user: {},
-      proPicUrl: null,
       complete: false,
     };
   }
 
   componentDidMount() {
-    this.setState({ user: this.props.user });
-    if (this.props.user != null) {
-      firebase
-        .storage()
-        .ref("profilePictures/" + this.props.user.id)
-        .getDownloadURL()
-        .then((url) => {
-          this.setState({ proPicUrl: url, complete: true });
-        })
-        .catch((err) => {
-          this.setState({ proPicUrl: null, complete: true });
-        });
-    }
+    this.setState({ user: this.props.user, complete: true });
   }
 
   onPress = () => {

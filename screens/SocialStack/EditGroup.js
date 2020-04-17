@@ -3,7 +3,6 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
-  KeyboardAvoidingView,
   SafeAreaView,
 } from "react-native";
 import { Block } from "galio-framework";
@@ -169,10 +168,6 @@ class EditGroup extends React.Component {
             justifyContent: "center",
           }}
         >
-          <KeyboardAvoidingView
-            style={{ flex: 1, justifyContent: "center", padding: 16 }}
-            behavior="padding"
-          >
             <Block
               center
               style={[
@@ -248,7 +243,6 @@ class EditGroup extends React.Component {
                 uppercase={false}
               />
             </Block>
-          </KeyboardAvoidingView>
         </SafeAreaView>
       </TouchableWithoutFeedback>
     );

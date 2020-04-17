@@ -47,73 +47,46 @@ class Register extends React.Component {
       .auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then((cred) => {
-        firebase
-          .firestore()
-          .collection("users")
-          .doc(cred.user.uid)
-          .set({
-            id: cred.user.uid,
-            name: this.state.name,
-            username: this.state.username,
-            dob: this.state.dob,
-            gameHistory: [],
-            wins: 0,
-            losses: 0,
-            points: 0,
-            gamesPlayed: 0,
-            email: this.state.email,
-            notifications: [],
-            calendar: [],
-            sports: {
-              basketball: {
-                gamesPlayed: 0,
-                wins: 0,
-                losses: 0,
-                ptsFor: 0,
-                ptsAgainst: 0,
-              },
-              football: {
-                gamesPlayed: 0,
-                wins: 0,
-                losses: 0,
-                ptsFor: 0,
-                ptsAgainst: 0,
-              },
-              spikeball: {
-                gamesPlayed: 0,
-                wins: 0,
-                losses: 0,
-                ptsFor: 0,
-                ptsAgainst: 0,
-              },
-              volleyball: {
-                gamesPlayed: 0,
-                wins: 0,
-                losses: 0,
-                ptsFor: 0,
-                ptsAgainst: 0,
-              },
-              soccer: {
-                gamesPlayed: 0,
-                wins: 0,
-                losses: 0,
-                ptsFor: 0,
-                ptsAgainst: 0,
-              },
-              frisbee: {
-                gamesPlayed: 0,
-                wins: 0,
-                losses: 0,
-                ptsFor: 0,
-                ptsAgainst: 0,
-              },
+        firebase.firestore().collection('users').doc(cred.user.uid).set({
+          id: cred.user.uid,
+          name: this.state.name,
+          username: this.state.username,
+          dob: this.state.dob,
+          gameHistory: [],
+          wins: 0,
+          losses: 0,
+          points:0,
+          gamesPlayed:0,
+          email: this.state.email,
+          proPicUrl: null,
+          notifications: [],
+          calendar: [],
+          sports:{
+            basketball: {
+              gamesPlayed:0,
             },
-            friendsList: [],
-            followers: [],
-          })
-          .then(() => {
-            uploadImageAsync(this.state.image, cred);
-          });
+            football: {
+              gamesPlayed:0,
+            },
+            spikeball: {
+              gamesPlayed:0,
+            },
+            volleyball: {
+              gamesPlayed:0,
+            },
+            soccer: {
+              gamesPlayed:0,
+            },
+            frisbee: {
+              gamesPlayed:0,
+            },
+          },
+          friendsList:[],
+          followers:[]
+        })
+        .then(() => {
+          uploadImageAsync(this.state.image, cred)
+        })
       })
       .catch((err) => {
         console.error(err.toString());
@@ -218,9 +191,12 @@ async function uploadImageAsync(uri, cred) {
       .ref()
       .child("profilePictures/" + cred.user.uid);
     const snapshot = await ref.put(blob);
-
-    // We're done with the blob, close and release it
     blob.close();
+    ref.getDownloadURL().then((url) =>
+      firebase.firestore().collection("users").doc(cred.user.uid).update({
+        proPicUrl: url,
+      })
+    );
   }
 }
 

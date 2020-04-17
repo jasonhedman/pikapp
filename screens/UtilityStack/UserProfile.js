@@ -30,7 +30,6 @@ class UserProfile extends React.Component {
     super();
     this.state = {
       user: {},
-      proPicUrl: null,
       lastThree: new Array(),
       complete: false,
       editModalVisible: false,
@@ -146,15 +145,7 @@ class UserProfile extends React.Component {
           });
           return doc.data();
         }),
-      firebase
-        .storage()
-        .ref("profilePictures/" + this.props.route.params.userId)
-        .getDownloadURL()
-        .then((url) => {
-          this.setState({ proPicUrl: url });
-        })
-        .catch(() => {}),
-    ]).then((data) => {
+    ]).then(data => {
       this.setFollowedBy(data[0].friendsList, data[1].followers);
     });
   }
@@ -259,8 +250,12 @@ class UserProfile extends React.Component {
               snapToStart={false}
             >
               <Block middle style={{ marginBottom: 12 }}>
-                <Block row middle style={{ marginBottom: 8 }}>
-                  <ProfilePic size={80} proPicUrl={this.state.proPicUrl} />
+                <Block 
+                  row 
+                  middle 
+                  style={{ marginBottom: 8 }}
+                >
+                  <ProfilePic size={80} proPicUrl={this.state.user.proPicUrl} />
                   <Block
                     row
                     flex

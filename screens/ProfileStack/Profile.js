@@ -35,7 +35,7 @@ class Profile extends React.Component {
     super(props);
     this.props._trace(this, "construct component", "constructor");
     this.state = {
-      proPicUrl: null,
+      user: {},
       lastThree: new Array(),
       complete: false,
       settingsVisible: false,
@@ -60,48 +60,45 @@ class Profile extends React.Component {
   componentDidMount() {
     this.props._trace(this, "mount component", "componentDidMount");
     let currentUserProfile = this.props._currentUserProfile;
-
-    // gets up to last 3 games for this user.
-    let lastThree = [];
-    for (
-      let i = currentUserProfile.gameHistory.length - 1;
-      i >=
-      (currentUserProfile.gameHistory.length >= 3
-        ? currentUserProfile.gameHistory.length - 3
-        : 0);
-      i--
-    ) {
-      // NOTE: lastThree is an array of promises, each pulling game data
-      lastThree.push(
-        firebase
-          .firestore()
-          .collection("games")
-          .doc(currentUserProfile.gameHistory[i])
-          .get()
-          .then((game) => {
-            return game.data();
-          })
-      );
-    }
-
-    // when all three are done, write the games to state
-    Promise.all(lastThree).then((games) => {
-      this.setState({
-        lastThree: games,
-        complete: true,
-      });
-    });
-
-    firebase
-      .storage()
-      .ref("profilePictures/" + firebase.auth().currentUser.uid)
-      .getDownloadURL()
-      .then((url) => {
-        this.setState({ proPicUrl: url });
-      })
-      .catch(() => {
-        this.setState({ proPicUrl: null });
-      });
+    console.log(currentUserProfile);
+        this.props.navigation.setOptions({
+          title: `${currentUserProfile.username}`,
+          headerRight: () => (
+            <IconButton
+              color={this.props.theme.colors.white}
+              icon={"settings"}
+              onPress={() => this.setState({ settingsVisible: true })}
+              size={20}
+            ></IconButton>
+          ),
+        });
+        let lastThree = [];
+        for (
+          let i = currentUserProfile.gameHistory.length - 1;
+          i >=
+          (currentUserProfile.gameHistory.length >= 3
+            ? currentUserProfile.gameHistory.length - 3
+            : 0);
+          i--
+        ) {
+          lastThree.push(
+            firebase
+              .firestore()
+              .collection("games")
+              .doc(currentUserProfile.gameHistory[i])
+              .get()
+              .then(game => {
+                return game.data();
+              })
+          );
+        }
+        Promise.all(lastThree).then(games => {
+          this.setState({
+            lastThree: games,
+            user: currentUserProfile,
+            complete: true,
+          });
+        });
   }
 
   setImage = (proPicUrl, func) => {
@@ -231,7 +228,7 @@ class Profile extends React.Component {
             >
               <Block middle style={{ marginBottom: 12 }}>
                 <Block row middle style={{ marginBottom: 8 }}>
-                  <ProfilePic size={80} proPicUrl={this.state.proPicUrl} />
+                  <ProfilePic size={80} proPicUrl={this.state.user.proPicUrl} />
                   <Block
                     row
                     flex
@@ -293,9 +290,7 @@ class Profile extends React.Component {
                   <Button
                     mode="contained"
                     onPress={() =>
-                      this.props.navigation.navigate("EditProfile", {
-                        user: this.props._currentUserProfile,
-                      })
+                      this.props.navigation.navigate("EditProfile")
                     }
                     dark={true}
                     style={[
