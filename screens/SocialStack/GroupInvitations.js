@@ -1,14 +1,9 @@
 import React from "react";
-import { SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
-import { withTheme, Avatar } from "react-native-paper";
+import { SafeAreaView, ScrollView } from "react-native";
+import { withTheme } from "react-native-paper";
 import { Block } from "galio-framework";
-import { Text, Button } from "react-native-paper";
 import firebase from "firebase";
-import firestore from "firebase/firestore";
-import ProfilePic from "../../components/Utility/ProfilePic";
 import GroupInviteNotification from "../../components/Notifications/GroupInvitations/GroupInviteNotification";
-import Follower from "../../components/Notifications/Social/Follower";
-import GroupMember from "../../components/Notifications/Social/GroupMember";
 
 class GroupInvitations extends React.Component {
   constructor() {
@@ -44,7 +39,7 @@ class GroupInvitations extends React.Component {
                   .onSnapshot((group) => {
                     let invitations = this.state.invitations;
                     invitations[index].group = group.data();
-                    this.setState({invitations});
+                    this.setState({ invitations });
                   });
               })
             );

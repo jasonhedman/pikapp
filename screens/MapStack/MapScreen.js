@@ -3,10 +3,8 @@ import { Dimensions, StyleSheet, Image, ScrollView } from "react-native";
 import SlideModal from "react-native-modal";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as firebase from "firebase";
-import firestore from "firebase/firestore";
 require("firebase/functions");
 const moment = require("moment");
-const fetch = require("node-fetch");
 import MapViewDirections from "react-native-maps-directions";
 import { Block } from "galio-framework";
 import {
@@ -18,7 +16,6 @@ import {
   IconButton,
   Menu,
   Text,
-  Subheading,
 } from "react-native-paper";
 import * as Location from "expo-location";
 
@@ -78,7 +75,7 @@ class MapScreen extends React.Component {
     };
   }
 
-  setGameModalVisible = visible => {
+  setGameModalVisible = (visible) => {
     this.setState({ gameModalVisible: visible });
   };
 
@@ -108,7 +105,7 @@ class MapScreen extends React.Component {
         .firestore()
         .collection("users")
         .doc(firebase.auth().currentUser.uid)
-        .onSnapshot(user => {
+        .onSnapshot((user) => {
           this.setState({ user: user.data() }, () => {
             let notifications = [];
             if (user.data().notifications != undefined) {
@@ -119,7 +116,7 @@ class MapScreen extends React.Component {
                     .collection("notifications")
                     .doc(user.data().notifications[i])
                     .get()
-                    .then(doc => {
+                    .then((doc) => {
                       let docData = doc.data();
                       docData.id = doc.id;
                       if (docData.expire !== undefined) {
@@ -139,8 +136,8 @@ class MapScreen extends React.Component {
                     })
                 );
               }
-              Promise.all(notifications).then(nots => {
-                nots = nots.filter(val => {
+              Promise.all(notifications).then((nots) => {
+                nots = nots.filter((val) => {
                   return val !== null;
                 });
                 this.setState({ userNotifications: nots });
@@ -148,10 +145,10 @@ class MapScreen extends React.Component {
             }
           });
         }),
-      Location.hasServicesEnabledAsync().then(locationEnabled => {
+      Location.hasServicesEnabledAsync().then((locationEnabled) => {
         this.setState({ locationEnabled });
         if (locationEnabled == true) {
-          Location.getCurrentPositionAsync().then(pos => {
+          Location.getCurrentPositionAsync().then((pos) => {
             let region = {
               latitude: pos.coords.latitude,
               longitude: pos.coords.longitude,
@@ -161,7 +158,7 @@ class MapScreen extends React.Component {
             this.setState(
               { region, userLoc: pos.coords, locationComplete: true },
               () => {
-                Location.watchPositionAsync({}, pos => {
+                Location.watchPositionAsync({}, (pos) => {
                   this.setState({ userLoc: pos.coords });
                 });
                 firebase
@@ -175,7 +172,7 @@ class MapScreen extends React.Component {
             );
           });
         } else {
-          Location.requestPermissionsAsync().then(permission => {
+          Location.requestPermissionsAsync().then((permission) => {
             if (permission.status == "granted") {
               this.setState({ locationEnabled: true });
             }
@@ -185,9 +182,9 @@ class MapScreen extends React.Component {
       firebase
         .firestore()
         .collection("games")
-        .onSnapshot(docs => {
+        .onSnapshot((docs) => {
           let markers = {};
-          docs.forEach(doc => {
+          docs.forEach((doc) => {
             if (doc.data().gameState == "created") {
               markers[doc.id] = doc.data();
               markers[doc.id].id = doc.id;
@@ -205,14 +202,14 @@ class MapScreen extends React.Component {
     this.props.navigation.navigate("GameStack");
   };
 
-  addToTeam = gameId => {
+  addToTeam = (gameId) => {
     this.setState({ joinGameLoading: true, lobbyModalVisible: false });
     firebase
       .firestore()
       .collection("games")
       .doc(gameId)
       .get()
-      .then(game => {
+      .then((game) => {
         Promise.all([
           firebase
             .firestore()
@@ -281,7 +278,7 @@ class MapScreen extends React.Component {
       });
   };
 
-  navToUserProfile = id => {
+  navToUserProfile = (id) => {
     if (id != firebase.auth().currentUser.uid) {
       this.props.navigation.navigate("UserProfile", { userId: id });
     } else {
@@ -305,7 +302,7 @@ class MapScreen extends React.Component {
     this.setState({ menuVisible: false });
   };
 
-  onNewGamePress = notification => {
+  onNewGamePress = (notification) => {
     this.closeMenu();
     this.mapView.animateToRegion({
       longitude: notification.game.location.longitude,
@@ -316,7 +313,7 @@ class MapScreen extends React.Component {
     this.removeNotification(notification);
   };
 
-  onInvitePress = notification => {
+  onInvitePress = (notification) => {
     this.closeMenu();
     this.mapView.animateToRegion({
       longitude: notification.game.location.longitude,
@@ -327,7 +324,7 @@ class MapScreen extends React.Component {
     this.removeNotification(notification);
   };
 
-  onFollowerPress = notification => {
+  onFollowerPress = (notification) => {
     this.closeMenu();
     this.props.navigation.navigate("UserProfile", {
       userId: notification.from.id,
@@ -335,13 +332,13 @@ class MapScreen extends React.Component {
     this.removeNotification(notification);
   };
 
-  onNewPlayerPress = notification => {
+  onNewPlayerPress = (notification) => {
     this.closeMenu();
     this.props.navigation.navigate("GameStack");
     this.removeNotification(notification);
   };
 
-  removeNotification = notification => {
+  removeNotification = (notification) => {
     firebase
       .firestore()
       .collection("users")
@@ -428,7 +425,7 @@ class MapScreen extends React.Component {
               </Modal>
             </Portal>
             <SlideModal
-              animationType='slide'
+              animationType="slide"
               isVisible={this.state.lobbyModalVisible}
               onBackdropPress={() => {
                 this.setState({ lobbyModalVisible: false });
@@ -449,7 +446,7 @@ class MapScreen extends React.Component {
               />
             </SlideModal>
             <SlideModal
-              animationType='slide'
+              animationType="slide"
               isVisible={this.state.locationModalVisible}
               onBackdropPress={() => {
                 this.closeLocationModal();
@@ -464,7 +461,7 @@ class MapScreen extends React.Component {
               />
             </SlideModal>
             <SlideModal
-              animationType='slide'
+              animationType="slide"
               isVisible={this.state.timeModalVisible}
               onBackdropPress={() => {
                 this.setTimeModalVisible(false, true);
@@ -477,10 +474,10 @@ class MapScreen extends React.Component {
             </SlideModal>
             {this.state.locationComplete ? (
               <MapView
-                onRegionChangeComplete={region => {
+                onRegionChangeComplete={(region) => {
                   this.setState({ region });
                 }}
-                ref={mapView => (this.mapView = mapView)}
+                ref={(mapView) => (this.mapView = mapView)}
                 customMapStyle={mapStyles}
                 provider={PROVIDER_GOOGLE}
                 style={{ flex: 1 }}
@@ -526,7 +523,9 @@ class MapScreen extends React.Component {
                   />
                 ) : null}
               </MapView>
-            ) : <Block style={{backgroundColor:colors.dBlue}} flex></Block>}
+            ) : (
+              <Block style={{ backgroundColor: colors.dBlue }} flex></Block>
+            )}
             {this.state.lobbyModalVisible ? null : (
               <Block style={{ position: "absolute", bottom: 8, right: 8 }}>
                 {/* <Block style={{ marginLeft: 'auto', marginBottom: 8 }}>
@@ -544,7 +543,7 @@ class MapScreen extends React.Component {
                     anchor={
                       <>
                         <IconButton
-                          icon='bell'
+                          icon="bell"
                           color={colors.dBlue}
                           size={28}
                           style={{ backgroundColor: colors.white, margin: 0 }}
@@ -577,7 +576,7 @@ class MapScreen extends React.Component {
                     }}
                   >
                     <HeaderBlock
-                      text='Notifications'
+                      text="Notifications"
                       backButton={true}
                       backPress={this.onMenuDismiss}
                     />
@@ -673,8 +672,8 @@ class MapScreen extends React.Component {
                   </Menu>
                 </Block>
                 <FAB
-                  icon='plus'
-                  label='Create Game'
+                  icon="plus"
+                  label="Create Game"
                   onPress={() => {
                     this.setGameModalVisible(true);
                   }}
@@ -723,7 +722,6 @@ class MapScreen extends React.Component {
     }
   }
 }
-
 
 const styles = StyleSheet.create({
   disabled: {

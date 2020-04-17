@@ -1,11 +1,10 @@
 import React from "react";
-import { StyleSheet, Dimensions, View } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { Block } from "galio-framework";
 import { Button, withTheme } from "react-native-paper";
 import Modal from "react-native-modal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-import HeaderBlock from "../Utility/HeaderBlock";
 import HelperText from "../Utility/HelperText";
 import Form from "../Utility/Form";
 
@@ -40,7 +39,7 @@ class AgeAndIntensity extends React.Component {
     return (
       <Block flex style={{ backgroundColor: colors.dBlue }}>
         <Modal
-          animationType='slide'
+          animationType="slide"
           transparent={true}
           isVisible={this.state.dobModalVisible}
           onBackdropPress={() => {
@@ -57,7 +56,7 @@ class AgeAndIntensity extends React.Component {
         >
           <Block style={{ backgroundColor: "#FFF" }}>
             <DateTimePicker
-              mode='date'
+              mode="date"
               value={this.state.dob}
               onChange={this.setDate}
               textColor={colors.white}
@@ -77,11 +76,11 @@ class AgeAndIntensity extends React.Component {
                   justifyContent: "center",
                   alignItems: "center",
                   borderColor: "#FFF",
-                  marginTop:8
+                  marginTop: 8,
                 }}
-                icon='menu-down'
+                icon="menu-down"
                 dark={true}
-                mode='text'
+                mode="text"
                 onPress={() => {
                   this.setState({ dobModalVisible: true });
                 }}
@@ -102,7 +101,7 @@ class AgeAndIntensity extends React.Component {
                     false
                   ) < 13 && this.state.dobChosen
                 }
-                text='You must be 13 to use PikApp'
+                text="You must be 13 to use PikApp"
               />
             </Block>
             <Block row style={styles.buttonBlock}>

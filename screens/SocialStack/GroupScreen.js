@@ -1,15 +1,12 @@
 import React from "react";
-import { SafeAreaView, ScrollView, KeyboardAvoidingView } from "react-native";
+import { ScrollView, KeyboardAvoidingView } from "react-native";
 import { withTheme } from "react-native-paper";
 import { Block } from "galio-framework";
 import firebase from "firebase";
-import firestore from "firebase/firestore";
 import { HeaderHeightContext } from "@react-navigation/stack";
-import HeaderBlock from "../../components/Utility/HeaderBlock";
 import GroupInput from "../../components/Groups/GroupInput";
 import UserMessage from "../../components/Groups/UserMessage";
 import AdminMessage from "../../components/Groups/AdminMessage";
-import { Header } from "react-navigation-stack";
 import PendingRequestsPreview from "../../components/Groups/PendingRequestsPreview";
 
 class GroupScreen extends React.Component {
@@ -93,7 +90,7 @@ class GroupScreen extends React.Component {
                 paddingTop: headerHeight,
               }}
             >
-              <KeyboardAvoidingView behavior='padding' style={{ flex: 1 }}>
+              <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
                 {Object.keys(this.state.group).length > 0 &&
                 (this.state.group.owner == firebase.auth().currentUser.uid ||
                   this.state.group.admins.includes(
@@ -134,7 +131,7 @@ class GroupScreen extends React.Component {
                   })}
                 </ScrollView>
                 <GroupInput
-                  collection='groups'
+                  collection="groups"
                   doc={this.props.route.params.groupId}
                   user={this.state.user}
                 />

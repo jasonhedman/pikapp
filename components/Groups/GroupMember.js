@@ -2,21 +2,9 @@ import React from "react";
 import { StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 import { Block } from "galio-framework";
 import * as firebase from "firebase";
-import firestore from "firebase/firestore";
-const moment = require("moment");
-import {
-  withTheme,
-  Text,
-  IconButton,
-  Button,
-  Menu,
-  ThemeProvider,
-  Divider,
-} from "react-native-paper";
+import { withTheme, Text, IconButton } from "react-native-paper";
 import ProfilePic from "../Utility/ProfilePic";
 import FollowButton from "../Utility/FollowButton";
-
-const { width, height } = Dimensions.get("screen");
 
 class GroupMember extends React.Component {
   constructor(props) {
@@ -77,8 +65,8 @@ class GroupMember extends React.Component {
             {this.props.user != firebase.auth().currentUser.uid ? (
               <Block row middle>
                 <IconButton
-                  icon='dots-horizontal'
-                  color='white'
+                  icon="dots-horizontal"
+                  color="white"
                   onPress={() => this.props.openActionsModal(this.state.user)}
                 />
                 <FollowButton

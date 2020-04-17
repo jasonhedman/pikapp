@@ -12,11 +12,7 @@ import {
   withTheme,
   TextInput,
   Text,
-  ActivityIndicator,
-  Subheading,
 } from "react-native-paper";
-import { getDistance } from "geolib";
-import HeaderBlock from "../../components/Utility/HeaderBlock";
 
 import NearbyUsers from "../../components/Utility/NearbyUsers";
 import FriendsList from "../../components/Utility/FriendsList";

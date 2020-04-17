@@ -1,12 +1,8 @@
 import React from "react";
-import { SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
-import { withTheme, Avatar } from "react-native-paper";
+import { SafeAreaView, ScrollView } from "react-native";
+import { withTheme } from "react-native-paper";
 import { Block } from "galio-framework";
-import { Text, Button } from "react-native-paper";
 import firebase from "firebase";
-import firestore from "firebase/firestore";
-import ProfilePic from "../../components/Utility/ProfilePic";
-import GroupInviteNotification from "../../components/Notifications/GroupInvitations/GroupInviteNotification";
 import Follower from "../../components/Notifications/Social/Follower";
 import GroupMember from "../../components/Notifications/Social/GroupMember";
 
@@ -28,9 +24,9 @@ class SocialNotifications extends React.Component {
         .doc(firebase.auth().currentUser.uid)
         .collection("social")
         .orderBy("time", "desc")
-        .onSnapshot(results => {
+        .onSnapshot((results) => {
           let notifications = [];
-          results.forEach(result => {
+          results.forEach((result) => {
             let resultData = result.data();
             resultData.id = result.id;
             notifications.push(resultData);
@@ -41,7 +37,7 @@ class SocialNotifications extends React.Component {
         .firestore()
         .collection("users")
         .doc(firebase.auth().currentUser.uid)
-        .onSnapshot(user => {
+        .onSnapshot((user) => {
           this.setState({ user: user.data() });
         }),
     ]).then(() => {
@@ -67,14 +63,14 @@ class SocialNotifications extends React.Component {
                   />
                 );
               } else if (notification.type == "groupMember") {
-                  return (
-                      <GroupMember
-                        user={notification.from}
-                        group={notification.group}
-                        navigate={this.props.navigation.navigate}
-                        key={index}
-                      />
-                  )
+                return (
+                  <GroupMember
+                    user={notification.from}
+                    group={notification.group}
+                    navigate={this.props.navigation.navigate}
+                    key={index}
+                  />
+                );
               } else {
                 return null;
               }

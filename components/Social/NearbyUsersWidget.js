@@ -1,28 +1,10 @@
 import React from "react";
-import {
-  Dimensions,
-  Keyboard,
-  TouchableWithoutFeedback,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { Block } from "galio-framework";
-import { TabView, SceneMap } from "react-native-tab-view";
-import {
-  withTheme,
-  TextInput,
-  Text,
-  ActivityIndicator,
-  Subheading,
-} from "react-native-paper";
+import { withTheme } from "react-native-paper";
 import { getDistance } from "geolib";
-import HeaderBlock from "../Utility/HeaderBlock";
 
 import * as firebase from "firebase";
 import "firebase/firestore";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
-
-const { height, width } = Dimensions.get("window");
 
 class NearbyUsersWidget extends React.Component {
   constructor(props) {

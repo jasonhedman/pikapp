@@ -1,6 +1,5 @@
 import React from "react";
 import * as firebase from "firebase";
-import firestore from "firebase/firestore";
 import { withTheme, Button } from "react-native-paper";
 import { Block } from "galio-framework";
 
@@ -29,15 +28,12 @@ class FollowButton extends React.Component {
             firebase.auth().currentUser.uid
           ),
         }),
-      firebase
-        .firestore()
-        .collection("notifications")
-        .add({
-          type: "follower",
-          from: this.props.currentUser,
-          to: this.props.user,
-          time: new Date(),
-        }),
+      firebase.firestore().collection("notifications").add({
+        type: "follower",
+        from: this.props.currentUser,
+        to: this.props.user,
+        time: new Date(),
+      }),
       firebase
         .firestore()
         .collection("users")
@@ -85,7 +81,7 @@ class FollowButton extends React.Component {
           }}
         >
           <Button
-            mode='text'
+            mode="text"
             dark={true}
             compact={true}
             color={colors.white}
@@ -100,7 +96,7 @@ class FollowButton extends React.Component {
     } else {
       return (
         <Button
-          mode='contained'
+          mode="contained"
           dark={true}
           compact={true}
           color={colors.orange}

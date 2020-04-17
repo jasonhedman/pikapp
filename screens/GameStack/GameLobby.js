@@ -1,29 +1,17 @@
 import React from "react";
 import { Block } from "galio-framework";
-import {
-  Dimensions,
-  Share,
-  KeyboardAvoidingView,
-  StyleSheet,
-  Keyboard,
-  TouchableWithoutFeedback,
-  SafeAreaView,
-} from "react-native";
+import { Dimensions, StyleSheet, SafeAreaView } from "react-native";
 import LobbyMember from "../../components/Lobby/LobbyMember";
 import * as firebase from "firebase";
-import firestore from "firebase/firestore";
 import {
   withTheme,
-  Headline,
   Button,
   Subheading,
   Text,
   Modal,
   Portal,
-  Caption,
   IconButton,
 } from "react-native-paper";
-import LoadingOverlay from "../../components/Utility/LoadingOverlay";
 import { ScrollView } from "react-native-gesture-handler";
 import HeaderBlock from "../../components/Utility/HeaderBlock";
 import InvitePlayers from "../../components/Lobby/InvitePlayers";
@@ -58,7 +46,7 @@ class GameLobby extends React.Component {
     this.props.navigation.navigate("ProfileStack");
   };
 
-  navToUserProfile = id => {
+  navToUserProfile = (id) => {
     this.props.navigation.navigate("UserProfile", { userId: id });
   };
 
@@ -67,25 +55,27 @@ class GameLobby extends React.Component {
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
-      .onSnapshot(user => {
+      .onSnapshot((user) => {
         this.setState({ user: user.data() });
       });
     firebase
       .firestore()
       .collection("games")
       .doc(this.props.route.params.gameId)
-      .onSnapshot(game => {
+      .onSnapshot((game) => {
         if (game.data().gameState == "created") {
           this.setState({ game: game.data(), complete: true }, () => {
             this.props.navigation.setOptions({
-              title: `${this.state.game.intensity[0].toUpperCase() +
-                this.state.game.intensity.substring(
-                  1
-                )} ${this.state.game.sport[0].toUpperCase() +
-                this.state.game.sport.substring(1)}`,
+              title: `${
+                this.state.game.intensity[0].toUpperCase() +
+                this.state.game.intensity.substring(1)
+              } ${
+                this.state.game.sport[0].toUpperCase() +
+                this.state.game.sport.substring(1)
+              }`,
               headerRight: () => (
                 <IconButton
-                  icon='message'
+                  icon="message"
                   color={this.props.theme.colors.orange}
                   onPress={() =>
                     this.props.navigation.navigate("Messages", {
@@ -100,15 +90,15 @@ class GameLobby extends React.Component {
             });
             let pictures = {};
             Promise.all(
-              game.data().players.map(player => {
+              game.data().players.map((player) => {
                 return firebase
                   .storage()
                   .ref("profilePictures/" + player.id)
                   .getDownloadURL()
-                  .then(url => {
+                  .then((url) => {
                     pictures[player.id] = url;
                   })
-                  .catch(err => {
+                  .catch((err) => {
                     pictures[player.id] = null;
                   });
               })
@@ -130,15 +120,15 @@ class GameLobby extends React.Component {
     });
   };
 
-  setModalVisible = modalVisible => {
+  setModalVisible = (modalVisible) => {
     this.setState({ modalVisible });
   };
 
-  setCancelModalVisible = cancelModalVisible => {
+  setCancelModalVisible = (cancelModalVisible) => {
     this.setState({ cancelModalVisible });
   };
 
-  setInviteModalVisible = inviteModalVisible => {
+  setInviteModalVisible = (inviteModalVisible) => {
     this.setState({ inviteModalVisible });
   };
 
@@ -198,7 +188,7 @@ class GameLobby extends React.Component {
 
   deleteGame = () => {
     Promise.all([
-      this.state.game.players.forEach(user => {
+      this.state.game.players.forEach((user) => {
         firebase
           .firestore()
           .collection("users")
@@ -279,7 +269,7 @@ class GameLobby extends React.Component {
         .update({
           gameState: "completed",
         }),
-      users.map(user => {
+      users.map((user) => {
         return firebase
           .firestore()
           .collection("users")
@@ -354,7 +344,7 @@ class GameLobby extends React.Component {
                   Are you sure you you would like to complete this game?
                 </Subheading>
                 <Button
-                  mode='contained'
+                  mode="contained"
                   dark={true}
                   onPress={this.completeGame}
                   theme={{
@@ -392,7 +382,7 @@ class GameLobby extends React.Component {
                   Are you sure you you would like to cancel this game?
                 </Subheading>
                 <Button
-                  mode='contained'
+                  mode="contained"
                   dark={true}
                   onPress={this.deleteGame}
                   theme={{
@@ -467,8 +457,8 @@ class GameLobby extends React.Component {
                       Equipment
                     </Text>
                   </Block>
-                  <Block style={{flex:-1}}>
-                    <ScrollView style={{ width: "100%"}}>
+                  <Block style={{ flex: -1 }}>
+                    <ScrollView style={{ width: "100%" }}>
                       {this.makePlayers()}
                     </ScrollView>
                   </Block>
@@ -484,7 +474,7 @@ class GameLobby extends React.Component {
                       }}
                     >
                       <Button
-                        mode='contained'
+                        mode="contained"
                         dark={true}
                         onPress={() => this.setCancelModalVisible(true)}
                         theme={{
@@ -496,7 +486,7 @@ class GameLobby extends React.Component {
                         Cancel
                       </Button>
                       <Button
-                        mode='contained'
+                        mode="contained"
                         onPress={() => this.setInviteModalVisible(true)}
                         theme={{
                           colors: { primary: colors.white },
@@ -509,7 +499,7 @@ class GameLobby extends React.Component {
                       {
                         <Button
                           dark={true}
-                          mode='contained'
+                          mode="contained"
                           onPress={() => this.setModalVisible(true)}
                           theme={{
                             colors: { primary: colors.lGreen },
@@ -531,7 +521,7 @@ class GameLobby extends React.Component {
                       }}
                     >
                       <Button
-                        mode='text'
+                        mode="text"
                         dark={false}
                         onPress={() => this.leaveGame()}
                         theme={{
@@ -543,7 +533,7 @@ class GameLobby extends React.Component {
                         Leave Game
                       </Button>
                       <Button
-                        mode='contained'
+                        mode="contained"
                         dark={true}
                         onPress={() => this.setInviteModalVisible(true)}
                         theme={{
@@ -559,7 +549,7 @@ class GameLobby extends React.Component {
                 </Block>
               ) : null}
               <HelperText
-                text='No players are bringing equipment'
+                text="No players are bringing equipment"
                 visible={!(this.state.game.equipment.length > 0)}
               />
             </Block>

@@ -1,77 +1,63 @@
-import React, { Component } from 'react';
-import {
-    ScrollView,
-} from 'react-native'
-import { Block } from 'galio-framework';
+import React, { Component } from "react";
+import { Block } from "galio-framework";
 
 export default class MultiStep extends Component {
-    
-    constructor(props) {
-        super(props)
-        this.next = this.next.bind(this)
-        this.previous = this.previous.bind(this)
-        this.saveStepState = this.saveStepState.bind(this)
-        this.getStepState = this.getStepState.bind(this)
-        this.finishWizard = this.finishWizard.bind(this)
-         this.state = {
-            curState:0,
-            steplist:[],
-            childState:[]
-           };
-        
-          
-        
-        for(var i =0; i< this.props.steps.length;i++){
-            this.state.steplist[i] = React.cloneElement(this.props.steps[i].component,{
-                nextFn:this.next,
-                prevFn:this.previous,
-                saveState:this.saveStepState,
-                getState:this.getStepState
-            })
-            
-            
+  constructor(props) {
+    super(props);
+    this.next = this.next.bind(this);
+    this.previous = this.previous.bind(this);
+    this.saveStepState = this.saveStepState.bind(this);
+    this.getStepState = this.getStepState.bind(this);
+    this.finishWizard = this.finishWizard.bind(this);
+    this.state = {
+      curState: 0,
+      steplist: [],
+      childState: [],
+    };
+
+    for (var i = 0; i < this.props.steps.length; i++) {
+      this.state.steplist[i] = React.cloneElement(
+        this.props.steps[i].component,
+        {
+          nextFn: this.next,
+          prevFn: this.previous,
+          saveState: this.saveStepState,
+          getState: this.getStepState,
         }
-        
-        
+      );
     }
-    next(){
-        if((this.state.curState +1) < this.props.steps.length ){
-            this.setState({curState:this.state.curState +1})
-        }
-        if((this.state.curState +1) == this.props.steps.length){
-            this.finishWizard()
-        }
-        
+  }
+  next() {
+    if (this.state.curState + 1 < this.props.steps.length) {
+      this.setState({ curState: this.state.curState + 1 });
     }
-    previous(){
-        if((this.state.curState - 1) >= 0 ){
-            this.setState({curState:this.state.curState - 1})
-        }
+    if (this.state.curState + 1 == this.props.steps.length) {
+      this.finishWizard();
     }
-    saveStepState(stepNum,stateData){
-        
-        var chdata = this.state.childState
-        chdata[stepNum] = stateData
-        this.setState({childState:chdata})
-        
+  }
+  previous() {
+    if (this.state.curState - 1 >= 0) {
+      this.setState({ curState: this.state.curState - 1 });
     }
-    
-    getStepState(){
-        return this.state.childState
-    }
-    
-    finishWizard(){
-        this.props.onFinish(this.getStepState())
-    }
-    render(){
-        
-        
-        return (
-            <Block middle flex style={{backgroundColor:'red'}}>
-                {this.state.steplist[this.state.curState]}  
-            </Block>
-        )
-            
-        
-    }
+  }
+  saveStepState(stepNum, stateData) {
+    var chdata = this.state.childState;
+    chdata[stepNum] = stateData;
+    this.setState({ childState: chdata });
+  }
+
+  getStepState() {
+    return this.state.childState;
+  }
+
+  finishWizard() {
+    this.props.onFinish(this.getStepState());
+  }
+  render() {
+    return (
+      <Block middle flex style={{ backgroundColor: "red" }}>
+        {this.state.steplist[this.state.curState]}
+      </Block>
+    );
+  }
 }

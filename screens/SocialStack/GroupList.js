@@ -13,14 +13,14 @@ class GroupList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props._trace(this,"construct component", "constructor");
+    this.props._trace(this, "construct component", "constructor");
     this.state = {
       groups: new Array(),
     };
   }
 
   componentDidMount() {
-    this.props._trace(this,"get group from user profile", "componentDidMount");
+    this.props._trace(this, "get group from user profile", "componentDidMount");
     const groupIds = this.props._currentUserProfile.groups;
 
     Promise.all(
@@ -35,13 +35,13 @@ class GroupList extends React.Component {
           });
       })
     ).then((groups) => {
-      this.props._trace(this,"set groups state", "componentDidMount");
+      this.props._trace(this, "set groups state", "componentDidMount");
       this.setState({ groups: groups });
     });
   }
 
   render() {
-    this.props._trace(this,"render component", "render");
+    this.props._trace(this, "render component", "render");
     const colors = this.props.theme.colors;
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>

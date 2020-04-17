@@ -25,7 +25,7 @@ import SportsBreakdown from "../../components/Profile/SportsBreakdown";
 import ProfilePic from "../../components/Utility/ProfilePic";
 import onShare from "../../services/onShare";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 import withLogging from "../../contexts/loggingContext/withLogging";
@@ -90,7 +90,7 @@ class Profile extends React.Component {
         lastThree: games,
         complete: true,
       });
-    })
+    });
 
     firebase
       .storage()

@@ -3,13 +3,10 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
-  View,
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
 import { Block } from "galio-framework";
-
-import LoadingOverlay from "../../components/Utility/LoadingOverlay";
 
 const { width, height } = Dimensions.get("window");
 
@@ -46,12 +43,12 @@ class UserProfile extends React.Component {
     };
   }
 
-  getFollowing = followers => {
+  getFollowing = (followers) => {
     return followers.includes(firebase.auth().currentUser.uid);
   };
 
   setFollowedBy = (currentUserFollowing, userFollowers) => {
-    let ids = currentUserFollowing.filter(value =>
+    let ids = currentUserFollowing.filter((value) =>
       userFollowers.includes(value)
     );
     if (ids.length == 0) {
@@ -63,7 +60,7 @@ class UserProfile extends React.Component {
           .collection("users")
           .doc(ids[0])
           .get()
-          .then(user => {
+          .then((user) => {
             return user.data().username;
           }),
         firebase
@@ -71,10 +68,10 @@ class UserProfile extends React.Component {
           .collection("users")
           .doc(ids[1])
           .get()
-          .then(user => {
+          .then((user) => {
             return user.data().username;
           }),
-      ]).then(followedBy => {
+      ]).then((followedBy) => {
         followedBy.push(`${ids.length - 2} others`);
         this.setState({ followedBy, followedByComplete: true });
       });
@@ -86,11 +83,11 @@ class UserProfile extends React.Component {
             .collection("users")
             .doc(id)
             .get()
-            .then(user => {
+            .then((user) => {
               return user.data().username;
             });
         })
-      ).then(followedBy => {
+      ).then((followedBy) => {
         this.setState({ followedBy, followedByComplete: true });
       });
     }
@@ -103,7 +100,7 @@ class UserProfile extends React.Component {
         .collection("users")
         .doc(firebase.auth().currentUser.uid)
         .get()
-        .then(user => {
+        .then((user) => {
           this.setState({
             currentUser: user.data(),
           });
@@ -114,7 +111,7 @@ class UserProfile extends React.Component {
         .collection("users")
         .doc(this.props.route.params.userId)
         .get()
-        .then(doc => {
+        .then((doc) => {
           this.props.navigation.setOptions({
             title: `${doc.data().username}`,
           });
@@ -134,12 +131,12 @@ class UserProfile extends React.Component {
                 .collection("games")
                 .doc(doc.data().gameHistory[i])
                 .get()
-                .then(game => {
+                .then((game) => {
                   return game.data();
                 })
             );
           }
-          Promise.all(lastThree).then(games => {
+          Promise.all(lastThree).then((games) => {
             this.setState({
               lastThree: games,
               user: doc.data(),
@@ -153,11 +150,11 @@ class UserProfile extends React.Component {
         .storage()
         .ref("profilePictures/" + this.props.route.params.userId)
         .getDownloadURL()
-        .then(url => {
+        .then((url) => {
           this.setState({ proPicUrl: url });
         })
         .catch(() => {}),
-    ]).then(data => {
+    ]).then((data) => {
       this.setFollowedBy(data[0].friendsList, data[1].followers);
     });
   }
@@ -185,30 +182,24 @@ class UserProfile extends React.Component {
               firebase.auth().currentUser.uid
             ),
           }),
+        firebase.firestore().collection("notifications").add({
+          type: "follower",
+          from: this.state.currentUser,
+          to: this.state.user,
+          time: new Date(),
+        }),
         firebase
           .firestore()
-          .collection("notifications")
+          .collection("users")
+          .doc(this.props.route.params.userId)
+          .collection("social")
           .add({
             type: "follower",
             from: this.state.currentUser,
             to: this.state.user,
             time: new Date(),
           }),
-        firebase
-          .firestore()
-          .collection("users")
-          .doc(this.props.route.params.userId)
-          .collection('social')
-          .add({
-            type: "follower",
-            from: this.state.currentUser,
-            to: this.state.user,
-            time: new Date(),
-          })
-      ])
-      
-      
-      
+      ]);
     });
   };
 
@@ -216,7 +207,7 @@ class UserProfile extends React.Component {
     this.setState({ following: false }, () => {
       let user = this.state.user;
       user.followers = user.followers.filter(
-        friend => friend != firebase.auth().currentUser.uid
+        (friend) => friend != firebase.auth().currentUser.uid
       );
       this.setState({ user }, () => {
         firebase
@@ -241,7 +232,7 @@ class UserProfile extends React.Component {
     });
   };
 
-  navToUserProfile = id => {
+  navToUserProfile = (id) => {
     if (id != firebase.auth().currentUser.uid) {
       this.props.navigation.push("UserProfile", { userId: id });
     } else {
@@ -261,15 +252,14 @@ class UserProfile extends React.Component {
           <SafeAreaView style={{ backgroundColor: colors.dBlue, flex: 1 }}>
             <ScrollView
               style={{ flex: 1 }}
-              contentContainerStyle={{ backgroundColor: colors.dBlue, paddingHorizontal: 16 }}
+              contentContainerStyle={{
+                backgroundColor: colors.dBlue,
+                paddingHorizontal: 16,
+              }}
               snapToStart={false}
             >
               <Block middle style={{ marginBottom: 12 }}>
-                <Block 
-                  row 
-                  middle 
-                  style={{ marginBottom: 8 }}
-                >
+                <Block row middle style={{ marginBottom: 8 }}>
                   <ProfilePic size={80} proPicUrl={this.state.proPicUrl} />
                   <Block
                     row
@@ -335,7 +325,9 @@ class UserProfile extends React.Component {
                           <>
                             {index == this.state.followedBy.length - 1 &&
                             this.state.followedBy.length > 1 ? (
-                              <Text key='and' style={{ color: colors.grey }}>and </Text>
+                              <Text key="and" style={{ color: colors.grey }}>
+                                and{" "}
+                              </Text>
                             ) : null}
                             <Text key={index} style={{ color: colors.white }}>
                               {userId}
@@ -353,7 +345,7 @@ class UserProfile extends React.Component {
                 <Block row style={{ marginBottom: 12 }}>
                   {this.state.following ? (
                     <Button
-                      mode='contained'
+                      mode="contained"
                       onPress={this.removeFriend}
                       dark={true}
                       style={[styles.button, { borderColor: colors.white }]}
@@ -368,7 +360,7 @@ class UserProfile extends React.Component {
                     </Button>
                   ) : (
                     <Button
-                      mode='contained'
+                      mode="contained"
                       onPress={this.addFriend}
                       dark={true}
                       style={[styles.button, { borderColor: colors.orange }]}
@@ -441,12 +433,12 @@ class UserProfile extends React.Component {
               }}
             >
               <HeaderBlock
-                text='User does not exist.'
+                text="User does not exist."
                 backButton={true}
                 backPress={() => this.props.navigation.goBack()}
               />
               <ButtonBlock
-                text='Go Back'
+                text="Go Back"
                 onPress={() => this.props.navigation.goBack()}
               />
             </Block>

@@ -65,11 +65,11 @@ class GroupInviteNotification extends React.Component {
             .firestore()
             .collection("groups")
             .doc(this.props.group.id)
-            .collection('messages')
+            .collection("messages")
             .add({
               content: `${this.props.currentUser.name} (@${this.props.currentUser.username}) joined the group.`,
-              created : new Date(),
-              type: 'admin'
+              created: new Date(),
+              type: "admin",
             }),
           this.props.accept(),
         ])
@@ -127,7 +127,7 @@ class GroupInviteNotification extends React.Component {
                 firebase.auth().currentUser.uid
               ) ? (
                 <Button
-                  mode='text'
+                  mode="text"
                   dark={false}
                   onPress={() => {}}
                   theme={{
@@ -142,7 +142,7 @@ class GroupInviteNotification extends React.Component {
               ) : (
                 <>
                   <Button
-                    mode='contained'
+                    mode="contained"
                     dark={true}
                     onPress={this.accept}
                     theme={{
@@ -155,7 +155,7 @@ class GroupInviteNotification extends React.Component {
                     Accept
                   </Button>
                   <Button
-                    mode='text'
+                    mode="text"
                     dark={false}
                     onPress={this.decline}
                     theme={{

@@ -14,7 +14,11 @@ class AppNavigator extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props._trace(this,"************** Starting  ******************", "constructor");
+    this.props._trace(
+      this,
+      "************** Starting  ******************",
+      "constructor"
+    );
 
     this.unsubscribe = null;
 
@@ -27,19 +31,28 @@ class AppNavigator extends React.Component {
   }
 
   componentDidMount() {
-    this.props._trace(this,"subscribe to auth changes", "componentDidMount");
+    this.props._trace(this, "subscribe to auth changes", "componentDidMount");
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (user != null) {
-        this.props._trace(this,`isAuthenticated ${user.email}`, "componentDidMount");
+        this.props._trace(
+          this,
+          `isAuthenticated ${user.email}`,
+          "componentDidMount"
+        );
         this.registerForPushNotificationsAsync(user.uid);
-        this.props._trace(this,"set hasCurrentUser true", "componentDidMount");
+        this.props._trace(this, "set hasCurrentUser true", "componentDidMount");
         this.setState({ hasCurrentUser: true });
       } else {
-        this.props._trace(this,
+        this.props._trace(
+          this,
           "authStateChanged - NO USER",
           "componentDidMount"
         );
-        this.props._trace(this,"set hasCurrentUser false", "componentDidMount");
+        this.props._trace(
+          this,
+          "set hasCurrentUser false",
+          "componentDidMount"
+        );
         this.setState({ hasCurrentUser: false });
       }
     });
@@ -47,15 +60,19 @@ class AppNavigator extends React.Component {
   }
 
   componentWillUnmount() {
-    this.props._trace(this,"component will unmount", "componentWillUnmount");
+    this.props._trace(this, "component will unmount", "componentWillUnmount");
     if (this.unsubscribe) {
-      this.props._trace(this,"unsubscribe auth listener", "componentWillUnmount");
+      this.props._trace(
+        this,
+        "unsubscribe auth listener",
+        "componentWillUnmount"
+      );
       this.unsubscribe();
     }
   }
 
   render() {
-    this.props._trace(this,"start", "render component");
+    this.props._trace(this, "start", "render component");
     return (
       <NavigationContainer>
         {this.state.hasCurrentUser ? (
@@ -72,7 +89,11 @@ class AppNavigator extends React.Component {
   }
 
   registerForPushNotificationsAsync = async (uid) => {
-    this.props._trace(this,"registering push notification", "registerForPushNotificationsAsync" );
+    this.props._trace(
+      this,
+      "registering push notification",
+      "registerForPushNotificationsAsync"
+    );
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS
     );
@@ -82,17 +103,18 @@ class AppNavigator extends React.Component {
       finalStatus = status;
     }
     if (finalStatus !== "granted") {
-      this.props._trace(this,
+      this.props._trace(
+        this,
         `push notification status: ${finalStatus}`,
         "registerForPushNotificationsAsync"
       );
       return;
     } else {
-      this.props._trace(this,
+      this.props._trace(
+        this,
         "push notification granted",
         "registerForPushNotificationsAsync"
       );
-
     }
 
     let token = await Notifications.getExpoPushTokenAsync();
@@ -117,7 +139,8 @@ class AppNavigator extends React.Component {
         });
       })
       .catch((err) => {
-        this.props._trace(this,
+        this.props._trace(
+          this,
           `Error Updating User Push Tokens: ${err}`,
           "registerForPushNotificationsAsync"
         );

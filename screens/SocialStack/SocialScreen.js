@@ -3,11 +3,9 @@ import {
   SafeAreaView,
   StyleSheet,
   Keyboard,
-  Dimensions,
   TouchableWithoutFeedback,
 } from "react-native";
-import { withTheme, FAB, Portal, Modal, TextInput } from "react-native-paper";
-import { Block } from "galio-framework";
+import { withTheme, FAB } from "react-native-paper";
 import firebase from "firebase";
 import SocialHeader from "../../components/Social/SocialHeader";
 import NearbyUsersWidget from "../../components/Social/NearbyUsersWidget";
@@ -23,18 +21,16 @@ class SocialScreen extends React.Component {
   componentDidMount() {
     let colors = this.props.theme.colors;
     this.props.navigation.setOptions({
-        header: ({ scene, previous, navigation }) => {
-          return (
-            <SocialHeader
-              search={this.state.search}
-              navigate={this.props.navigation.navigate}
-            />
-          );
-        },
-      });
+      header: ({ scene, previous, navigation }) => {
+        return (
+          <SocialHeader
+            search={this.state.search}
+            navigate={this.props.navigation.navigate}
+          />
+        );
+      },
+    });
   }
-
-
 
   render() {
     const colors = this.props.theme.colors;
@@ -43,8 +39,8 @@ class SocialScreen extends React.Component {
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
           <NearbyUsersWidget />
           <FAB
-            icon='plus'
-            label='See Groups'
+            icon="plus"
+            label="See Groups"
             onPress={() => {
               this.props.navigation.navigate("GroupList");
             }}
@@ -54,8 +50,8 @@ class SocialScreen extends React.Component {
             ]}
           />
           <FAB
-            icon='plus'
-            label='Create Group'
+            icon="plus"
+            label="Create Group"
             onPress={() => {
               this.props.navigation.navigate("CreateGroup");
             }}
@@ -65,8 +61,8 @@ class SocialScreen extends React.Component {
             ]}
           />
           <FAB
-            icon='plus'
-            label='Search Groups'
+            icon="plus"
+            label="Search Groups"
             onPress={() => {
               this.props.navigation.navigate("SearchGroups");
             }}
@@ -76,8 +72,8 @@ class SocialScreen extends React.Component {
             ]}
           />
           <FAB
-            icon='plus'
-            label='Search Players'
+            icon="plus"
+            label="Search Players"
             onPress={() => {
               this.props.navigation.navigate("SearchPlayers");
             }}
@@ -87,8 +83,8 @@ class SocialScreen extends React.Component {
             ]}
           />
           <FAB
-            icon='plus'
-            label='Social Activity'
+            icon="plus"
+            label="Social Activity"
             onPress={() => {
               this.props.navigation.navigate("SocialNotifications", {
                 userId: firebase.auth().currentUser.uid,

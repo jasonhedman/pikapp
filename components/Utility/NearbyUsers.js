@@ -1,27 +1,11 @@
 import React from "react";
-import {
-  Dimensions,
-  Keyboard,
-  TouchableWithoutFeedback,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native";
 import { Block } from "galio-framework";
-import { TabView, SceneMap } from "react-native-tab-view";
-import {
-  withTheme,
-  TextInput,
-  Text,
-  ActivityIndicator,
-  Subheading,
-} from "react-native-paper";
+import { withTheme, Text, ActivityIndicator } from "react-native-paper";
 import { getDistance } from "geolib";
-import HeaderBlock from "../../components/Utility/HeaderBlock";
 
 import * as firebase from "firebase";
 import "firebase/firestore";
-
-const { height, width } = Dimensions.get("window");
 
 const FirstRoute = () => (
   <Block flex style={[{ backgroundColor: "#ff4081" }]} />

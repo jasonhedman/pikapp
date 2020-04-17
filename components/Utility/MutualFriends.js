@@ -1,19 +1,10 @@
 import React from "react";
-import {
-  Dimensions,
-  Keyboard,
-  TouchableWithoutFeedback,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native";
 import { Block } from "galio-framework";
-import { TabView, SceneMap } from "react-native-tab-view";
 import { withTheme, Text, ActivityIndicator } from "react-native-paper";
 
 import * as firebase from "firebase";
 import "firebase/firestore";
-
-const { height, width } = Dimensions.get("window");
 
 class MutualFriends extends React.Component {
   constructor(props) {

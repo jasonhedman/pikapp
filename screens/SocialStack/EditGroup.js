@@ -2,14 +2,12 @@ import React from "react";
 import {
   StyleSheet,
   TouchableWithoutFeedback,
-  Dimensions,
   Keyboard,
   KeyboardAvoidingView,
   SafeAreaView,
 } from "react-native";
 import { Block } from "galio-framework";
 import { withTheme, Switch, Text, Chip } from "react-native-paper";
-import HeaderBlock from "../../components/Utility/HeaderBlock";
 import ButtonBlock from "../../components/Utility/ButtonBlock";
 import "firebase/firestore";
 import InputBlock from "../../components/Utility/InputBlock";
@@ -21,9 +19,6 @@ import volleyball from "../../assets/images/Volleyball.png";
 import football from "../../assets/images/Football.png";
 
 import firebase from "firebase";
-import firestore from "firebase/firestore";
-
-const { height, width } = Dimensions.get("window");
 
 const sports = {
   Basketball: basketball,
@@ -46,16 +41,16 @@ class EditGroup extends React.Component {
       volleyball: false,
       football: false,
     };
-    Object.keys(this.props.route.params.group.sports).forEach(sport => {
+    Object.keys(this.props.route.params.group.sports).forEach((sport) => {
       this.state[sport] = true;
     });
   }
 
-  onTitleChange = title => {
+  onTitleChange = (title) => {
     this.setState({ title });
   };
 
-  onDescriptionChange = description => {
+  onDescriptionChange = (description) => {
     this.setState({ description });
   };
 
@@ -67,12 +62,12 @@ class EditGroup extends React.Component {
       volleyball: this.state.volleyball,
       football: this.state.football,
     };
-    let sportsList = Object.keys(sportsObject).filter(sport => {
+    let sportsList = Object.keys(sportsObject).filter((sport) => {
       return sportsObject[sport];
     });
     let sports = {};
     sportsList.forEach(
-      sport =>
+      (sport) =>
         (sports[sport] =
           this.props.route.params.group.sports[sport] == undefined
             ? 0
@@ -176,7 +171,7 @@ class EditGroup extends React.Component {
         >
           <KeyboardAvoidingView
             style={{ flex: 1, justifyContent: "center", padding: 16 }}
-            behavior='padding'
+            behavior="padding"
           >
             <Block
               center
@@ -187,14 +182,14 @@ class EditGroup extends React.Component {
             >
               <InputBlock
                 value={this.state.title}
-                placeholder='Title'
+                placeholder="Title"
                 onChange={this.onTitleChange}
                 multiline={false}
                 dense={true}
               />
               <InputBlock
                 value={this.state.description}
-                placeholder='Description'
+                placeholder="Description"
                 onChange={this.onDescriptionChange}
                 multiline={true}
                 dense={true}
@@ -240,7 +235,7 @@ class EditGroup extends React.Component {
                 />
               </Block>
               <ButtonBlock
-                text='Edit Group'
+                text="Edit Group"
                 onPress={this.update}
                 disabled={
                   this.state.title.length == 0 ||

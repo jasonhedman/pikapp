@@ -1,19 +1,7 @@
 import React from "react";
-import {
-  StyleSheet,
-  Dimensions,
-  Keyboard,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 import { Block } from "galio-framework";
-import {
-  Button,
-  TextInput,
-  withTheme,
-  IconButton,
-  TouchableRipple,
-} from "react-native-paper";
+import { Button, withTheme } from "react-native-paper";
 import * as firebase from "firebase";
 import "firebase/firestore";
 import SlideModal from "react-native-modal";
@@ -24,10 +12,8 @@ import { HeaderHeightContext } from "@react-navigation/stack";
 import ProfilePic from "../../components/Utility/ProfilePic";
 import Form from "../../components/Utility/Form";
 import ButtonBlock from "../../components/Utility/ButtonBlock";
-import HeaderBlock from "../../components/Utility/HeaderBlock";
 import InputBlock from "../../components/Utility/InputBlock";
 import HelperText from "../../components/Utility/HelperText";
-import { Header } from "react-navigation-stack";
 import LoadingOverlay from "../../components/Utility/LoadingOverlay";
 
 class EditProfile extends React.Component {
@@ -48,7 +34,7 @@ class EditProfile extends React.Component {
     };
   }
 
-  onNameChange = name => {
+  onNameChange = (name) => {
     this.setState({ name });
   };
 
@@ -78,7 +64,7 @@ class EditProfile extends React.Component {
   };
 
   componentDidMount() {
-    Permissions.getAsync(Permissions.CAMERA_ROLL).then(permission => {
+    Permissions.getAsync(Permissions.CAMERA_ROLL).then((permission) => {
       this.setState({
         crPermission: permission.status == "granted" ? true : false,
       });
@@ -87,7 +73,7 @@ class EditProfile extends React.Component {
       .storage()
       .ref("profilePictures/" + this.props.route.params.user.id)
       .getDownloadURL()
-      .then(url => {
+      .then((url) => {
         this.setState({ image: url, imageLoaded: true });
       })
       .catch(() => {
@@ -101,18 +87,21 @@ class EditProfile extends React.Component {
       .collection("users")
       .where("username", "==", this.state.username)
       .get()
-      .then(users => {
+      .then((users) => {
         let i = 0;
-        users.forEach(user => {
+        users.forEach((user) => {
           i++;
         });
-        if (i > 0 && this.state.username != this.props.route.params.user.username) {
+        if (
+          i > 0 &&
+          this.state.username != this.props.route.params.user.username
+        ) {
           this.setState({ usernameTaken: true });
         } else {
           this.setState({ usernameTaken: false });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   };
@@ -154,7 +143,7 @@ class EditProfile extends React.Component {
       <>
         {this.state.loading ? <LoadingOverlay /> : null}
         <SlideModal
-          animationIn='slideInUp'
+          animationIn="slideInUp"
           transparent={true}
           isVisible={this.state.visible}
           onBackdropPress={() => this.setState({ visible: false })}
@@ -182,7 +171,7 @@ class EditProfile extends React.Component {
             }}
           >
             <Button
-              mode='contained'
+              mode="contained"
               dark={true}
               style={[styles.button]}
               onPress={this.pickImage}
@@ -195,7 +184,7 @@ class EditProfile extends React.Component {
               Change New Image
             </Button>
             <HelperText
-              type='error'
+              type="error"
               visible={this.state.showErr}
               theme={{ colors: { error: colors.orange } }}
               style={this.state.showErr ? {} : { display: "none" }}
@@ -203,7 +192,7 @@ class EditProfile extends React.Component {
               You must grant access to your camera roll first.
             </HelperText>
             <Button
-              mode='text'
+              mode="text"
               dark={true}
               style={[
                 styles.button,
@@ -225,7 +214,7 @@ class EditProfile extends React.Component {
           </Block>
         </SlideModal>
         <HeaderHeightContext.Consumer>
-          {headerHeight => (
+          {(headerHeight) => (
             <Block
               flex
               style={{
@@ -248,19 +237,19 @@ class EditProfile extends React.Component {
                 </TouchableOpacity>
                 <InputBlock
                   value={this.state.name}
-                  placeholder='Name'
+                  placeholder="Name"
                   onChange={this.onNameChange}
                   onBlur={() => this.setState({ nameBlur: true })}
                 >
                   <HelperText
                     visible={!this.state.name.length > 0 && this.state.nameBlur}
-                    text='Please enter your name.'
+                    text="Please enter your name."
                   />
                 </InputBlock>
                 <InputBlock
                   value={this.state.username}
-                  placeholder='Username'
-                  onChange={val => {
+                  placeholder="Username"
+                  onChange={(val) => {
                     this.onUsernameChange(val.toLowerCase(), () => {
                       if (this.state.usernameBlur) {
                         this.checkUsername();
@@ -288,7 +277,7 @@ class EditProfile extends React.Component {
                   />
                 </InputBlock>
                 <ButtonBlock
-                  text='Save Changes'
+                  text="Save Changes"
                   disabled={this.state.usernameTaken}
                   disabledStyles={{
                     opacity: 0.3,
@@ -325,10 +314,10 @@ async function uploadImageAsync(uri, id) {
   if (uri != null) {
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.onload = function() {
+      xhr.onload = function () {
         resolve(xhr.response);
       };
-      xhr.onerror = function(e) {
+      xhr.onerror = function (e) {
         console.log(e);
         reject(new TypeError("Network request failed"));
       };

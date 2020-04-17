@@ -9,7 +9,7 @@ import { Block } from "galio-framework";
 import { TabView, TabBar } from "react-native-tab-view";
 import { withTheme, TextInput, Text, Subheading } from "react-native-paper";
 import { getDistance } from "geolib";
-const moment = require('moment')
+const moment = require("moment");
 
 import * as firebase from "firebase";
 import "firebase/firestore";
@@ -46,9 +46,9 @@ class GroupInvite extends React.Component {
       .firestore()
       .collection("users")
       .get()
-      .then(allUsers => {
+      .then((allUsers) => {
         let users = {};
-        allUsers.forEach(user => {
+        allUsers.forEach((user) => {
           if (user.id != firebase.auth().currentUser.uid) {
             users[user.id] = user.data();
           } else {
@@ -59,7 +59,7 @@ class GroupInvite extends React.Component {
         this.setState({ users, complete: true });
         return users;
       })
-      .then(allUsers => {
+      .then((allUsers) => {
         let nearbyLat = [];
         let nearbyLng = [];
         Promise.all([
@@ -77,8 +77,8 @@ class GroupInvite extends React.Component {
               currentUser.location.latitude - 5 * (1 / 69)
             )
             .get()
-            .then(users => {
-              users.forEach(user => {
+            .then((users) => {
+              users.forEach((user) => {
                 nearbyLat.push(user.id);
               });
             }),
@@ -96,14 +96,14 @@ class GroupInvite extends React.Component {
               currentUser.location.longitude - 5 * (1 / 69)
             )
             .get()
-            .then(users => {
-              users.forEach(user => {
+            .then((users) => {
+              users.forEach((user) => {
                 nearbyLng.push(user.id);
               });
             }),
         ]).then(() => {
           let nearby = nearbyLat.filter(
-            value =>
+            (value) =>
               nearbyLng.includes(value) &&
               value != firebase.auth().currentUser.uid
           );
@@ -118,8 +118,8 @@ class GroupInvite extends React.Component {
       });
   }
 
-  onSearch = search => {
-    let filteredUsers = Object.keys(this.state.users).filter(user => {
+  onSearch = (search) => {
+    let filteredUsers = Object.keys(this.state.users).filter((user) => {
       return this.state.users[user].username.includes(search.toLowerCase());
     });
     filteredUsers.sort((a, b) => {
@@ -139,11 +139,11 @@ class GroupInvite extends React.Component {
     this.setState({ visible: false });
   };
 
-  onUserPress = user => {
+  onUserPress = (user) => {
     this.setState({ focusUser: user, visible: true });
   };
 
-  navToUserProfile = id => {
+  navToUserProfile = (id) => {
     if (id != firebase.auth().currentUser.uid) {
       this.props.navigation.navigate("UserProfile", { userId: id });
     } else {
@@ -151,20 +151,20 @@ class GroupInvite extends React.Component {
     }
   };
 
-  onIndexChange = index => this.setState({ index });
+  onIndexChange = (index) => this.setState({ index });
 
   renderScene = ({ route }) => {
     switch (route.key) {
-      case 'nearby':
+      case "nearby":
         return <NearbyUsers onPress={this.invite} />;
-      case 'friends':
+      case "friends":
         return <FriendsList onPress={this.invite} />;
       default:
         return null;
     }
   };
 
-  renderTabBar = props => {
+  renderTabBar = (props) => {
     return (
       <TabBar
         {...props}
@@ -180,25 +180,33 @@ class GroupInvite extends React.Component {
   };
 
   invite = (user) => {
-      Promise.all([
-        firebase.firestore().collection('notifications').add({
-            type: 'groupInvite',
-            group: this.props.route.params.group,
-            from: this.state.user,
-            to: user,
-            time: moment().toDate(),
+    Promise.all([
+      firebase.firestore().collection("notifications").add({
+        type: "groupInvite",
+        group: this.props.route.params.group,
+        from: this.state.user,
+        to: user,
+        time: moment().toDate(),
+      }),
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(user.id)
+        .collection("groupInvitations")
+        .add({
+          group: this.props.route.params.group,
+          from: this.state.user,
+          time: new Date(),
         }),
-        firebase.firestore().collection('users').doc(user.id).collection('groupInvitations').add({
-            group: this.props.route.params.group,
-            from: this.state.user,
-            time: new Date(),
+      firebase
+        .firestore()
+        .collection("groups")
+        .doc(this.props.route.params.group.id)
+        .update({
+          invites: firebase.firestore.FieldValue.arrayUnion(user.id),
         }),
-        firebase.firestore().collection('groups').doc(this.props.route.params.group.id).update({
-            invites: firebase.firestore.FieldValue.arrayUnion(user.id)
-        }),
-      ])
-   
-  }
+    ]);
+  };
 
   render() {
     const colors = this.props.theme.colors;
@@ -287,7 +295,7 @@ class GroupInvite extends React.Component {
                     renderScene={this.renderScene}
                     renderTabBar={this.renderTabBar}
                     onIndexChange={this.onIndexChange}
-                    sceneContainerStyle={{paddingVertical:8}}
+                    sceneContainerStyle={{ paddingVertical: 8 }}
                   />
                 </>
               )}

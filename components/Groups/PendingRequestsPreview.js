@@ -11,7 +11,14 @@ class PendingRequestsPreview extends React.Component {
   render() {
     let colors = this.props.theme.colors;
     return (
-      <TouchableOpacity onPress={() => {this.props.navigate('PendingRequests', {requests:this.props.requests, groupId: this.props.groupId})}}>
+      <TouchableOpacity
+        onPress={() => {
+          this.props.navigate("PendingRequests", {
+            requests: this.props.requests,
+            groupId: this.props.groupId,
+          });
+        }}
+      >
         <Block
           style={{
             borderWidth: 1,
@@ -25,7 +32,7 @@ class PendingRequestsPreview extends React.Component {
           <Block row middle style={{ justifyContent: "space-between" }}>
             <Text style={{ color: colors.white }}>Pending Requests</Text>
             <Block row>
-              <Avatar.Icon icon='circle' size={20} color={colors.orange} />
+              <Avatar.Icon icon="circle" size={20} color={colors.orange} />
               <Text style={{ color: colors.white }}>
                 {this.props.requests.length}
               </Text>

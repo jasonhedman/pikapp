@@ -5,10 +5,7 @@ import Register from "../screens/RegisterStack/Register";
 import SignIn from "../screens/RegisterStack/SignIn";
 import ForgotPassword from "../screens/RegisterStack/ForgotPassword";
 
-import {Button, withTheme, IconButton} from 'react-native-paper';
-
-import firebase from "firebase";
-import "firebase/firestore";
+import { Button, withTheme, IconButton } from "react-native-paper";
 
 const AuthStack = createStackNavigator();
 
@@ -23,7 +20,7 @@ class AuthNavigation extends React.Component {
   render() {
     return (
       <AuthStack.Navigator
-        initialRouteName='SignIn'
+        initialRouteName="SignIn"
         screenOptions={({ navigation, route }) => ({
           headerStyle: styles.header,
           headerTitleStyle: styles.headerText,
@@ -32,59 +29,59 @@ class AuthNavigation extends React.Component {
           headerTruncatedBackTitle: null,
           headerLeft: () => (
             <IconButton
-              icon='chevron-left'
-              color='#E68A54'
+              icon="chevron-left"
+              color="#E68A54"
               size={30}
               onPress={() => navigation.goBack()}
             />
           ),
         })}
       >
-        <AuthStack.Screen 
-          name='SignIn'
+        <AuthStack.Screen
+          name="SignIn"
           component={SignIn}
           options={({ navigation, route }) => ({
             title: "Sign In",
             headerRight: () => (
               <Button
-                  mode='text'
-                  color={this.props.theme.colors.lGreen}
-                  onPress={() => navigation.navigate('SignUp')}
-                  compact={true}
-                  uppercase={false}
-                  style={{marginRight:4}}
-              >   
-                  Sign Up
+                mode="text"
+                color={this.props.theme.colors.lGreen}
+                onPress={() => navigation.navigate("SignUp")}
+                compact={true}
+                uppercase={false}
+                style={{ marginRight: 4 }}
+              >
+                Sign Up
               </Button>
             ),
-            headerLeft: null
+            headerLeft: null,
           })}
         />
-        <AuthStack.Screen 
-          name='SignUp' 
+        <AuthStack.Screen
+          name="SignUp"
           component={Register}
           options={({ navigation, route }) => ({
             title: "Sign Up",
             headerLeft: () => (
               <Button
-                  mode='text'
-                  color={this.props.theme.colors.lGreen}
-                  onPress={() => navigation.navigate('SignIn')}
-                  compact={true}
-                  uppercase={false}
-                  style={{marginLeft:4}}
-              >   
-                  Sign In
+                mode="text"
+                color={this.props.theme.colors.lGreen}
+                onPress={() => navigation.navigate("SignIn")}
+                compact={true}
+                uppercase={false}
+                style={{ marginLeft: 4 }}
+              >
+                Sign In
               </Button>
-            )
+            ),
           })}
         />
-        <AuthStack.Screen 
-          name='ForgotPassword' 
+        <AuthStack.Screen
+          name="ForgotPassword"
           component={ForgotPassword}
           options={{
-            title: "Forgot Password"
-          }} 
+            title: "Forgot Password",
+          }}
         />
       </AuthStack.Navigator>
     );

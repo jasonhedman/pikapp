@@ -11,9 +11,9 @@ class GameLandingScreen extends React.Component {
 
   render() {
     if (this.props._currentUserProfile.calendar.length > 0) {
-      return( <GameScreen {...this.props}></GameScreen>);
+      return <GameScreen {...this.props}></GameScreen>;
     } else {
-      return( <LeaderboardScreen {...this.props}></LeaderboardScreen>);
+      return <LeaderboardScreen {...this.props}></LeaderboardScreen>;
     }
   }
 }

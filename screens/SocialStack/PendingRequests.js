@@ -1,10 +1,9 @@
 import React from "react";
 import { SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
-import { withTheme, Avatar } from "react-native-paper";
+import { withTheme } from "react-native-paper";
 import { Block } from "galio-framework";
 import { Text, Button } from "react-native-paper";
 import firebase from "firebase";
-import firestore from "firebase/firestore";
 import ProfilePic from "../../components/Utility/ProfilePic";
 
 class PendingRequests extends React.Component {
@@ -156,7 +155,7 @@ class PendingRequests extends React.Component {
                   </Block>
                   <Block row>
                     <Button
-                      mode='contained'
+                      mode="contained"
                       dark={true}
                       onPress={() => this.accept(request)}
                       theme={{
@@ -169,7 +168,7 @@ class PendingRequests extends React.Component {
                       Accept
                     </Button>
                     <Button
-                      mode='text'
+                      mode="text"
                       dark={false}
                       onPress={() => this.decline(request.id)}
                       theme={{

@@ -80,11 +80,11 @@ class App extends React.Component {
         <View style={styles.container}>
           <SafeAreaProvider>
             <LogglyProvider
-              token='59059019-605b-4aee-8c56-614fd989cab7'
+              token="59059019-605b-4aee-8c56-614fd989cab7"
               logToConsole={true}
             >
               <PaperProvider theme={theme}>
-                <StatusBar barStyle='light-content' />
+                <StatusBar barStyle="light-content" />
                 <ErrorBoundary
                   onError={(error, stack) => {
                     console.log("==== AN ERROR HAPPENED =====");
