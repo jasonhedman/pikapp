@@ -6,7 +6,6 @@ import {
   Animated,
   Keyboard,
   Easing,
-  KeyboardAvoidingView,
 } from "react-native";
 import { Block } from "galio-framework";
 import HeaderBlock from "../../components/Utility/HeaderBlock";
@@ -16,7 +15,6 @@ import { withTheme, Headline } from "react-native-paper";
 import firebase from "firebase";
 import firestore from "firebase/firestore";
 import { SafeAreaView } from "react-navigation";
-import { HeaderHeightContext } from "@react-navigation/stack";
 import { Header } from "react-navigation-stack";
 class MessageBoard extends React.Component {
   constructor(props) {
@@ -37,9 +35,9 @@ class MessageBoard extends React.Component {
         .collection("messages")
         .orderBy("created", "desc")
         .limit(50)
-        .onSnapshot(allMessages => {
+        .onSnapshot((allMessages) => {
           let messages = [];
-          allMessages.forEach(message => {
+          allMessages.forEach((message) => {
             messages.push(message.data());
           });
           this.setState({ messages });
@@ -49,7 +47,7 @@ class MessageBoard extends React.Component {
         .collection("users")
         .doc(firebase.auth().currentUser.uid)
         .get()
-        .then(user => {
+        .then((user) => {
           this.setState({ user: user.data() });
         }),
     ]).then(() => {
@@ -57,7 +55,7 @@ class MessageBoard extends React.Component {
     });
   }
 
-  onSend = prop => {
+  onSend = (prop) => {
     console.log(prop);
   };
 
@@ -65,45 +63,33 @@ class MessageBoard extends React.Component {
     const colors = this.props.theme.colors;
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
-        <KeyboardAvoidingView behavior='padding' style={{ flex: 1 }}>
-          <HeaderHeightContext.Consumer>
-            {headerHeight => (
-              <Block
-                flex
-                style={{ justifyContent: "flex-end", paddingTop: headerHeight }}
-              >
-                <ScrollView
-                  contentContainerStyle={{
-                    marginTop: "auto",
-                    flexDirection: "column-reverse",
-                    flex: 1,
-                    paddingHorizontal: 16,
-                  }}
-                >
-                  {this.state.messages.map((message, index) => {
-                    return (
-                      <Message
-                        key={index}
-                        message={message}
-                        picture={
-                          this.props.route.params.pictures[message.senderId]
-                        }
-                        messageAbove={this.state.messages[index + 1]}
-                        messageBelow={this.state.messages[index - 1]}
-                        navigation={this.props.navigation}
-                      />
-                    );
-                  })}
-                </ScrollView>
-                <MessageInput
-                  collection={this.props.route.params.collection}
-                  doc={this.props.route.params.doc}
-                  user={this.state.user}
+        <Block flex style={{ justifyContent: "flex-end" }}>
+          <ScrollView
+            contentContainerStyle={{
+              marginTop: "auto",
+              flexDirection: "column-reverse",
+              flex: 1,
+              paddingHorizontal: 16,
+            }}
+          >
+            {this.state.messages.map((message, index) => {
+              return (
+                <Message
+                  key={index}
+                  message={message}
+                  messageAbove={this.state.messages[index + 1]}
+                  messageBelow={this.state.messages[index - 1]}
+                  navigation={this.props.navigation}
                 />
-              </Block>
-            )}
-          </HeaderHeightContext.Consumer>
-        </KeyboardAvoidingView>
+              );
+            })}
+          </ScrollView>
+          <MessageInput
+            collection={this.props.route.params.collection}
+            doc={this.props.route.params.doc}
+            user={this.state.user}
+          />
+        </Block>
       </SafeAreaView>
     );
   }

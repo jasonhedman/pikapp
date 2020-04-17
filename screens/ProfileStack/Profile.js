@@ -39,7 +39,6 @@ class Profile extends React.Component {
     super();
     this.state = {
       user: {},
-      proPicUrl: null,
       lastThree: new Array(),
       complete: false,
       editModalVisible: false,
@@ -89,16 +88,6 @@ class Profile extends React.Component {
             complete: true,
           });
         });
-        firebase
-          .storage()
-          .ref("profilePictures/" + firebase.auth().currentUser.uid)
-          .getDownloadURL()
-          .then(url => {
-            this.setState({ proPicUrl: url });
-          })
-          .catch(() => {
-            this.setState({ proPicUrl: null})
-          });
   }
 
   setImage = (proPicUrl, func) => {
@@ -223,7 +212,7 @@ class Profile extends React.Component {
             >
               <Block middle style={{ marginBottom: 12 }}>
                 <Block row middle style={{ marginBottom: 8 }}>
-                  <ProfilePic size={80} proPicUrl={this.state.proPicUrl} />
+                  <ProfilePic size={80} proPicUrl={this.state.user.proPicUrl} />
                   <Block
                     row
                     flex
@@ -285,9 +274,7 @@ class Profile extends React.Component {
                   <Button
                     mode='contained'
                     onPress={() =>
-                      this.props.navigation.navigate("EditProfile", {
-                        user: this.state.user,
-                      })
+                      this.props.navigation.navigate("EditProfile")
                     }
                     dark={true}
                     style={[styles.button, { borderColor: colors.white, flex:1 }]}

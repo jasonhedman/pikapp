@@ -4,7 +4,6 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   Keyboard,
-  KeyboardAvoidingView,
   SafeAreaView
 } from "react-native";
 import { Block} from "galio-framework";
@@ -125,7 +124,6 @@ class CreateGroup extends React.Component {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{flex:1}}>
             <SafeAreaView style={{flex:1,backgroundColor:colors.dBlue,justifyContent:'center'}}>
-                <KeyboardAvoidingView style={{flex:1,justifyContent:'center',padding:16}} behavior='padding'>
                 <Block center style={[styles.registerContainer, {backgroundColor:colors.dBlue,borderColor:colors.orange}]}>
                     <InputBlock
                         value={this.state.title}
@@ -174,7 +172,6 @@ class CreateGroup extends React.Component {
                     </Block>
                     <ButtonBlock text='Create Group' onPress={this.onCreate} disabled={this.state.title.length == 0 || this.state.description.length == 0} disabledStyles={{opacity: .3, backgroundColor:colors.orange}} />
                 </Block>
-                </KeyboardAvoidingView>
             </SafeAreaView>
         </TouchableWithoutFeedback>
     );

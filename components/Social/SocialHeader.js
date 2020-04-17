@@ -9,7 +9,6 @@ import {
 import { Block } from "galio-framework";
 import { withTheme, TextInput, Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { HeaderHeightContext } from "@react-navigation/stack";
 
 class SocialHeader extends React.Component {
   constructor() {

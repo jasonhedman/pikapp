@@ -12,8 +12,6 @@ class PendingRequests extends React.Component {
     super();
     this.state = {
       requests: new Array(),
-      images: new Object(),
-      imagesComplete: false,
       group: {},
     };
   }
@@ -37,23 +35,6 @@ class PendingRequests extends React.Component {
           })
         ).then((requests) => {
           this.setState({ requests, group: group.data() });
-        });
-        let images = {};
-        Promise.all(
-          group.data().requests.map((request) => {
-            return firebase
-              .storage()
-              .ref("profilePictures/" + request)
-              .getDownloadURL()
-              .then((url) => {
-                images[request] = url;
-              })
-              .catch((err) => {
-                images[request] = null;
-              });
-          })
-        ).then((images) => {
-          this.setState({ images, imagesComplete: true });
         });
       });
   }
@@ -142,12 +123,10 @@ class PendingRequests extends React.Component {
                   row
                   middle
                 >
-                  {this.state.imagesComplete ? (
                     <ProfilePic
-                      proPicUrl={this.state.images[request]}
+                      proPicUrl={request.proPicUrl}
                       size={35}
                     />
-                  ) : null}
                   <Block style={{ marginLeft: 8, marginRight: "auto" }}>
                     <Text style={{ color: colors.white }}>
                       @{request.username}

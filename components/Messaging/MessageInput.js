@@ -23,7 +23,10 @@ class MessageInput extends React.Component{
             content: this.state.message,
             created: new Date(),
             senderId: this.props.user.id,
-            senderName: this.props.user.username
+            sender: {
+                username: this.props.user.username,
+                proPicUrl: this.props.user.proPicUrl
+            }
         })
         this.setState({message:''})
         Keyboard.dismiss()

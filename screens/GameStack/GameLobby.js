@@ -3,7 +3,6 @@ import { Block } from "galio-framework";
 import {
   Dimensions,
   Share,
-  KeyboardAvoidingView,
   StyleSheet,
   Keyboard,
   TouchableWithoutFeedback,
@@ -50,7 +49,6 @@ class GameLobby extends React.Component {
       user: {},
       games: new Object(),
       cancelModalVisible: false,
-      pictures: new Object(),
     };
   }
 
@@ -91,29 +89,11 @@ class GameLobby extends React.Component {
                     this.props.navigation.navigate("Messages", {
                       collection: "games",
                       doc: this.props.route.params.gameId,
-                      pictures: this.state.pictures,
                     })
                   }
                   size={20}
                 />
               ),
-            });
-            let pictures = {};
-            Promise.all(
-              game.data().players.map(player => {
-                return firebase
-                  .storage()
-                  .ref("profilePictures/" + player.id)
-                  .getDownloadURL()
-                  .then(url => {
-                    pictures[player.id] = url;
-                  })
-                  .catch(err => {
-                    pictures[player.id] = null;
-                  });
-              })
-            ).then(() => {
-              this.setState({ pictures });
             });
           });
         } else {

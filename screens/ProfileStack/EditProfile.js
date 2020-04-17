@@ -20,7 +20,6 @@ import SlideModal from "react-native-modal";
 const { width, height } = Dimensions.get("screen");
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
-import { HeaderHeightContext } from "@react-navigation/stack";
 import ProfilePic from "../../components/Utility/ProfilePic";
 import Form from "../../components/Utility/Form";
 import ButtonBlock from "../../components/Utility/ButtonBlock";
@@ -29,14 +28,15 @@ import InputBlock from "../../components/Utility/InputBlock";
 import HelperText from "../../components/Utility/HelperText";
 import { Header } from "react-navigation-stack";
 import LoadingOverlay from "../../components/Utility/LoadingOverlay";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 class EditProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: this.props.route.params.user.name,
-      username: this.props.route.params.user.username,
-      image: null,
+      name: this.props._currentUserProfile.name,
+      username: this.props._currentUserProfile.username,
+      image: this.props._currentUserProfile.proPicUrl,
       nameBlur: false,
       usernameBlur: false,
       usernameTaken: false,
@@ -48,7 +48,7 @@ class EditProfile extends React.Component {
     };
   }
 
-  onNameChange = name => {
+  onNameChange = (name) => {
     this.setState({ name });
   };
 
@@ -78,21 +78,11 @@ class EditProfile extends React.Component {
   };
 
   componentDidMount() {
-    Permissions.getAsync(Permissions.CAMERA_ROLL).then(permission => {
+    Permissions.getAsync(Permissions.CAMERA_ROLL).then((permission) => {
       this.setState({
         crPermission: permission.status == "granted" ? true : false,
       });
     });
-    firebase
-      .storage()
-      .ref("profilePictures/" + this.props.route.params.user.id)
-      .getDownloadURL()
-      .then(url => {
-        this.setState({ image: url, imageLoaded: true });
-      })
-      .catch(() => {
-        this.setState({ image: null, imageLoaded: true });
-      });
   }
 
   checkUsername = () => {
@@ -101,18 +91,21 @@ class EditProfile extends React.Component {
       .collection("users")
       .where("username", "==", this.state.username)
       .get()
-      .then(users => {
+      .then((users) => {
         let i = 0;
-        users.forEach(user => {
+        users.forEach((user) => {
           i++;
         });
-        if (i > 0 && this.state.username != this.props.route.params.user.username) {
+        if (
+          i > 0 &&
+          this.state.username != this.props._currentUserProfile.username
+        ) {
           this.setState({ usernameTaken: true });
         } else {
           this.setState({ usernameTaken: false });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   };
@@ -127,6 +120,15 @@ class EditProfile extends React.Component {
             .ref()
             .child("profilePictures/" + firebase.auth().currentUser.uid)
             .delete()
+            .then(() => {
+              firebase
+                .firestore()
+                .collection("users")
+                .doc(firebase.auth().currentUser.uid)
+                .update({
+                  proPicUrl: null,
+                });
+            })
             .catch(() => {});
     Promise.all([promise]).then(() => {
       firebase
@@ -192,7 +194,7 @@ class EditProfile extends React.Component {
               }}
               uppercase={false}
             >
-              Change New Image
+              Choose New Image
             </Button>
             <HelperText
               type='error'
@@ -224,12 +226,9 @@ class EditProfile extends React.Component {
             </Button>
           </Block>
         </SlideModal>
-        <HeaderHeightContext.Consumer>
-          {headerHeight => (
             <Block
               flex
               style={{
-                paddingTop: headerHeight,
                 backgroundColor: colors.dBlue,
               }}
             >
@@ -238,13 +237,11 @@ class EditProfile extends React.Component {
                   onPress={() => this.setState({ visible: true })}
                   style={{ marginBottom: 12 }}
                 >
-                  {this.state.imageLoaded ? (
-                    <ProfilePic
-                      size={80}
-                      proPicUrl={this.state.image}
-                      addEnabled={true}
-                    />
-                  ) : null}
+                  <ProfilePic
+                    size={80}
+                    proPicUrl={this.state.image}
+                    addEnabled={true}
+                  />
                 </TouchableOpacity>
                 <InputBlock
                   value={this.state.name}
@@ -260,7 +257,7 @@ class EditProfile extends React.Component {
                 <InputBlock
                   value={this.state.username}
                   placeholder='Username'
-                  onChange={val => {
+                  onChange={(val) => {
                     this.onUsernameChange(val.toLowerCase(), () => {
                       if (this.state.usernameBlur) {
                         this.checkUsername();
@@ -298,8 +295,6 @@ class EditProfile extends React.Component {
                 ></ButtonBlock>
               </Form>
             </Block>
-          )}
-        </HeaderHeightContext.Consumer>
       </>
     );
   }
@@ -325,10 +320,10 @@ async function uploadImageAsync(uri, id) {
   if (uri != null) {
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.onload = function() {
+      xhr.onload = function () {
         resolve(xhr.response);
       };
-      xhr.onerror = function(e) {
+      xhr.onerror = function (e) {
         console.log(e);
         reject(new TypeError("Network request failed"));
       };
@@ -342,8 +337,13 @@ async function uploadImageAsync(uri, id) {
       .child("profilePictures/" + id);
     const snapshot = await ref.put(blob);
     blob.close();
+    ref.getDownloadURL().then((url) =>
+      firebase.firestore().collection("users").doc(id).update({
+        proPicUrl: url,
+      })
+    );
     return;
   }
 }
 
-export default withTheme(EditProfile);
+export default withAuthenticatedUser(withTheme(EditProfile));

@@ -22,7 +22,6 @@ class GroupInfo extends React.Component {
     super();
     this.state = {
       group: {},
-      pictures: {},
       complete: false,
       modalVisible: false,
       actionsVisible: false,
@@ -85,23 +84,6 @@ class GroupInfo extends React.Component {
                   });
                 }
               }
-              let pictures = {};
-              Promise.all(
-                group.data().users.map((user) => {
-                  return firebase
-                    .storage()
-                    .ref("profilePictures/" + user)
-                    .getDownloadURL()
-                    .then((url) => {
-                      pictures[user] = url;
-                    })
-                    .catch((err) => {
-                      pictures[user] = null;
-                    });
-                })
-              ).then(() => {
-                this.setState({ pictures });
-              });
             });
           }
         }),
@@ -356,7 +338,6 @@ class GroupInfo extends React.Component {
                   return (
                     <GroupMember
                       user={user}
-                      picture={this.state.pictures[user]}
                       key={index}
                       navToUserProfile={this.navToUserProfile}
                       group={this.state.group}

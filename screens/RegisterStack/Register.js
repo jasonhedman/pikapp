@@ -66,50 +66,27 @@ class Register extends React.Component {
           points:0,
           gamesPlayed:0,
           email: this.state.email,
+          proPicUrl: null,
           notifications: [],
           calendar: [],
           sports:{
             basketball: {
               gamesPlayed:0,
-              wins:0,
-              losses:0,
-              ptsFor: 0,
-              ptsAgainst:0
             },
             football: {
               gamesPlayed:0,
-              wins:0,
-              losses:0,
-              ptsFor: 0,
-              ptsAgainst:0
             },
             spikeball: {
               gamesPlayed:0,
-              wins:0,
-              losses:0,
-              ptsFor: 0,
-              ptsAgainst:0
             },
             volleyball: {
               gamesPlayed:0,
-              wins:0,
-              losses:0,
-              ptsFor: 0,
-              ptsAgainst:0
             },
             soccer: {
               gamesPlayed:0,
-              wins:0,
-              losses:0,
-              ptsFor: 0,
-              ptsAgainst:0
             },
             frisbee: {
               gamesPlayed:0,
-              wins:0,
-              losses:0,
-              ptsFor: 0,
-              ptsAgainst:0
             },
           },
           friendsList:[],
@@ -192,9 +169,12 @@ async function uploadImageAsync(uri, cred) {
   
     const ref = firebase.storage().ref().child("profilePictures/" + cred.user.uid);
     const snapshot = await ref.put(blob);
-  
-    // We're done with the blob, close and release it
     blob.close();
+    ref.getDownloadURL().then((url) =>
+      firebase.firestore().collection("users").doc(cred.user.uid).update({
+        proPicUrl: url,
+      })
+    );
   }
 }
 
