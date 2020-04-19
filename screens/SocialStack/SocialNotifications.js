@@ -5,6 +5,7 @@ import { Block } from "galio-framework";
 import firebase from "firebase";
 import Follower from "../../components/Notifications/Social/Follower";
 import GroupMember from "../../components/Notifications/Social/GroupMember";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 class SocialNotifications extends React.Component {
   constructor() {
@@ -17,33 +18,30 @@ class SocialNotifications extends React.Component {
   }
 
   componentDidMount() {
-    Promise.all([
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .collection("social")
-        .orderBy("time", "desc")
-        .onSnapshot((results) => {
-          let notifications = [];
-          results.forEach((result) => {
-            let resultData = result.data();
-            resultData.id = result.id;
-            notifications.push(resultData);
-          });
-          this.setState({ notifications });
-        }),
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .onSnapshot((user) => {
-          this.setState({ user: user.data() });
-        }),
-    ]).then(() => {
-      this.setState({ complete: true });
-    });
+    const unsubscribe = firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("social")
+      .orderBy("time", "desc")
+      .onSnapshot((results) => {
+        let notifications = [];
+        results.forEach((result) => {
+          let resultData = result.data();
+          resultData.id = result.id;
+          notifications.push(resultData);
+        });
+        this.setState({ notifications, complete: true });
+      });
+    this.unsubscribe = unsubscribe;
   }
+
+  componentWillUnmount(){
+    if(this.unsubscribe){
+      this.unsubscribe();
+    }
+  }
+
 
   render() {
     const colors = this.props.theme.colors;
@@ -56,7 +54,7 @@ class SocialNotifications extends React.Component {
                 return (
                   <Follower
                     user={notification.to}
-                    currentUser={this.state}
+                    currentUser={this.props._currentUserProfile}
                     follower={notification.from}
                     key={index}
                     navigate={this.props.navigation.navigate}
@@ -84,4 +82,4 @@ class SocialNotifications extends React.Component {
   }
 }
 
-export default withTheme(SocialNotifications);
+export default withTheme(withAuthenticatedUser(SocialNotifications));

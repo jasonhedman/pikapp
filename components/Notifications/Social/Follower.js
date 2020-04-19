@@ -16,14 +16,21 @@ class Follower extends React.Component {
   }
 
   componentDidMount = () => {
-    firebase
+    const unsubscribe = firebase
       .firestore()
       .collection("users")
       .doc(this.props.follower.id)
       .onSnapshot((follower) => {
         this.setState({ follower: follower.data(), complete: true });
       });
+    this.unsubscribe = unsubscribe;
   };
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
 
   render() {
     const colors = this.props.theme.colors;

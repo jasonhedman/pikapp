@@ -24,6 +24,7 @@ import ProfilePic from "../../components/Utility/ProfilePic";
 import HeaderBlock from "../../components/Utility/HeaderBlock";
 import ButtonBlock from "../../components/Utility/ButtonBlock";
 import SportsBreakdown from "../../components/Profile/SportsBreakdown";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 class UserProfile extends React.Component {
   constructor() {
@@ -93,61 +94,55 @@ class UserProfile extends React.Component {
   };
 
   componentDidMount() {
-    Promise.all([
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .get()
-        .then((user) => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection("users")
+      .doc(this.props.route.params.userId)
+      .onSnapshot((doc) => {
+        this.props.navigation.setOptions({
+          title: `${doc.data().username}`,
+        });
+        let following = this.getFollowing(doc.data().followers);
+        let lastThree = [];
+        for (
+          let i = doc.data().gameHistory.length - 1;
+          i >=
+          (doc.data().gameHistory.length >= 3
+            ? doc.data().gameHistory.length - 3
+            : 0);
+          i--
+        ) {
+          lastThree.push(
+            firebase
+              .firestore()
+              .collection("games")
+              .doc(doc.data().gameHistory[i])
+              .get()
+              .then((game) => {
+                return game.data();
+              })
+          );
+        }
+        Promise.all(lastThree).then((games) => {
           this.setState({
-            currentUser: user.data(),
+            lastThree: games,
+            user: doc.data(),
+            following,
+            complete: true,
           });
-          return user.data();
-        }),
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(this.props.route.params.userId)
-        .get()
-        .then((doc) => {
-          this.props.navigation.setOptions({
-            title: `${doc.data().username}`,
-          });
-          let following = this.getFollowing(doc.data().followers);
-          let lastThree = [];
-          for (
-            let i = doc.data().gameHistory.length - 1;
-            i >=
-            (doc.data().gameHistory.length >= 3
-              ? doc.data().gameHistory.length - 3
-              : 0);
-            i--
-          ) {
-            lastThree.push(
-              firebase
-                .firestore()
-                .collection("games")
-                .doc(doc.data().gameHistory[i])
-                .get()
-                .then((game) => {
-                  return game.data();
-                })
-            );
-          }
-          Promise.all(lastThree).then((games) => {
-            this.setState({
-              lastThree: games,
-              user: doc.data(),
-              following,
-              complete: true,
-            });
-          });
-          return doc.data();
-        }),
-    ]).then(data => {
-      this.setFollowedBy(data[0].friendsList, data[1].followers);
-    });
+        });
+        this.setFollowedBy(
+          this.props._currentUserProfile.friendsList,
+          doc.data().followers
+        );
+      });
+    this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
   }
 
   addFriend = () => {
@@ -175,7 +170,7 @@ class UserProfile extends React.Component {
           }),
         firebase.firestore().collection("notifications").add({
           type: "follower",
-          from: this.state.currentUser,
+          from: this.props._currentUserProfile,
           to: this.state.user,
           time: new Date(),
         }),
@@ -186,7 +181,7 @@ class UserProfile extends React.Component {
           .collection("social")
           .add({
             type: "follower",
-            from: this.state.currentUser,
+            from: this.props._currentUserProfile,
             to: this.state.user,
             time: new Date(),
           }),
@@ -250,11 +245,7 @@ class UserProfile extends React.Component {
               snapToStart={false}
             >
               <Block middle style={{ marginBottom: 12 }}>
-                <Block 
-                  row 
-                  middle 
-                  style={{ marginBottom: 8 }}
-                >
+                <Block row middle style={{ marginBottom: 8 }}>
                   <ProfilePic size={80} proPicUrl={this.state.user.proPicUrl} />
                   <Block
                     row
@@ -320,7 +311,7 @@ class UserProfile extends React.Component {
                           <>
                             {index == this.state.followedBy.length - 1 &&
                             this.state.followedBy.length > 1 ? (
-                              <Text key="and" style={{ color: colors.grey }}>
+                              <Text key='and' style={{ color: colors.grey }}>
                                 and{" "}
                               </Text>
                             ) : null}
@@ -340,7 +331,7 @@ class UserProfile extends React.Component {
                 <Block row style={{ marginBottom: 12 }}>
                   {this.state.following ? (
                     <Button
-                      mode="contained"
+                      mode='contained'
                       onPress={this.removeFriend}
                       dark={true}
                       style={[styles.button, { borderColor: colors.white }]}
@@ -355,7 +346,7 @@ class UserProfile extends React.Component {
                     </Button>
                   ) : (
                     <Button
-                      mode="contained"
+                      mode='contained'
                       onPress={this.addFriend}
                       dark={true}
                       style={[styles.button, { borderColor: colors.orange }]}
@@ -428,12 +419,12 @@ class UserProfile extends React.Component {
               }}
             >
               <HeaderBlock
-                text="User does not exist."
+                text='User does not exist.'
                 backButton={true}
                 backPress={() => this.props.navigation.goBack()}
               />
               <ButtonBlock
-                text="Go Back"
+                text='Go Back'
                 onPress={() => this.props.navigation.goBack()}
               />
             </Block>
@@ -482,4 +473,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(UserProfile);
+export default withTheme(withAuthenticatedUser(UserProfile));

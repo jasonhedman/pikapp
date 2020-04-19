@@ -13,7 +13,7 @@ class LobbyMember extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      user:{},
+      user: {},
       complete: false,
     };
   }
@@ -24,14 +24,14 @@ class LobbyMember extends React.Component {
       .collection("users")
       .doc(this.props.user.id)
       .onSnapshot((user) => {
-        this.setState({user:user.data(), complete:true})
+        this.setState({ user: user.data(), complete: true });
       });
-    this.unsubscribe = unsubscribe
+    this.unsubscribe = unsubscribe;
   }
 
-  componentWillUnmount(){
-    if(this.unsubscribe){
-      this.unsubscribe()
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
     }
   }
 
@@ -61,7 +61,7 @@ class LobbyMember extends React.Component {
 
   render() {
     let colors = this.props.theme.colors;
-    if(this.state.complete){
+    if (this.state.complete) {
       return (
         <TouchableOpacity
           onPress={() => {
@@ -110,9 +110,8 @@ class LobbyMember extends React.Component {
         </TouchableOpacity>
       );
     } else {
-      return null
+      return null;
     }
-    
   }
 }
 

@@ -47,46 +47,70 @@ class Register extends React.Component {
       .auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then((cred) => {
-        firebase.firestore().collection('users').doc(cred.user.uid).set({
-          id: cred.user.uid,
-          name: this.state.name,
-          username: this.state.username,
-          dob: this.state.dob,
-          gameHistory: [],
-          wins: 0,
-          losses: 0,
-          points:0,
-          gamesPlayed:0,
-          email: this.state.email,
-          proPicUrl: null,
-          notifications: [],
-          calendar: [],
-          sports:{
-            basketball: {
-              gamesPlayed:0,
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(cred.user.uid)
+          .set({
+            calendar: [],
+            currentGame: null,
+            dob: this.state.dob,
+            email: this.state.email,
+            followers: [],
+            friendsList: [],
+            gameHistory: [],
+            gamesPlayed: 0,
+            groups: [],
+            id: cred.user.uid,
+            //location
+            name: this.state.name,
+            notifications: [],
+            points: 0,
+            proPicUrl: null,
+            sports: {
+              basketball: {
+                gamesPlayed: 0,
+              },
+              football: {
+                gamesPlayed: 0,
+              },
+              spikeball: {
+                gamesPlayed: 0,
+              },
+              volleyball: {
+                gamesPlayed: 0,
+              },
+              soccer: {
+                gamesPlayed: 0,
+              },
+              frisbee: {
+                gamesPlayed: 0,
+              },
             },
-            football: {
-              gamesPlayed:0,
-            },
-            spikeball: {
-              gamesPlayed:0,
-            },
-            volleyball: {
-              gamesPlayed:0,
-            },
-            soccer: {
-              gamesPlayed:0,
-            },
-            frisbee: {
-              gamesPlayed:0,
-            },
-          },
-          friendsList:[],
-          followers:[]
-        })
-        .then(() => {
-          uploadImageAsync(this.state.image, cred)
-        })
+            updated: new Date(),
+            username: this.state.username,
+          })
+          .then(() => {
+            uploadImageAsync(this.state.image, cred);
+          })
+          .then(() => {
+            Promise.all([
+              firebase
+                .firestore()
+                .collection("users")
+                .doc(cred.user.uid)
+                .collection("social")
+                .doc("admin")
+                .set({}),
+              firebase
+                .firestore()
+                .collection("users")
+                .doc(cred.user.uid)
+                .collection("groupInvitations")
+                .doc("admin")
+                .set({}),
+            ]);
+          });
       })
       .catch((err) => {
         console.error(err.toString());
@@ -144,7 +168,7 @@ class Register extends React.Component {
           </Caption>
           <Button
             uppercase={false}
-            mode="text"
+            mode='text'
             onPress={this.toSignIn}
             dark={true}
             style={styles.createButton}

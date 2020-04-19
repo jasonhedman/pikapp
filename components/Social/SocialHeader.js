@@ -44,7 +44,7 @@ class SocialHeader extends React.Component {
     let colors = this.props.theme.colors;
     return (
       <SafeAreaView style={{ backgroundColor: colors.dBlue }}>
-        <Block row middle flex style={{ paddingHorizontal: 16, height: 54 }}>
+        <Block row middle style={{ }}>
           <TextInput
             mode={"outlined"}
             theme={{

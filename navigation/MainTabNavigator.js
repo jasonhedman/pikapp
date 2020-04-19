@@ -143,7 +143,6 @@ function ProfileStack() {
 }
 
 function SocialStack(props) {
-  const insets = useSafeArea();
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "#121D28" }}
@@ -152,7 +151,7 @@ function SocialStack(props) {
       <SocialStackNav.Navigator
         initialRouteName='SocialScreen'
         screenOptions={({ navigation, route }) => ({
-          headerStyle: [styles.header, { height: insets.top + 54 }],
+          headerStyle: styles.header,
           headerTitleStyle: styles.headerText,
           headerTintColor: "#E68A54",
           headerMode: "screen",

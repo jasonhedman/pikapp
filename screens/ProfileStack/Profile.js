@@ -94,15 +94,10 @@ class Profile extends React.Component {
         Promise.all(lastThree).then(games => {
           this.setState({
             lastThree: games,
-            user: currentUserProfile,
             complete: true,
           });
         });
   }
-
-  setImage = (proPicUrl, func) => {
-    this.setState({ proPicUrl }, func);
-  };
 
   signOut = () => {
     firebase.auth().signOut();
@@ -123,8 +118,6 @@ class Profile extends React.Component {
   navToUserProfile = (id) => {
     if (id != firebase.auth().currentUser.uid) {
       this.props.navigation.navigate("UserProfile", { userId: id });
-    } else {
-      this.props.navigation.navigate("Profile");
     }
   };
 
@@ -136,6 +129,7 @@ class Profile extends React.Component {
     this.props._trace(this, "render component", "render");
     this.renderHelper();
     const colors = this.props.theme.colors;
+    let currentUserProfile = this.props._currentUserProfile;
     if (this.state.complete) {
       return (
         <>
@@ -227,7 +221,7 @@ class Profile extends React.Component {
             >
               <Block middle style={{ marginBottom: 12 }}>
                 <Block row middle style={{ marginBottom: 8 }}>
-                  <ProfilePic size={80} proPicUrl={this.state.user.proPicUrl} />
+                  <ProfilePic size={80} proPicUrl={this.props._currentUserProfile.proPicUrl} />
                   <Block
                     row
                     flex

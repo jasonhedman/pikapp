@@ -14,6 +14,7 @@ import "firebase/firestore";
 import GroupMember from "../../components/Groups/GroupMember";
 import SportInfo from "../../components/Groups/SportInfo";
 import ActionsModal from "../../components/Groups/ActionsModal";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -32,71 +33,62 @@ class GroupInfo extends React.Component {
   }
 
   componentDidMount() {
-    Promise.all([
-      firebase
-        .firestore()
-        .collection("groups")
-        .doc(this.props.route.params.groupId)
-        .onSnapshot((group) => {
-          if (group.exists) {
-            this.setState({ group: group.data() }, () => {
-              this.props.navigation.setOptions({
-                headerTitle: group.data().title,
-              });
+    const unsubscribe = firebase
+      .firestore()
+      .collection("groups")
+      .doc(this.props.route.params.groupId)
+      .onSnapshot((group) => {
+        if (group.exists) {
+          this.setState({ group: group.data(), complete:true }, () => {
+            if (!group.data().users.includes(firebase.auth().currentUser.uid)) {
               if (
-                !group.data().users.includes(firebase.auth().currentUser.uid)
+                group.data().private == true &&
+                !group.data().invites.includes(firebase.auth().currentUser.uid)
               ) {
-                if (
-                  group.data().private == true &&
-                  !group
-                    .data()
-                    .invites.includes(firebase.auth().currentUser.uid)
-                ) {
-                  this.props.navigation.setOptions({
-                    headerRight: () => (
-                      <Button
-                        mode="text"
-                        color={this.props.theme.colors.orange}
-                        onPress={this.requestGroup}
-                        compact={true}
-                        uppercase={false}
-                        disabled={this.state.group.requests.includes(
-                          firebase.auth().currentUser.uid
-                        )}
-                      >
-                        Request
-                      </Button>
-                    ),
-                  });
-                } else {
-                  this.props.navigation.setOptions({
-                    headerRight: () => (
-                      <Button
-                        mode="text"
-                        color={this.props.theme.colors.orange}
-                        onPress={this.joinGroup}
-                        compact={true}
-                        uppercase={false}
-                      >
-                        Join
-                      </Button>
-                    ),
-                  });
-                }
+                this.props.navigation.setOptions({
+                  headerTitle: group.data().title,
+                  headerRight: () => (
+                    <Button
+                      mode='text'
+                      color={this.props.theme.colors.orange}
+                      onPress={this.requestGroup}
+                      compact={true}
+                      uppercase={false}
+                      disabled={this.state.group.requests.includes(
+                        firebase.auth().currentUser.uid
+                      )}
+                    >
+                      Request
+                    </Button>
+                  ),
+                });
+              } else {
+                this.props.navigation.setOptions({
+                  headerTitle: group.data().title,
+                  headerRight: () => (
+                    <Button
+                      mode='text'
+                      color={this.props.theme.colors.orange}
+                      onPress={this.joinGroup}
+                      compact={true}
+                      uppercase={false}
+                    >
+                      Join
+                    </Button>
+                  ),
+                });
               }
-            });
-          }
-        }),
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .onSnapshot((user) => {
-          this.setState({ user: user.data() });
-        }),
-    ]).then(() => {
-      this.setState({ complete: true });
-    });
+            }
+          });
+        }
+      });
+    this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
   }
 
   joinGroup = () => {
@@ -110,7 +102,7 @@ class GroupInfo extends React.Component {
             .collection("social")
             .add({
               type: "groupMember",
-              from: this.state.user,
+              from: this.props._currentUserProfile,
               group: this.state.group,
               time: new Date(),
             });
@@ -143,7 +135,7 @@ class GroupInfo extends React.Component {
             .doc(this.props.route.params.groupId)
             .collection("messages")
             .add({
-              content: `${this.state.user.name} (@${this.state.user.username}) joined the group.`,
+              content: `${this.props._currentUserProfile.name} (@${this.props._currentUserProfile.username}) joined the group.`,
               created: new Date(),
               type: "admin",
             }),
@@ -197,7 +189,7 @@ class GroupInfo extends React.Component {
         .doc(this.props.route.params.groupId)
         .collection("messages")
         .add({
-          content: `${this.state.user.name} (@${this.state.user.username}) left the group.`,
+          content: `${this.props._currentUserProfile.name} (@${this.props._currentUserProfile.username}) left the group.`,
           created: new Date(),
           type: "admin",
         }),
@@ -277,7 +269,7 @@ class GroupInfo extends React.Component {
                   Are you sure you want to delete this group?
                 </Text>
                 <Button
-                  mode="contained"
+                  mode='contained'
                   color={colors.orange}
                   onPress={this.deleteGroup}
                   dark={true}
@@ -297,7 +289,7 @@ class GroupInfo extends React.Component {
             <ActionsModal
               user={this.state.actionsUser}
               group={this.state.group}
-              currentUser={this.state.user}
+              currentUser={this.props._currentUserProfile}
               closeModal={this.closeActionsModal}
               navigate={this.props.navigation.navigate}
             />
@@ -341,7 +333,7 @@ class GroupInfo extends React.Component {
                       key={index}
                       navToUserProfile={this.navToUserProfile}
                       group={this.state.group}
-                      currentUser={this.state.user}
+                      currentUser={this.props._currentUserProfile}
                       openActionsModal={this.openActionsModal}
                     />
                   );
@@ -376,7 +368,7 @@ class GroupInfo extends React.Component {
                       firebase.auth().currentUser.uid
                     ) ? (
                       <Button
-                        mode="text"
+                        mode='text'
                         color={colors.orange}
                         onPress={() =>
                           this.props.navigation.navigate("EditGroup", {
@@ -392,7 +384,7 @@ class GroupInfo extends React.Component {
                     {this.state.group.owner !=
                     firebase.auth().currentUser.uid ? (
                       <Button
-                        mode="text"
+                        mode='text'
                         color={colors.orange}
                         onPress={this.leaveGroup}
                         compact={true}
@@ -405,7 +397,7 @@ class GroupInfo extends React.Component {
                     {this.state.group.owner ==
                     firebase.auth().currentUser.uid ? (
                       <Button
-                        mode="text"
+                        mode='text'
                         color={colors.orange}
                         onPress={() => this.setState({ modalVisible: true })}
                         compact={true}
@@ -420,7 +412,7 @@ class GroupInfo extends React.Component {
                     firebase.auth().currentUser.uid
                   ) ? (
                   <Button
-                    mode="text"
+                    mode='text'
                     color={this.props.theme.colors.orange}
                     onPress={this.requestGroup}
                     compact={true}
@@ -433,7 +425,7 @@ class GroupInfo extends React.Component {
                   </Button>
                 ) : (
                   <Button
-                    mode="text"
+                    mode='text'
                     color={colors.orange}
                     onPress={this.joinGroup}
                     compact={true}
@@ -464,4 +456,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(GroupInfo);
+export default withTheme(withAuthenticatedUser(GroupInfo));

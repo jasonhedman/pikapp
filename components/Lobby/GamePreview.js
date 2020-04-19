@@ -15,13 +15,18 @@ class GamePreview extends React.Component {
   }
 
   componentDidMount() {
-    firebase
+    const unsubscribe = firebase
       .firestore()
       .collection("games")
       .doc(this.props.game)
       .onSnapshot((game) => {
         this.setState({ game: game.data(), complete: true });
       });
+    this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   render() {

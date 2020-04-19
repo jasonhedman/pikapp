@@ -14,6 +14,7 @@ class GroupInviteNotification extends React.Component {
   }
 
   componentDidMount() {
+    console.log('working');
     if (this.props.group.users.includes(firebase.auth().currentUser.uid)) {
       this.props.accept();
     }
@@ -123,9 +124,7 @@ class GroupInviteNotification extends React.Component {
               <Text style={{ color: colors.grey }}>Group Invite</Text>
             </Block>
             <Block row>
-              {this.props.group.users.includes(
-                firebase.auth().currentUser.uid
-              ) ? (
+              {this.state.accepted ? (
                 <Button
                   mode="text"
                   dark={false}

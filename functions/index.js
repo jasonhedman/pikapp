@@ -403,7 +403,9 @@ exports.findMutualFriends = functions.https.onCall((data,context) => {
                 userData.mutualFriends = mutualFriends[friend];
                 return userData;
             })
-        }))
+        })).then((users) => {
+            return users.splice(data.results);
+        })
     })
     .catch((err) => {return err})
 })

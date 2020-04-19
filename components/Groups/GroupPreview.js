@@ -30,7 +30,7 @@ class GroupPreview extends React.Component {
   }
 
   componentDidMount() {
-    firebase
+    const unsubscribe = firebase
       .firestore()
       .collection("groups")
       .doc(this.props.group.id)
@@ -42,6 +42,13 @@ class GroupPreview extends React.Component {
           this.setState({ mostRecent: message.data(), complete: true });
         });
       });
+    this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
   }
 
   render() {
@@ -103,7 +110,7 @@ class GroupPreview extends React.Component {
                 );
               })}
             </Block>
-            <Block>
+            <Block flex>
               <Text style={{ fontSize: 20, marginBottom: 4 }}>
                 <Text style={{ color: colors.white }}>
                   {this.props.group.title}
@@ -114,11 +121,11 @@ class GroupPreview extends React.Component {
                   this.props.group.users.length == 1 ? "User" : "Users"
                 }`}</Text>
               </Text>
-              <Block row>
+              <Block row style={{}}>
                 <Text
-                  style={{ color: colors.grey }}
+                  style={{ color: colors.grey, flex: -1 }}
                   numberOfLines={1}
-                  ellipsizeMode="tail"
+                  ellipsizeMode='tail'
                 >{`${
                   this.state.mostRecent.senderName != null
                     ? this.state.mostRecent.senderName + ": "

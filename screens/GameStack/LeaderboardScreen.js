@@ -21,7 +21,7 @@ class LeaderboardScreen extends React.Component {
   }
 
   componentDidMount() {
-    firebase
+    const unsubscribe = firebase
       .firestore()
       .collection("users")
       .orderBy("points", "desc")
@@ -35,6 +35,13 @@ class LeaderboardScreen extends React.Component {
         });
         this.setState({ topTen });
       });
+    this.unsubscribe = this.unsubscribe;
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
   }
 
   render() {
@@ -131,7 +138,7 @@ class LeaderboardScreen extends React.Component {
           </Caption>
           <Block center middle style={{ width: "100%" }}>
             <Button
-              mode="contained"
+              mode='contained'
               dark={true}
               onPress={() => onShare()}
               theme={{

@@ -13,7 +13,7 @@ class MessageBoard extends React.Component {
     };
   }
   componentDidMount() {
-    this.props.messages
+    const unsubscribe = this.props.messages
       .orderBy("created", "desc")
       .limit(10)
       .onSnapshot((allMessages) => {
@@ -23,6 +23,13 @@ class MessageBoard extends React.Component {
         });
         this.setState({ messages });
       });
+    this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
   }
 
   render() {

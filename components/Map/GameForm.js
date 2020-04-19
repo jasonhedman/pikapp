@@ -9,6 +9,8 @@ import * as firebase from "firebase";
 import moment from "moment";
 import "firebase/firestore";
 
+// import withAuthenticatedUser from '../../contexts/authenticatedUserContext/withAuthenticatedUser'
+
 class GameForm extends React.Component {
   constructor(props) {
     super(props);
@@ -26,6 +28,8 @@ class GameForm extends React.Component {
   }
 
   componentDidMount() {
+    // let currentUserProfile = this.props._currentUserProfile;
+
     firebase
       .firestore()
       .collection("users")
@@ -142,6 +146,7 @@ class GameForm extends React.Component {
                 .doc()
                 .set({
                   content: "Game Created",
+                  type:'admin',
                   created: new Date(),
                   senderId: null,
                   senderName: null,
@@ -326,4 +331,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(GameForm);
+export default withTheme((GameForm));

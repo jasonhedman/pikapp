@@ -14,11 +14,7 @@ class ProfilePic extends React.Component {
   }
 
   componentDidMount() {
-    fetch(
-      "https://api.generated.photos/api/v1/faces?api_key=-o9RUblbajTTUQdPqenc9g&age=young-adult&per_page=1&order_by=random&gender=male"
-    )
-      .then((res) => res.json())
-      .then((json) => this.setState({ pic: json.faces[0].urls[4]["512"] }));
+    
   }
 
   render() {

@@ -1,10 +1,6 @@
 import React from "react";
 import { Block } from "galio-framework";
-import {
-  Dimensions,
-  StyleSheet,
-  SafeAreaView,
-} from "react-native";
+import { Dimensions, StyleSheet, SafeAreaView } from "react-native";
 import LobbyMember from "../../components/Lobby/LobbyMember";
 import * as firebase from "firebase";
 import {
@@ -22,6 +18,7 @@ import InvitePlayers from "../../components/Lobby/InvitePlayers";
 import HelperText from "../../components/Utility/HelperText";
 const { width, height } = Dimensions.get("screen");
 import moment from "moment";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 const orange = "#E68A54";
 const green = "#56B49E";
 const grey = "#83838A";
@@ -54,14 +51,7 @@ class GameLobby extends React.Component {
   };
 
   componentDidMount() {
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .onSnapshot((user) => {
-        this.setState({ user: user.data() });
-      });
-    firebase
+    const unsubscribe = firebase
       .firestore()
       .collection("games")
       .doc(this.props.route.params.gameId)
@@ -78,7 +68,7 @@ class GameLobby extends React.Component {
               }`,
               headerRight: () => (
                 <IconButton
-                  icon="message"
+                  icon='message'
                   color={this.props.theme.colors.orange}
                   onPress={() =>
                     this.props.navigation.navigate("Messages", {
@@ -95,6 +85,13 @@ class GameLobby extends React.Component {
           this.props.navigation.navigate("GameLandingScreen");
         }
       });
+    this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
   }
 
   setTeamModalVisible = (team, visible) => {
@@ -205,7 +202,7 @@ class GameLobby extends React.Component {
         .doc(this.props.route.params.gameId)
         .collection("messages")
         .add({
-          content: `@${this.state.user.username} left the game`,
+          content: `@${this.props._currentUserProfile.username} left the game`,
           created: new Date(),
           senderId: null,
           senderName: null,
@@ -217,9 +214,9 @@ class GameLobby extends React.Component {
         .update({
           players: firebase.firestore.FieldValue.arrayRemove({
             id: firebase.auth().currentUser.uid,
-            name: this.state.user.name,
-            username: this.state.user.username,
-            dob: this.state.user.dob,
+            name: this.props._currentUserProfile.name,
+            username: this.props._currentUserProfile.username,
+            dob: this.props._currentUserProfile.dob,
           }),
         }),
     ])
@@ -329,7 +326,7 @@ class GameLobby extends React.Component {
                   Are you sure you you would like to complete this game?
                 </Subheading>
                 <Button
-                  mode="contained"
+                  mode='contained'
                   dark={true}
                   onPress={this.completeGame}
                   theme={{
@@ -367,7 +364,7 @@ class GameLobby extends React.Component {
                   Are you sure you you would like to cancel this game?
                 </Subheading>
                 <Button
-                  mode="contained"
+                  mode='contained'
                   dark={true}
                   onPress={this.deleteGame}
                   theme={{
@@ -397,7 +394,7 @@ class GameLobby extends React.Component {
               <InvitePlayers
                 setModalVisible={this.setInviteModalVisible}
                 game={this.state.game}
-                user={this.state.user}
+                user={this.props._currentUserProfile}
                 toSocialScreen={this.toSocialScreen}
               />
             </Modal>
@@ -459,7 +456,7 @@ class GameLobby extends React.Component {
                       }}
                     >
                       <Button
-                        mode="contained"
+                        mode='contained'
                         dark={true}
                         onPress={() => this.setCancelModalVisible(true)}
                         theme={{
@@ -471,7 +468,7 @@ class GameLobby extends React.Component {
                         Cancel
                       </Button>
                       <Button
-                        mode="contained"
+                        mode='contained'
                         onPress={() => this.setInviteModalVisible(true)}
                         theme={{
                           colors: { primary: colors.white },
@@ -484,7 +481,7 @@ class GameLobby extends React.Component {
                       {
                         <Button
                           dark={true}
-                          mode="contained"
+                          mode='contained'
                           onPress={() => this.setModalVisible(true)}
                           theme={{
                             colors: { primary: colors.lGreen },
@@ -506,7 +503,7 @@ class GameLobby extends React.Component {
                       }}
                     >
                       <Button
-                        mode="text"
+                        mode='text'
                         dark={false}
                         onPress={() => this.leaveGame()}
                         theme={{
@@ -518,7 +515,7 @@ class GameLobby extends React.Component {
                         Leave Game
                       </Button>
                       <Button
-                        mode="contained"
+                        mode='contained'
                         dark={true}
                         onPress={() => this.setInviteModalVisible(true)}
                         theme={{
@@ -534,7 +531,7 @@ class GameLobby extends React.Component {
                 </Block>
               ) : null}
               <HelperText
-                text="No players are bringing equipment"
+                text='No players are bringing equipment'
                 visible={!(this.state.game.equipment.length > 0)}
               />
             </Block>
@@ -596,4 +593,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(GameLobby);
+export default withTheme(withAuthenticatedUser(GameLobby));

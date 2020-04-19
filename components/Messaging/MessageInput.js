@@ -21,6 +21,7 @@ class MessageInput extends React.Component {
         firebase.firestore().collection(this.props.collection).doc(this.props.doc).collection('messages').add({
             content: this.state.message,
             created: new Date(),
+            type:'message',
             senderId: this.props.user.id,
             sender: {
                 username: this.props.user.username,

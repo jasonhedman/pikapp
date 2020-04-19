@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, FlatList } from "react-native";
 import { withTheme } from "react-native-paper";
 import { Block } from "galio-framework";
 import firebase from "firebase";
@@ -7,6 +7,7 @@ import GroupInput from "../../components/Groups/GroupInput";
 import UserMessage from "../../components/Groups/UserMessage";
 import AdminMessage from "../../components/Groups/AdminMessage";
 import PendingRequestsPreview from "../../components/Groups/PendingRequestsPreview";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 class GroupScreen extends React.Component {
   constructor(props) {
@@ -19,42 +20,44 @@ class GroupScreen extends React.Component {
   }
 
   componentDidMount() {
-    Promise.all([
-      firebase
-        .firestore()
-        .collection("groups")
-        .doc(this.props.route.params.groupId)
-        .onSnapshot((group) => {
-          this.props.navigation.setOptions({
-            headerTitle: group.data().title,
-          });
-          this.setState({ group: group.data() });
-        }),
-      firebase
-        .firestore()
-        .collection("groups")
-        .doc(this.props.route.params.groupId)
-        .collection("messages")
-        .orderBy("created", "desc")
-        .limit(50)
-        .onSnapshot((allMessages) => {
-          let messages = [];
-          allMessages.forEach((message) => {
-            messages.push(message.data());
-          });
-          this.setState({ messages });
-        }),
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .get()
-        .then((user) => {
-          this.setState({ user: user.data() });
-        }),
-    ]).then(() => {
-      this.setState({ complete: true });
-    });
+    const groupUnsubscribe = firebase
+      .firestore()
+      .collection("groups")
+      .doc(this.props.route.params.groupId)
+      .onSnapshot((group) => {
+        this.props.navigation.setOptions({
+          headerTitle: group.data().title,
+        });
+        this.setState({ group: group.data(), complete: true });
+      });
+      const messagesUnsubscribe = firebase
+      .firestore()
+      .collection("groups")
+      .doc(this.props.route.params.groupId)
+      .collection("messages")
+      .orderBy("created", "desc")
+      .limit(50)
+      .onSnapshot((allMessages) => {
+        let messages = [];
+        allMessages.forEach((message) => {
+          let messageData = message.data();
+          messageData.id = message.id;
+          messages.push(messageData);
+        });
+        this.setState({ messages });
+      });
+      this.unsubscribe = [
+        groupUnsubscribe,
+        messagesUnsubscribe,
+      ];
+  }
+
+  componentWillUnmount(){
+    if(this.unsubscribe){
+      this.unsubscribe.forEach((func) => {
+        func();
+      })
+    }
   }
 
   render() {
@@ -65,6 +68,7 @@ class GroupScreen extends React.Component {
           style={{
             flex: 1,
             backgroundColor: colors.dBlue,
+            paddingHorizontal: 8,
           }}
         >
           {Object.keys(this.state.group).length > 0 &&
@@ -77,36 +81,31 @@ class GroupScreen extends React.Component {
             <PendingRequestsPreview
               requests={this.state.group.requests}
               navigate={this.props.navigation.navigate}
-              groupId={this.state.group.id}
+              group={this.state.group}
             />
           ) : null}
-          <ScrollView
-            contentContainerStyle={{
-              marginTop: "auto",
-              flexDirection: "column-reverse",
-              flex: 1,
-              paddingHorizontal: 8,
-            }}
-          >
-            {this.state.messages.map((message, index) => {
-              if (message.type == "message") {
+          <FlatList
+            data={this.state.messages}
+            keyExtractor={(message) => message.id}
+            renderItem={({ item, index }) => {
+              if (item.type == "message") {
                 return (
                   <UserMessage
-                    key={index}
-                    message={message}
+                    message={item}
                     messageAbove={this.state.messages[index + 1]}
                     messageBelow={this.state.messages[index - 1]}
                   />
                 );
-              } else if (message.type == "admin") {
-                return <AdminMessage key={index} message={message} />;
+              } else if (item.type == "admin") {
+                return <AdminMessage message={item} />;
               }
-            })}
-          </ScrollView>
+            }}
+            inverted={true}
+          />
           <GroupInput
             collection='groups'
             doc={this.props.route.params.groupId}
-            user={this.state.user}
+            user={this.props._currentUserProfile}
           />
         </Block>
       );
@@ -116,4 +115,4 @@ class GroupScreen extends React.Component {
   }
 }
 
-export default withTheme(GroupScreen);
+export default withTheme(withAuthenticatedUser(GroupScreen));

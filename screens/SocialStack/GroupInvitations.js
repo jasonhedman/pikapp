@@ -4,6 +4,7 @@ import { withTheme } from "react-native-paper";
 import { Block } from "galio-framework";
 import firebase from "firebase";
 import GroupInviteNotification from "../../components/Notifications/GroupInvitations/GroupInviteNotification";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 class GroupInvitations extends React.Component {
   constructor() {
@@ -15,46 +16,28 @@ class GroupInvitations extends React.Component {
   }
 
   componentDidMount() {
-    Promise.all([
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .collection("groupInvitations")
-        .orderBy("time", "desc")
-        .onSnapshot((results) => {
-          let invitations = [];
-          results.forEach((result, index) => {
-            let resultData = result.data();
-            resultData.id = result.id;
-            invitations.push(resultData);
-          });
-          this.setState({ invitations }, () => {
-            Promise.all(
-              this.state.invitations.map((invitation, index) => {
-                firebase
-                  .firestore()
-                  .collection("groups")
-                  .doc(invitation.group.id)
-                  .onSnapshot((group) => {
-                    let invitations = this.state.invitations;
-                    invitations[index].group = group.data();
-                    this.setState({ invitations });
-                  });
-              })
-            );
-          });
-        }),
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .onSnapshot((user) => {
-          this.setState({ user: user.data() });
-        }),
-    ]).then(() => {
-      this.setState({ complete: true });
-    });
+    let unsubscribe = firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("groupInvitations")
+      .orderBy("time", "desc")
+      .onSnapshot((results) => {
+        let invitations = [];
+        results.forEach((result, index) => {
+          let resultData = result.data();
+          resultData.id = result.id;
+          invitations.push(resultData);
+        });
+        this.setState({ invitations });
+      });
+    this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount(){
+    if(this.unsubscribe){
+      this.unsubscribe();
+    }
   }
 
   accept = (invitation) => {
@@ -77,29 +60,25 @@ class GroupInvitations extends React.Component {
 
   render() {
     const colors = this.props.theme.colors;
-    if (this.state.complete) {
-      return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
-          <ScrollView flex style={{ padding: 16 }}>
-            {this.state.invitations.map((invitation, index) => {
-              return (
-                <GroupInviteNotification
-                  group={invitation.group}
-                  currentUser={this.state.user}
-                  invitationId={invitation.id}
-                  accept={() => this.accept(invitation)}
-                  key={index}
-                  navigate={this.props.navigation.navigate}
-                />
-              );
-            })}
-          </ScrollView>
-        </SafeAreaView>
-      );
-    } else {
-      return <Block flex style={{ backgroundColor: colors.dBlue }} />;
-    }
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
+        <ScrollView flex style={{ padding: 16 }}>
+          {this.state.invitations.map((invitation, index) => {
+            return (
+              <GroupInviteNotification
+                group={invitation.group}
+                currentUser={this.props._currentUserProfile}
+                invitationId={invitation.id}
+                accept={() => this.accept(invitation)}
+                key={index}
+                navigate={this.props.navigation.navigate}
+              />
+            );
+          })}
+        </ScrollView>
+      </SafeAreaView>
+    );
   }
 }
 
-export default withTheme(GroupInvitations);
+export default withTheme(withAuthenticatedUser(GroupInvitations));

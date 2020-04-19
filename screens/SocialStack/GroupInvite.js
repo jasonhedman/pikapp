@@ -15,6 +15,7 @@ import * as firebase from "firebase";
 import "firebase/firestore";
 import NearbyUsers from "../../components/Utility/NearbyUsers";
 import FriendsList from "../../components/Utility/FriendsList";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 class GroupInvite extends React.Component {
   constructor(props) {
@@ -51,71 +52,11 @@ class GroupInvite extends React.Component {
         allUsers.forEach((user) => {
           if (user.id != firebase.auth().currentUser.uid) {
             users[user.id] = user.data();
-          } else {
-            currentUser = user.data();
-            this.setState({ user: user.data() });
           }
         });
         this.setState({ users, complete: true });
         return users;
       })
-      .then((allUsers) => {
-        let nearbyLat = [];
-        let nearbyLng = [];
-        Promise.all([
-          firebase
-            .firestore()
-            .collection("users")
-            .where(
-              "location.latitude",
-              "<",
-              currentUser.location.latitude + 5 * (1 / 69)
-            )
-            .where(
-              "location.latitude",
-              ">",
-              currentUser.location.latitude - 5 * (1 / 69)
-            )
-            .get()
-            .then((users) => {
-              users.forEach((user) => {
-                nearbyLat.push(user.id);
-              });
-            }),
-          firebase
-            .firestore()
-            .collection("users")
-            .where(
-              "location.longitude",
-              "<",
-              currentUser.location.longitude + 5 * (1 / 69)
-            )
-            .where(
-              "location.longitude",
-              ">",
-              currentUser.location.longitude - 5 * (1 / 69)
-            )
-            .get()
-            .then((users) => {
-              users.forEach((user) => {
-                nearbyLng.push(user.id);
-              });
-            }),
-        ]).then(() => {
-          let nearby = nearbyLat.filter(
-            (value) =>
-              nearbyLng.includes(value) &&
-              value != firebase.auth().currentUser.uid
-          );
-          nearby.sort((a, b) => {
-            return (
-              getDistance(allUsers[a].location, currentUser.location) -
-              getDistance(allUsers[b].location, currentUser.location)
-            );
-          });
-          this.setState({ nearby, nearbyComplete: true });
-        });
-      });
   }
 
   onSearch = (search) => {
@@ -184,7 +125,7 @@ class GroupInvite extends React.Component {
       firebase.firestore().collection("notifications").add({
         type: "groupInvite",
         group: this.props.route.params.group,
-        from: this.state.user,
+        from: this.props._currentUserProfile,
         to: user,
         time: moment().toDate(),
       }),
@@ -195,7 +136,7 @@ class GroupInvite extends React.Component {
         .collection("groupInvitations")
         .add({
           group: this.props.route.params.group,
-          from: this.state.user,
+          from: this.props._currentUserProfile,
           time: new Date(),
         }),
       firebase
@@ -307,4 +248,4 @@ class GroupInvite extends React.Component {
   }
 }
 
-export default withTheme(GroupInvite);
+export default withTheme(withAuthenticatedUser(GroupInvite));

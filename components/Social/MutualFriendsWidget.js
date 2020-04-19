@@ -5,40 +5,44 @@ import { getDistance } from "geolib";
 
 import { Block } from "galio-framework";
 const { height, width } = Dimensions.get("screen");
-import firebase from "firebase";
-import * as geofirex from "geofirex";
-const geo = geofirex.init(firebase);
+import * as firebase from "firebase";
 import "firebase/firestore";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 import UserPreview from "./UserPreview";
 
-class NearbyUsersWidget extends React.Component {
+class MutualFriendsWidget extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      nearbyUsers: new Array(),
-      complete: false,
+      mutualFriends: new Array(),
     };
   }
 
   componentDidMount() {
-    const query = geo
-      .query(firebase.firestore().collection("users"))
-      .within(this.props._currentUserProfile.location, 10, "location");
-    query.subscribe((nearbyUsers) => this.setState({nearbyUsers}));
+    let findMutualFriends = firebase
+      .functions()
+      .httpsCallable("findMutualFriends");
+    findMutualFriends({
+      user: this.props._currentUserProfile,
+      id: this.props._currentUserProfile.id,
+    }).then((result) => {
+      this.setState({
+        mutualFriends: result.data,
+      });
+    });
   }
 
   render() {
     const colors = this.props.theme.colors;
     return (
-      <Block style={{ marginTop: 10 }}>
+      <Block style={{ marginTop: 4 }}>
         <Text
           style={{ color: "white", fontFamily: "ralewayBold", marginBottom: 4 }}
         >
-          Nearby Users
+          Mutual Friends
         </Text>
         <FlatList
-          data={this.state.nearbyUsers}
+          data={this.state.mutualFriends}
           renderItem={({ item, index }) => (
             <UserPreview
               user={item}
@@ -55,4 +59,4 @@ class NearbyUsersWidget extends React.Component {
   }
 }
 
-export default withTheme(withAuthenticatedUser(NearbyUsersWidget));
+export default withTheme(withAuthenticatedUser(MutualFriendsWidget));

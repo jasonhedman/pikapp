@@ -5,10 +5,13 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
+import {Block} from 'galio-framework'
 import { withTheme, FAB } from "react-native-paper";
 import firebase from "firebase";
 import SocialHeader from "../../components/Social/SocialHeader";
 import NearbyUsersWidget from "../../components/Social/NearbyUsersWidget";
+import GroupsWidget from "../../components/Social/GroupsWidget";
+import MutualFriendsWidget from "../../components/Social/MutualFriendsWidget";
 
 class SocialScreen extends React.Component {
   constructor() {
@@ -21,82 +24,35 @@ class SocialScreen extends React.Component {
   componentDidMount() {
     let colors = this.props.theme.colors;
     this.props.navigation.setOptions({
-      header: ({ scene, previous, navigation }) => {
-        return (
-          <SocialHeader
-            search={this.state.search}
-            navigate={this.props.navigation.navigate}
-          />
-        );
-      },
+      headerShown: false,
     });
+  }
+
+  navToUserProfile = (id) => {
+    this.props.navigation.navigate("UserProfile", { userId: id });
+  };
+
+  onSearch = (search) => {
+    this.setState({search})
   }
 
   render() {
     const colors = this.props.theme.colors;
     return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
-          <NearbyUsersWidget />
-          <FAB
-            icon="plus"
-            label="See Groups"
-            onPress={() => {
-              this.props.navigation.navigate("GroupList");
-            }}
-            style={[
-              styles.fab,
-              { backgroundColor: colors.orange, color: colors.white },
-            ]}
+      // <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
+        <Block style={{paddingHorizontal:8, overflow:'visible'}}>
+          <SocialHeader
+            search={this.state.search}
+            navigate={this.props.navigation.navigate}
+            onSearch={this.onSearch}
           />
-          <FAB
-            icon="plus"
-            label="Create Group"
-            onPress={() => {
-              this.props.navigation.navigate("CreateGroup");
-            }}
-            style={[
-              styles.fab,
-              { backgroundColor: colors.orange, color: colors.white },
-            ]}
-          />
-          <FAB
-            icon="plus"
-            label="Search Groups"
-            onPress={() => {
-              this.props.navigation.navigate("SearchGroups");
-            }}
-            style={[
-              styles.fab,
-              { backgroundColor: colors.orange, color: colors.white },
-            ]}
-          />
-          <FAB
-            icon="plus"
-            label="Search Players"
-            onPress={() => {
-              this.props.navigation.navigate("SearchPlayers");
-            }}
-            style={[
-              styles.fab,
-              { backgroundColor: colors.orange, color: colors.white },
-            ]}
-          />
-          <FAB
-            icon="plus"
-            label="Social Activity"
-            onPress={() => {
-              this.props.navigation.navigate("SocialNotifications", {
-                userId: firebase.auth().currentUser.uid,
-              });
-            }}
-            style={[
-              styles.fab,
-              { backgroundColor: colors.orange, color: colors.white },
-            ]}
-          />
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
+          <NearbyUsersWidget navToUserProfile={this.navToUserProfile} />
+          <GroupsWidget navigate={this.props.navigation.navigate} />
+          <MutualFriendsWidget navToUserProfile={this.navToUserProfile} />
+        </Block>
+      </SafeAreaView>
+      // </TouchableWithoutFeedback>
     );
   }
 }

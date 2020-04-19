@@ -16,31 +16,12 @@ class PendingRequests extends React.Component {
   }
 
   componentDidMount() {
-    firebase
-      .firestore()
-      .collection("groups")
-      .doc(this.props.route.params.groupId)
-      .onSnapshot((group) => {
-        Promise.all(
-          group.data().requests.map((request) => {
-            return firebase
-              .firestore()
-              .collection("users")
-              .doc(request)
-              .get()
-              .then((request) => {
-                return request.data();
-              });
-          })
-        ).then((requests) => {
-          this.setState({ requests, group: group.data() });
-        });
-      });
+    
   }
 
   accept = (request) => {
     Promise.all(
-      this.state.group.users
+      this.props.group.users
         .map((user) => {
           firebase
             .firestore()
@@ -50,7 +31,7 @@ class PendingRequests extends React.Component {
             .add({
               type: "groupMember",
               from: request,
-              group: this.state.group,
+              group: this.props.group,
               time: new Date(),
             });
         })
@@ -101,7 +82,7 @@ class PendingRequests extends React.Component {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
         <ScrollView flex style={{ padding: 16 }}>
-          {this.state.requests.map((request, index) => {
+          {this.props.group.requests.map((request, index) => {
             return (
               <TouchableOpacity
                 onPress={() =>
