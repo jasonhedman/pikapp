@@ -34,49 +34,34 @@ class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.props._trace(this, "construct component", "constructor");
+
     this.state = {
       proPicUrl: null,
-      lastThree: new Array(),
-      complete: false,
+      gameHistory: null,            // NOTE: This is the state that matters when re-rendering
+      lastThreeGames: new Array(),  // this holds the actual games retrieved
+      complete: false,              // indicates that last 3 games were loaded
       settingsVisible: false,
     };
   }
 
-  renderHelper() {
-    let currentUserProfile = this.props._currentUserProfile;
-    this.props.navigation.setOptions({
-      title: `${currentUserProfile.username}`,
-      headerRight: () => (
-        <IconButton
-          color={this.props.theme.colors.white}
-          icon={"settings"}
-          onPress={() => this.setState({ settingsVisible: true })}
-          size={20}
-        ></IconButton>
-      ),
-    });
-  }
-
-  componentDidMount() {
-    this.props._trace(this, "mount component", "componentDidMount");
-    let currentUserProfile = this.props._currentUserProfile;
+  asyncLoadLast3Games() {
+    this.props._trace(this, "start", "asyncLoadLast3Games");
+    const gameHistory = this.props._currentUserProfile.gameHistory
+    this.setState({ gameHistory: gameHistory });
 
     // gets up to last 3 games for this user.
-    let lastThree = [];
+    let lastThreeGamePromises = [];
     for (
-      let i = currentUserProfile.gameHistory.length - 1;
-      i >=
-      (currentUserProfile.gameHistory.length >= 3
-        ? currentUserProfile.gameHistory.length - 3
-        : 0);
+      let i = gameHistory.length - 1;
+      i >= Math.max(gameHistory.length - 3, 0);
       i--
     ) {
-      // NOTE: lastThree is an array of promises, each pulling game data
-      lastThree.push(
+      // NOTE: lastThreeGames is an array of promises, each pulling game data
+      lastThreeGamePromises.push(
         firebase
           .firestore()
           .collection("games")
-          .doc(currentUserProfile.gameHistory[i])
+          .doc(gameHistory[i])
           .get()
           .then((game) => {
             return game.data();
@@ -85,12 +70,21 @@ class Profile extends React.Component {
     }
 
     // when all three are done, write the games to state
-    Promise.all(lastThree).then((games) => {
+    Promise.all(lastThreeGamePromises).then((games) => {
       this.setState({
-        lastThree: games,
+        lastThreeGames: games,
+        complete: true,
+      });
+    })
+    .catch(() => {
+      this.setState({
+        lastThreeGames: [],
         complete: true,
       });
     });
+  }
+
+  asyncLoadPic() {
 
     firebase
       .storage()
@@ -102,7 +96,39 @@ class Profile extends React.Component {
       .catch(() => {
         this.setState({ proPicUrl: null });
       });
+
   }
+
+  componentDidMount() {
+    // load last 3 games
+    this.asyncLoadLast3Games();
+
+    // load pic
+    this.asyncLoadPic();
+  }
+
+  // called when new props are delivered before a render. compare the saved gameHistory with the
+  // current user game history. If they differ, then need to re-load the last 3 before drawing
+  // so set the data to null (so there's no data). Then when compoentDidUpdate() is called, it'll
+  // reload the data as necessary.
+  static getDerivedStateFromProps(props, state) {
+    if (props._currentUserProfile.gameHistory !== state.gameHistory) {
+      return {
+        gameHistory: null,
+        externalData: null,
+        complete: false,
+      };
+    }
+    // No state update necessary
+    return null;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.gameHistory === null) {
+      this.asyncLoadLast3Games(this.props._currentUserProfile.gameHistory);
+    }
+  }
+
 
   setImage = (proPicUrl, func) => {
     this.setState({ proPicUrl }, func);
@@ -138,7 +164,18 @@ class Profile extends React.Component {
 
   render() {
     this.props._trace(this, "render component", "render");
-    this.renderHelper();
+    let currentUserProfile = this.props._currentUserProfile;
+    this.props.navigation.setOptions({
+      title: `${currentUserProfile.username}`,
+      headerRight: () => (
+        <IconButton
+          color={this.props.theme.colors.white}
+          icon={"settings"}
+          onPress={() => this.setState({ settingsVisible: true })}
+          size={20}
+        ></IconButton>
+      ),
+    });
     const colors = this.props.theme.colors;
     if (this.state.complete) {
       return (
@@ -356,9 +393,9 @@ class Profile extends React.Component {
               >
                 Last Three Games
               </Headline>
-              {this.state.lastThree.length > 0 ? (
+              {this.state.lastThreeGames.length > 0 ? (
                 <Block column>
-                  {this.state.lastThree.map((game, index) => {
+                  {this.state.lastThreeGames.map((game, index) => {
                     return (
                       <GameResult
                         game={game}
