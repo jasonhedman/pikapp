@@ -20,63 +20,80 @@ class NearbyUsersWidget extends React.Component {
     let nearbyLatKeys = [];
     let nearbyLngKeys = [];
     let nearbyLng = {};
-    Promise.all([
-      firebase
-        .firestore()
-        .collection("users")
-        .where(
-          "location.latitude",
-          "<",
-          currentUser.location.latitude + 5 * (1 / 69)
-        )
-        .where(
-          "location.latitude",
-          ">",
-          currentUser.location.latitude - 5 * (1 / 69)
-        )
-        .get()
-        .then((users) => {
-          users.forEach((user) => {
-            nearbyLatKeys.push(user.id);
+    try {
+      Promise.all([
+
+        firebase
+          .firestore()
+          .collection("users")
+          .where(
+            "location.latitude",
+            "<",
+            currentUser.location.latitude + 5 * (1 / 69)
+          )
+          .where(
+            "location.latitude",
+            ">",
+            currentUser.location.latitude - 5 * (1 / 69)
+          )
+          .get()
+          .then((users) => {
+            users.forEach((user) => {
+              nearbyLatKeys.push(user.id);
+            });
+          })
+          .catch((error) => {
+            console.log("An error happened - handle somehow");
+          }),
+
+        firebase
+          .firestore()
+          .collection("users")
+          .where(
+            "location.longitude",
+            "<",
+            currentUser.location.longitude + 5 * (1 / 69)
+          )
+          .where(
+            "location.longitude",
+            ">",
+            currentUser.location.longitude - 5 * (1 / 69)
+          )
+          .get()
+          .then((users) => {
+            users.forEach((user) => {
+              nearbyLngKeys.push(user.id);
+              nearbyLng[user.id] = user.data();
+            });
+          })
+          .catch((error) => {
+            console.log("An error happened - handle somehow");
+          }),
+      ])
+        .then(() => {
+          let nearbySortedKeys = nearbyLatKeys
+            .filter(
+              (value) =>
+                nearbyLngKeys.includes(value) && value != currentUser.id
+            )
+            .sort((a, b) => {
+              return (
+                getDistance(nearbyLng[a].location, currentUser.location) -
+                getDistance(nearbyLng[b].location, currentUser.location)
+              );
+            });
+          this.setState({
+            users: nearbyLng,
+            nearbySortedKeys,
+            nearbyComplete: true,
           });
-        }),
-      firebase
-        .firestore()
-        .collection("users")
-        .where(
-          "location.longitude",
-          "<",
-          currentUser.location.longitude + 5 * (1 / 69)
-        )
-        .where(
-          "location.longitude",
-          ">",
-          currentUser.location.longitude - 5 * (1 / 69)
-        )
-        .get()
-        .then((users) => {
-          users.forEach((user) => {
-            nearbyLngKeys.push(user.id);
-            nearbyLng[user.id] = user.data();
-          });
-        }),
-    ]).then(() => {
-      let nearbySortedKeys = nearbyLatKeys
-        .filter(
-          (value) => nearbyLngKeys.includes(value) && value != currentUser.id
-        )
-        .sort((a, b) => {
-          return (
-            getDistance(nearbyLng[a].location, currentUser.location) -
-            getDistance(nearbyLng[b].location, currentUser.location)
-          );
+        })
+        .catch((error) => {
+          console.log("An error happened - handle somehow");
         });
-      this.setState({
-        users: nearbyLng,
-        nearbySortedKeys,
-        nearbyComplete: true,
-      });
-    });
+    } catch (error) {
+      console.log(`ERROR: ${error}`);
+    }
   }
 
   render() {
