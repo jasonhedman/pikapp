@@ -16,6 +16,9 @@ require("firebase/functions");
 import HeaderBlock from "../Utility/HeaderBlock";
 import moment from "moment";
 import { getDistance } from "geolib";
+import * as geofirex from "geofirex";
+const geo = geofirex.init(firebase);
+
 import onShare from "../../services/onShare";
 
 import {
@@ -43,58 +46,12 @@ class InvitePlayers extends React.Component {
 
   componentDidMount() {
     let nearby = new Object();
-    Promise.all([
-      firebase
-        .firestore()
-        .collection("users")
-        .where(
-          "location.latitude",
-          "<",
-          this.props.user.location.latitude + 5 * (1 / 69)
-        )
-        .where(
-          "location.latitude",
-          ">",
-          this.props.user.location.latitude - 5 * (1 / 69)
-        )
-        .get()
-        .then((users) => {
-          users.forEach((user) => {
-            let userData = user.data();
-            userData.id = user.id;
-            nearby[user.id] = userData;
-          });
-        }),
-      firebase
-        .firestore()
-        .collection("users")
-        .where(
-          "location.longitude",
-          "<",
-          this.props.user.location.longitude + 5 * (1 / 69)
-        )
-        .where(
-          "location.longitude",
-          ">",
-          this.props.user.location.longitude - 5 * (1 / 69)
-        )
-        .get()
-        .then((users) => {
-          users.forEach((user) => {
-            let userData = user.data();
-            userData.id = user.id;
-            nearby[user.id] = userData;
-          });
-        }),
-    ]).then(() => {
-      let nearbySortedKeys = Object.keys(nearby).sort((a, b) => {
-        return (
-          getDistance(nearby[a].location, this.props.user.location) -
-          getDistance(nearby[b].location, this.props.user.location)
-        );
-      });
-      this.setState({ nearby, nearbyComplete: true, nearbySortedKeys });
-    });
+    const query = geo
+      .query(firebase.firestore().collection("users"))
+      .within(this.props.user.location, 10, "location");
+    query.subscribe((nearby) =>
+      this.setState({ nearby, nearbyComplete: true })
+    );
   }
 
   onPress = (id, user) => {
@@ -134,32 +91,20 @@ class InvitePlayers extends React.Component {
           center
           style={{ backgroundColor: colors.dBlue, width: "100%" }}
         >
-          <HeaderBlock
-            text={"Nearby Players"}
-            backButton={true}
-            backPress={() => this.props.setModalVisible(false)}
-          />
-          {/* <Subheading style={{color:colors.white, textAlign:'center',marginBottom:8,marginTop:8}} theme={{fonts:{medium:this.props.theme.fonts.regular}}}>Nearby Players</Subheading> */}
+          <Headline style={{color:colors.white,fontSize:20,marginBottom:8}}>Nearby Players</Headline>
           {this.state.nearbyComplete ? (
             Object.keys(this.state.nearby).length > 0 ? (
               <ScrollView style={styles.scrollview}>
-                {this.state.nearbySortedKeys.map((userId, key) => {
+                {this.state.nearby.map((user, key) => {
                   if (
-                    this.props.user.friendsList.includes(userId) ||
-                    userId == firebase.auth().currentUser.uid
+                    this.props.user.friendsList.includes(user.id) ||
+                    user.id == firebase.auth().currentUser.uid
                   ) {
                     return null;
                   } else {
-                    let user = this.state.nearby[userId];
-                    let distance;
-                    if (user.location != undefined) {
-                      distance = Math.round(
-                        getDistance(user.location, this.props.user.location) *
-                          0.000621371
-                      );
-                    } else {
-                      distance = null;
-                    }
+                    let distance =
+                      Math.round(user.hitMetadata.distance * 0.621371 * 10) /
+                      10;
                     return (
                       <TouchableOpacity
                         onPress={() => this.onPress(user.id, user)}
@@ -186,20 +131,8 @@ class InvitePlayers extends React.Component {
                               @{user.username}
                             </Text>
                           </Block>
-                          <Text style={{ color: "#fff" }}>{`${
-                            distance != null
-                              ? distance < 1
-                                ? "<1"
-                                : distance
-                              : user.points
-                          } ${
-                            distance != null
-                              ? distance < 2
-                                ? "Mile Away"
-                                : "Miles Away"
-                              : user.points == 1
-                              ? "Point"
-                              : "Points"
+                          <Text style={{ color: "#fff" }}>{`${distance < 1 ? "<1" : distance} ${
+                            distance > 1 ? "Miles Away" : "Mile Away"
                           }`}</Text>
                         </Block>
                       </TouchableOpacity>
@@ -247,7 +180,7 @@ class InvitePlayers extends React.Component {
                   No nearby players.
                 </Headline>
                 <Button
-                  mode="contained"
+                  mode='contained'
                   dark={true}
                   onPress={onShare}
                   theme={{
@@ -279,6 +212,7 @@ const styles = StyleSheet.create({
     maxHeight: height * 0.5,
     borderRadius: 8,
     padding: 4,
+    paddingBottom:0
   },
 });
 

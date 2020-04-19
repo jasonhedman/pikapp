@@ -112,7 +112,11 @@ class GroupPreview extends React.Component {
             </Block>
             <Block flex>
               <Text style={{ fontSize: 20, marginBottom: 4 }}>
-                <Text style={{ color: colors.white }}>
+                <Text
+                  style={{ color: colors.white, flex: -1 }}
+                  numberOfLines={1}
+                  ellipsizeMode='tail'
+                >
                   {this.props.group.title}
                 </Text>
                 <Text style={{ color: colors.grey, fontSize: 16 }}>{`  •  ${

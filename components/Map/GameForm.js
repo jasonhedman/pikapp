@@ -6,10 +6,10 @@ import HeaderBlock from "../Utility/HeaderBlock";
 import MenuBlock from "../Utility/MenuBlock";
 import ButtonBlock from "../Utility/ButtonBlock";
 import * as firebase from "firebase";
+import * as geofirex from "geofirex";
+const geo = geofirex.init(firebase);
 import moment from "moment";
 import "firebase/firestore";
-
-// import withAuthenticatedUser from '../../contexts/authenticatedUserContext/withAuthenticatedUser'
 
 class GameForm extends React.Component {
   constructor(props) {
@@ -17,7 +17,6 @@ class GameForm extends React.Component {
     this.state = {
       sport: this.props.sport,
       intensity: this.props.intensity,
-      user: null,
       bringingEquipment: this.props.bringingEquipment,
       locationModalVisible: false,
       location: this.props.location,
@@ -28,60 +27,17 @@ class GameForm extends React.Component {
   }
 
   componentDidMount() {
-    // let currentUserProfile = this.props._currentUserProfile;
-
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .get()
-      .then((currentUser) => {
-        this.setState({ user: currentUser.data() });
-        let nearby = {};
-        Promise.all([
-          firebase
-            .firestore()
-            .collection("users")
-            .where(
-              "location.latitude",
-              "<",
-              currentUser.data().location.latitude + 2 * (1 / 69)
-            )
-            .where(
-              "location.latitude",
-              ">",
-              currentUser.data().location.latitude - 2 * (1 / 69)
-            )
-            .get()
-            .then((users) => {
-              users.forEach((user) => {
-                nearby[user.id] = user.data();
-              });
-            }),
-          firebase
-            .firestore()
-            .collection("users")
-            .where(
-              "location.longitude",
-              "<",
-              currentUser.data().location.longitude + 2 * (1 / 69)
-            )
-            .where(
-              "location.longitude",
-              ">",
-              currentUser.data().location.longitude - 2 * (1 / 69)
-            )
-            .get()
-            .then((users) => {
-              users.forEach((user) => {
-                nearby[user.id] = user.data();
-              });
-            }),
-        ]).then(() => {
-          delete nearby[firebase.auth().currentUser.uid];
-          this.setState({ nearby, nearbyComplete: true });
-        });
-      });
+    const query = geo
+      .query(firebase.firestore().collection("users"))
+      .within(this.props.currentUserProfile.location, 10, "location");
+    query.subscribe((nearby) =>
+      this.setState({
+        nearby: nearby.filter(
+          (user) => user.id != firebase.auth().currentUser.uid
+        ),
+        nearbyComplete: true,
+      })
+    );
   }
 
   onSportMenuClick = (sport) => {
@@ -108,95 +64,100 @@ class GameForm extends React.Component {
       : [];
     firebase
       .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .get()
-      .then((doc) => {
-        firebase
-          .firestore()
-          .collection("games")
-          .add({
-            intensity: this.props.intensity,
-            location: this.props.location.coordinates,
-            locationName: this.props.location.name,
-            sport: this.props.sport,
-            ownerId: doc.id,
-            owner: doc.data(),
-            players: [
-              {
-                id: firebase.auth().currentUser.uid,
-                name: this.state.user.name,
-                username: this.state.user.username,
-                dob: this.state.user.dob,
+      .collection("games")
+      .add({
+        intensity: this.props.intensity,
+        location: geo.point(
+          this.props.location.coordinates.latitude,
+          this.props.location.coordinates.longitude
+        ),
+        locationName: this.props.location.name,
+        sport: this.props.sport,
+        ownerId: this.props.currentUserProfile.id,
+        owner: this.props.currentUserProfile,
+        players: [
+          {
+            id: firebase.auth().currentUser.uid,
+            name: this.props.currentUserProfile.name,
+            username: this.props.currentUserProfile.username,
+            dob: this.props.currentUserProfile.dob,
+          },
+        ],
+        gameState: "created",
+        startTime: this.props.time,
+        updated: moment().toDate(),
+        time: moment().toDate(),
+        equipment: equipment,
+      })
+      .then((game) => {
+        Promise.all([
+          firebase
+            .firestore()
+            .collection("games")
+            .doc(game.id)
+            .collection("messages")
+            .doc()
+            .set({
+              content: "Game Created",
+              type: "admin",
+              created: new Date(),
+              senderId: null,
+              senderName: null,
+            }),
+          firebase
+            .firestore()
+            .collection("games")
+            .doc(game.id)
+            .update({
+              id:game.id
+            }),
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(firebase.auth().currentUser.uid)
+            .update({
+              calendar: firebase.firestore.FieldValue.arrayUnion(game.id),
+            }),
+          firebase
+            .firestore()
+            .collection("notifications")
+            .add({
+              type: "newGame",
+              game: {
+                intensity: this.props.intensity,
+                location: geo.point(
+                  this.props.location.coordinates.latitude,
+                  this.props.location.coordinates.longitude
+                ),
+                sport: this.props.sport,
+                ownerId: this.props.currentUserProfile.id,
+                owner: this.props.currentUserProfile,
+                gameState: "created",
               },
-            ],
-            gameState: "created",
-            startTime: this.props.time,
-            updated: moment().toDate(),
-            time: moment().toDate(),
-            equipment: equipment,
-          })
-          .then((game) => {
-            Promise.all([
-              firebase
-                .firestore()
-                .collection("games")
-                .doc(game.id)
-                .collection("messages")
-                .doc()
-                .set({
-                  content: "Game Created",
-                  type:'admin',
-                  created: new Date(),
-                  senderId: null,
-                  senderName: null,
-                }),
-              firebase
-                .firestore()
-                .collection("users")
-                .doc(firebase.auth().currentUser.uid)
-                .update({
-                  calendar: firebase.firestore.FieldValue.arrayUnion(game.id),
-                }),
-              firebase
-                .firestore()
-                .collection("notifications")
-                .add({
-                  type: "newGame",
-                  game: {
-                    intensity: this.props.intensity,
-                    location: this.props.location.coordinates,
-                    sport: this.props.sport,
-                    ownerId: doc.id,
-                    owner: doc.data(),
-                    gameState: "created",
-                  },
-                  action: "created",
-                  from: this.state.user,
-                  to: this.state.user.followers,
-                  time: moment().toDate(),
-                  expire: moment(this.props.time.time).add(1, "h").toDate(),
-                }),
-              // firebase.firestore().collection('notifications').add({
-              //   type: 'newGameNearby',
-              //   game: {
-              //     intensity: this.props.intensity,
-              //     location: this.props.location.coordinates,
-              //     sport:this.props.sport,
-              //     ownerId: doc.id,
-              //     owner: doc.data(),
-              //     gameState: "created"
-              //   },
-              //   action:"created",
-              //   from:this.state.user,
-              //   to: Object.keys(this.state.nearby),
-              //   time: moment().toDate(),
-              //   expire: moment(this.props.time.time).add(1, 'h').toDate()
-              // })
-            ]);
+              action: "created",
+              from: this.props.currentUserProfile,
+              to: this.props.currentUserProfile.followers,
+              time: moment().toDate(),
+              expire: moment(this.props.time.time).add(1, "h").toDate(),
+            }),
+          // firebase.firestore().collection('notifications').add({
+          //   type: 'newGameNearby',
+          //   game: {
+          //     intensity: this.props.intensity,
+          //location: geo.point(this.props.location.coordinates.latitude, this.props.location.coordinates.longitude),          //     sport:this.props.sport,
+          //     ownerId: this.props.currentUserProfile.id,
+          //     owner: this.props.currentUserProfile,
+          //     gameState: "created"
+          //   },
+          //   action:"created",
+          //   from:this.props.currentUserProfile,
+          //   to: Object.keys(this.state.nearby),
+          //   time: moment().toDate(),
+          //   expire: moment(this.props.time.time).add(1, 'h').toDate()
+          // })
+        ]);
 
-            this.props.navToGame();
-          });
+        this.props.navToGame();
       });
   };
 
@@ -213,7 +174,7 @@ class GameForm extends React.Component {
           ]}
         >
           <HeaderBlock
-            text="Create Game"
+            text='Create Game'
             backButton={true}
             backPress={this.props.closeModal}
           />
@@ -221,7 +182,7 @@ class GameForm extends React.Component {
             visible={this.state.sportVisible}
             onDismiss={() => this.setState({ sportVisible: false })}
             value={this.state.sport}
-            title="Sport"
+            title='Sport'
             items={[
               "Basketball",
               "Soccer",
@@ -237,7 +198,7 @@ class GameForm extends React.Component {
             visible={this.state.intensityVisible}
             onDismiss={() => this.setState({ intensityVisible: false })}
             value={this.state.intensity}
-            title="Intensity"
+            title='Intensity'
             items={["Casual", "Competitive"]}
             onAnchorPress={() => this.setState({ intensityVisible: true })}
             onMenuItemPress={this.onIntensityMenuClick}
@@ -251,10 +212,10 @@ class GameForm extends React.Component {
             }}
           >
             <Button
-              icon="map-search-outline"
-              mode="text"
+              icon='map-search-outline'
+              mode='text'
               onPress={() => this.props.navToLocationScreen()}
-              color="#fff"
+              color='#fff'
               theme={{ dark: true }}
             >
               {this.state.location != null
@@ -271,10 +232,10 @@ class GameForm extends React.Component {
             }}
           >
             <Button
-              icon="clock-outline"
-              mode="text"
+              icon='clock-outline'
+              mode='text'
               onPress={() => this.props.setTimeModalVisible(true)}
-              color="#fff"
+              color='#fff'
               theme={{ dark: true }}
             >
               {this.state.time != null
@@ -306,7 +267,7 @@ class GameForm extends React.Component {
           </Block>
 
           <ButtonBlock
-            text="Create Game"
+            text='Create Game'
             onPress={this.onCreate}
             disabled={
               this.state.sport == null ||
@@ -331,4 +292,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme((GameForm));
+export default withTheme(GameForm);

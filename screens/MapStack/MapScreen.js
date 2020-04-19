@@ -101,63 +101,81 @@ class MapScreen extends React.Component {
     //   .get()
     //   .then((users) => {
     //     users.forEach((user) => {
-    //      
+    //
     //     });
     //   });
-    Promise.all([
-      Location.hasServicesEnabledAsync().then((locationEnabled) => {
-        this.setState({ locationEnabled });
-        if (locationEnabled == true) {
-          Location.getCurrentPositionAsync().then((pos) => {
-            let region = {
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            };
-            this.setState(
-              { region, userLoc: pos.coords, locationComplete: true },
-              () => {
-                Location.watchPositionAsync({}, (pos) => {
-                  this.setState({ userLoc: pos.coords });
+    Location.hasServicesEnabledAsync().then((locationEnabled) => {
+      this.setState({ locationEnabled, complete: true });
+      if (locationEnabled == true) {
+        Location.getCurrentPositionAsync().then((pos) => {
+          let region = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          };
+          this.setState(
+            { region, userLoc: pos.coords, locationComplete: true },
+            () => {
+              Location.watchPositionAsync({}, (pos) => {
+                this.setState({ userLoc: pos.coords });
+              });
+              firebase
+                .firestore()
+                .collection("users")
+                .doc(firebase.auth().currentUser.uid)
+                .update({
+                  location: geo.point(
+                    pos.coords.latitude,
+                    pos.coords.longitude
+                  ),
                 });
-                firebase
-                  .firestore()
-                  .collection("users")
-                  .doc(firebase.auth().currentUser.uid)
-                  .update({
-                    location: geo.point(
-                      pos.coords.latitude,
-                      pos.coords.longitude
-                    ),
-                  });
-              }
-            );
-          });
-        } else {
-          Location.requestPermissionsAsync().then((permission) => {
-            if (permission.status == "granted") {
-              this.setState({ locationEnabled: true });
             }
-          });
-        }
-      }),
-      firebase
-        .firestore()
-        .collection("games")
-        .onSnapshot((docs) => {
-          let markers = {};
-          docs.forEach((doc) => {
-            if (doc.data().gameState == "created") {
-              markers[doc.id] = doc.data();
-              markers[doc.id].id = doc.id;
-            }
-          });
-          this.setState({ markers });
-        }),
-    ]).then(() => {
-      this.setState({ complete: true });
+          );
+        });
+      } else {
+        Location.requestPermissionsAsync().then((permission) => {
+          if (permission.status == "granted") {
+            this.setState({ locationEnabled: true });
+          }
+        });
+      }
     });
+    const query = geo
+      .query(
+        firebase
+          .firestore()
+          .collection("games")
+          .where("gameState", "==", "created")
+      )
+      .within(this.props._currentUserProfile.location, 10, "location");
+    query.subscribe((markersArray) => {
+      let markers = {}
+      markersArray.forEach((marker) => {
+        markers[marker.id] = marker;
+      })
+      this.setState({markers});
+    });
+    // const unsubscribe = firebase
+    //   .firestore()
+    //   .collection("games")
+    //   .onSnapshot((docs) => {
+    //     let markers = {};
+    //     docs.forEach((doc) => {
+    //       if (doc.data().gameState == "created") {
+    //         markers[doc.id] = doc.data();
+    //         markers[doc.id].id = doc.id;
+    //       }
+    //     });
+    //     this.setState({ markers });
+    //   });
+    // this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
   }
 
   navToGame = () => {
@@ -268,8 +286,8 @@ class MapScreen extends React.Component {
   onNewGamePress = (notification) => {
     this.closeMenu();
     this.mapView.animateToRegion({
-      longitude: notification.game.location.longitude,
-      latitude: notification.game.location.latitude,
+      longitude: notification.game.location.geopoint._long,
+      latitude: notification.game.location.geopoint._lat,
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
     });
@@ -279,8 +297,8 @@ class MapScreen extends React.Component {
   onInvitePress = (notification) => {
     this.closeMenu();
     this.mapView.animateToRegion({
-      longitude: notification.game.location.longitude,
-      latitude: notification.game.location.latitude,
+      longitude: notification.game.location.geopoint._long,
+      latitude: notification.game.location.geopoint._lat,
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
     });
@@ -354,7 +372,7 @@ class MapScreen extends React.Component {
 
   render() {
     const colors = this.props.theme.colors;
-    if (this.state.complete == true) {
+    if (this.state.complete) {
       if (this.state.locationEnabled) {
         return (
           <>
@@ -384,6 +402,7 @@ class MapScreen extends React.Component {
                   location={this.state.location}
                   time={this.state.time}
                   setTimeModalVisible={this.setTimeModalVisible}
+                  currentUserProfile={this.props._currentUserProfile}
                 />
               </Modal>
             </Portal>
@@ -453,14 +472,14 @@ class MapScreen extends React.Component {
                     <Marker
                       key={index}
                       coordinate={{
-                        longitude: marker.location.longitude,
-                        latitude: marker.location.latitude,
+                        longitude: marker.location.geopoint._long,
+                        latitude: marker.location.geopoint._lat,
                       }}
                       onPress={() => {
                         this.mapView.animateToRegion(
                           {
-                            longitude: marker.location.longitude,
-                            latitude: marker.location.latitude,
+                            longitude: marker.location.geopoint._long,
+                            latitude: marker.location.geopoint._lat,
                             latitudeDelta: 0.0622,
                             longitudeDelta: 0.0221,
                           },
@@ -681,7 +700,7 @@ class MapScreen extends React.Component {
         );
       }
     } else {
-      return <Block style={{ flex: 1, backgroundColor: colors.dBlue }}></Block>;
+      return <Block flex style={{ backgroundColor: colors.dBlue }} />;
     }
   }
 }
@@ -884,4 +903,4 @@ const mapStyles = [
   },
 ];
 
-export default withTheme(withAuthenticatedUser( MapScreen));
+export default withTheme(withAuthenticatedUser(MapScreen));

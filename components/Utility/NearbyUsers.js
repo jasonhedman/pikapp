@@ -2,10 +2,11 @@ import React from "react";
 import { ScrollView, TouchableOpacity } from "react-native";
 import { Block } from "galio-framework";
 import { withTheme, Text, ActivityIndicator } from "react-native-paper";
-import { getDistance } from "geolib";
-
+import * as geofirex from "geofirex";
+const geo = geofirex.init(firebase);
 import * as firebase from "firebase";
 import "firebase/firestore";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 const FirstRoute = () => (
   <Block flex style={[{ backgroundColor: "#ff4081" }]} />
@@ -19,86 +20,15 @@ class GroupInvite extends React.Component {
     super(props);
     this.state = {
       users: new Array(),
-      user: {},
       complete: false,
     };
   }
 
   componentDidMount() {
-    let currentUser;
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .get()
-      .then((user) => {
-        this.setState({ user: user.data() });
-        return user.data();
-      })
-      .then((user) => {
-        let nearbyLatKeys = [];
-        let nearbyLngKeys = [];
-        let nearbyLng = {};
-        Promise.all([
-          firebase
-            .firestore()
-            .collection("users")
-            .where(
-              "location.latitude",
-              "<",
-              user.location.latitude + 5 * (1 / 69)
-            )
-            .where(
-              "location.latitude",
-              ">",
-              user.location.latitude - 5 * (1 / 69)
-            )
-            .get()
-            .then((users) => {
-              users.forEach((user) => {
-                nearbyLatKeys.push(user.id);
-              });
-            }),
-          firebase
-            .firestore()
-            .collection("users")
-            .where(
-              "location.longitude",
-              "<",
-              user.location.longitude + 5 * (1 / 69)
-            )
-            .where(
-              "location.longitude",
-              ">",
-              user.location.longitude - 5 * (1 / 69)
-            )
-            .get()
-            .then((users) => {
-              users.forEach((user) => {
-                nearbyLngKeys.push(user.id);
-                nearbyLng[user.id] = user.data();
-              });
-            }),
-        ]).then(() => {
-          let nearbySortedKeys = nearbyLatKeys
-            .filter(
-              (value) =>
-                nearbyLngKeys.includes(value) &&
-                value != firebase.auth().currentUser.uid
-            )
-            .sort((a, b) => {
-              return (
-                getDistance(nearbyLng[a].location, user.location) -
-                getDistance(nearbyLng[b].location, user.location)
-              );
-            });
-          this.setState({
-            users: nearbyLng,
-            nearbySortedKeys,
-            nearbyComplete: true,
-          });
-        });
-      });
+    const query = geo
+      .query(firebase.firestore().collection("users"))
+      .within(this.props._currentUserProfile.location, 10, "location");
+    query.subscribe((users) => this.setState({ users, complete: true }));
   }
 
   render() {
@@ -106,14 +36,11 @@ class GroupInvite extends React.Component {
     return (
       <>
         <ScrollView style={{ flex: 1 }}>
-          {this.state.nearbyComplete ? (
-            this.state.nearbySortedKeys.length > 0 ? (
-              this.state.nearbySortedKeys.map((userId, key) => {
-                let user = this.state.users[userId];
-                let distance = Math.round(
-                  getDistance(user.location, this.state.user.location) *
-                    0.000621371
-                );
+          {this.state.complete ? (
+            this.state.users.length > 0 ? (
+              this.state.users.map((user, key) => {
+                let distance =
+                  Math.round(user.hitMetadata.distance * 0.621371 * 10) / 10;
                 return (
                   <TouchableOpacity
                     onPress={() => this.props.onPress(user)}
@@ -140,7 +67,7 @@ class GroupInvite extends React.Component {
                       </Block>
                       <Text style={{ color: "#fff" }}>{`${
                         distance < 1 ? "<1" : distance
-                      } ${distance < 2 ? "Mile" : "Miles"} Away`}</Text>
+                      } ${distance > 1 ? "Miles Away" : "Mile Away"}`}</Text>
                     </Block>
                   </TouchableOpacity>
                 );
@@ -176,4 +103,4 @@ class GroupInvite extends React.Component {
   }
 }
 
-export default withTheme(GroupInvite);
+export default withTheme(withAuthenticatedUser(GroupInvite));
