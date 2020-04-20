@@ -3,9 +3,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import * as firebase from "firebase";
-import {Block} from 'galio-framework';
+import { Block } from "galio-framework";
 
-import withLogging from "../contexts/loggingContext/withLogging";
+import trace from "../services/trace";
 
 import AuthenticatedUserProvider from "../contexts/authenticatedUserContext/AuthenticatedUserProvider";
 import MainTabNavigator from "./MainTabNavigator";
@@ -16,11 +16,7 @@ class AppNavigator extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props._trace(
-      this,
-      "************** Starting  ******************",
-      "constructor"
-    );
+    trace(this, "************** Starting  ******************", "constructor");
 
     this.unsubscribe = null;
 
@@ -34,28 +30,17 @@ class AppNavigator extends React.Component {
   }
 
   componentDidMount() {
-    this.props._trace(this, "subscribe to auth changes", "componentDidMount");
+    trace(this, "subscribe to auth changes", "componentDidMount");
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      trace(this, "authStateChanged", "componentDidMount");
       if (user != null) {
-        this.props._trace(
-          this,
-          `isAuthenticated ${user.email}`,
-          "componentDidMount"
-        );
+        trace(this, `isAuthenticated ${user.email}`, "componentDidMount");
         this.registerForPushNotificationsAsync(user.uid);
-        this.props._trace(this, "set hasCurrentUser true", "componentDidMount");
+        trace(this, "set hasCurrentUser true", "componentDidMount");
         this.setState({ hasCurrentUser: true, loading: false });
       } else {
-        this.props._trace(
-          this,
-          "authStateChanged - NO USER",
-          "componentDidMount"
-        );
-        this.props._trace(
-          this,
-          "set hasCurrentUser false",
-          "componentDidMount"
-        );
+        trace(this, "authStateChanged - NO USER", "componentDidMount");
+        trace(this, "set hasCurrentUser false", "componentDidMount");
         this.setState({ hasCurrentUser: false, loading: false });
       }
     });
@@ -63,41 +48,42 @@ class AppNavigator extends React.Component {
   }
 
   componentWillUnmount() {
-    this.props._trace(this, "component will unmount", "componentWillUnmount");
+    trace(this, "component will unmount", "componentWillUnmount");
     if (this.unsubscribe) {
-      this.props._trace(
-        this,
-        "unsubscribe auth listener",
-        "componentWillUnmount"
-      );
+      trace(this, "unsubscribe auth listener", "componentWillUnmount");
       this.unsubscribe();
     }
   }
 
   render() {
-    this.props._trace(this, "start", "render component");
+    trace(this, "render", "render");
 
     var view = null;
     if (this.state.loading) {
       // show nothing while loading. just sit on splash page.
-      view = <Block flex style={{backgroundColor:this.props.theme.colors.dBlue}} />
+      view = (
+        <Block
+          flex
+          style={{ backgroundColor: this.props.theme.colors.dBlue }}
+        />
+      );
     } else if (this.state.hasCurrentUser) {
-      view = <AuthenticatedUserProvider currentUserId={firebase.auth().currentUser.uid} >
-            <MainTabNavigator />
-          </AuthenticatedUserProvider>
+      view = (
+        <AuthenticatedUserProvider
+          currentUserId={firebase.auth().currentUser.uid}
+        >
+          <MainTabNavigator />
+        </AuthenticatedUserProvider>
+      );
     } else {
-      view = <AuthNavigation />
+      view = <AuthNavigation />;
     }
 
-    return (
-      <NavigationContainer>
-        { view }
-      </NavigationContainer>
-    );
+    return <NavigationContainer>{view}</NavigationContainer>;
   }
 
   registerForPushNotificationsAsync = async (uid) => {
-    this.props._trace(
+    trace(
       this,
       "registering push notification",
       "registerForPushNotificationsAsync"
@@ -111,14 +97,14 @@ class AppNavigator extends React.Component {
       finalStatus = status;
     }
     if (finalStatus !== "granted") {
-      this.props._trace(
+      trace(
         this,
         `push notification status: ${finalStatus}`,
         "registerForPushNotificationsAsync"
       );
       return;
     } else {
-      this.props._trace(
+      trace(
         this,
         "push notification granted",
         "registerForPushNotificationsAsync"
@@ -147,7 +133,7 @@ class AppNavigator extends React.Component {
         });
       })
       .catch((err) => {
-        this.props._trace(
+        trace(
           this,
           `Error Updating User Push Tokens: ${err}`,
           "registerForPushNotificationsAsync"
@@ -156,4 +142,4 @@ class AppNavigator extends React.Component {
   };
 }
 
-export default withLogging(withTheme(AppNavigator));
+export default withTheme(AppNavigator);

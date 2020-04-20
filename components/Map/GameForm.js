@@ -10,10 +10,12 @@ import * as geofirex from "geofirex";
 const geo = geofirex.init(firebase);
 import moment from "moment";
 import "firebase/firestore";
+import trace from "../../services/trace";
 
 class GameForm extends React.Component {
   constructor(props) {
     super(props);
+    trace(this, "construct component", "constructor");
     this.state = {
       sport: this.props.sport,
       intensity: this.props.intensity,
@@ -27,9 +29,10 @@ class GameForm extends React.Component {
   }
 
   componentDidMount() {
+    trace(this, "mounted component", "componentDidMount");
     const query = geo
       .query(firebase.firestore().collection("users"))
-      .within(this.props.currentUserProfile.location, 10, "location");
+      .within(this.props._currentUserProfile.location, 10, "location");
     query.subscribe((nearby) =>
       this.setState({
         nearby: nearby.filter(
@@ -73,14 +76,14 @@ class GameForm extends React.Component {
         ),
         locationName: this.props.location.name,
         sport: this.props.sport,
-        ownerId: this.props.currentUserProfile.id,
-        owner: this.props.currentUserProfile,
+        ownerId: this.props._currentUserProfile.id,
+        owner: this.props._currentUserProfile,
         players: [
           {
             id: firebase.auth().currentUser.uid,
-            name: this.props.currentUserProfile.name,
-            username: this.props.currentUserProfile.username,
-            dob: this.props.currentUserProfile.dob,
+            name: this.props._currentUserProfile.name,
+            username: this.props._currentUserProfile.username,
+            dob: this.props._currentUserProfile.dob,
           },
         ],
         gameState: "created",
@@ -130,13 +133,13 @@ class GameForm extends React.Component {
                   this.props.location.coordinates.longitude
                 ),
                 sport: this.props.sport,
-                ownerId: this.props.currentUserProfile.id,
-                owner: this.props.currentUserProfile,
+                ownerId: this.props._currentUserProfile.id,
+                owner: this.props._currentUserProfile,
                 gameState: "created",
               },
               action: "created",
-              from: this.props.currentUserProfile,
-              to: this.props.currentUserProfile.followers,
+              from: this.props._currentUserProfile,
+              to: this.props._currentUserProfile.followers,
               time: moment().toDate(),
               expire: moment(this.props.time.time).add(1, "h").toDate(),
             }),
@@ -145,12 +148,12 @@ class GameForm extends React.Component {
           //   game: {
           //     intensity: this.props.intensity,
           //location: geo.point(this.props.location.coordinates.latitude, this.props.location.coordinates.longitude),          //     sport:this.props.sport,
-          //     ownerId: this.props.currentUserProfile.id,
-          //     owner: this.props.currentUserProfile,
+          //     ownerId: this.props._currentUserProfile.id,
+          //     owner: this.props._currentUserProfile,
           //     gameState: "created"
           //   },
           //   action:"created",
-          //   from:this.props.currentUserProfile,
+          //   from:this.props._currentUserProfile,
           //   to: Object.keys(this.state.nearby),
           //   time: moment().toDate(),
           //   expire: moment(this.props.time.time).add(1, 'h').toDate()
@@ -162,6 +165,7 @@ class GameForm extends React.Component {
   };
 
   render() {
+    trace(this, "render component", "render");
     const colors = this.props.theme.colors;
     return (
       <>

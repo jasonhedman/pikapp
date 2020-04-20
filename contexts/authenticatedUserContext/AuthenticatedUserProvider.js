@@ -3,49 +3,93 @@ import PropTypes from "prop-types";
 import * as firebase from "firebase";
 
 import AuthenticatedUserContext from "./AuthenticatedUserContext";
-import withLogging from "../loggingContext/withLogging";
+import trace from "../../services/trace";
 
 class AuthenticatedUserProvider extends React.Component {
   constructor(props) {
     super(props);
-    this.props._trace(this,"create component", "constructor");
+    trace(this, "create component", "constructor");
 
     this.unsubscribe = null;
 
     this.state = {
-      currentUserId: props.currentUserId,
+      currentUserId: this.props.currentUserId,
       currentUser: firebase.auth().currentUser,
       currentUserProfile: null,
     };
-    this.props._trace(this,`current user guid: ${props.currentUserId}`, "constructor");
+    trace(
+      this,
+      `current user guid: ${this.props.currentUserId}`,
+      "constructor"
+    );
   }
 
-  componentDidMount() {
-    this.props._trace(this,"component mounted", "componentDidMount");
-    this.props._trace(this,"setup user snapshot", "componentDidMount");
+  asyncUserSnapshot() {
+    if (this.unsubscribe) {
+      trace(
+        this,
+        "unsubscribe old user snapshot listener",
+        "asyncUserSnapshot"
+      );
+      this.unsubscribe();
+    }
 
     const unsubscribe = firebase
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
       .onSnapshot((userProfile) => {
-        this.props._trace(this,"received user snapshot", "componentDidMount");
+        trace(
+          this,
+          "received user snapshot - update user profile",
+          "asyncUserSnapshot"
+        );
         const newUserProfile = userProfile.data();
         this.setState({ currentUserProfile: newUserProfile });
       });
+
     this.unsubscribe = unsubscribe;
   }
 
+  componentDidMount() {
+    trace(this, "component mounted", "componentDidMount");
+    trace(this, "setup user snapshot", "componentDidMount");
+    this.asyncUserSnapshot();
+  }
+
+  // called when new props are delivered before a render. compare the saved gameHistory with the
+  // current user game history. If they differ, then need to re-load the last 3 before drawing
+  // so set the data to null (so there's no data). Then when compoentDidUpdate() is called, it'll
+  // reload the data as necessary.
+  static getDerivedStateFromProps(props, state) {
+    if (props.currentUserId !== state.currentUserId) {
+      trace(this, "user id changed", "getDerivedStateFromProps");
+      return {
+        currentUserId: props.currentUserId,
+        currentUserProfile: null,
+      };
+    }
+    // No state update necessary
+    return null;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.currentUserProfile === null) {
+      trace(this, "reload user because id changed", "componentDidUpdate");
+      this.asyncUserSnapshot();
+    }
+  }
+
   componentWillUnmount() {
-    this.props._trace(this,"unmount component", "componentWillUnmount");
+    trace(this, "unmount component", "componentWillUnmount");
     if (this.unsubscribe) {
-      this.props._trace(this,"unsubscribe user snapshot listener", "componentWillUnmount");
+      trace(this, "unsubscribe user snapshot listener", "componentWillUnmount");
       this.unsubscribe();
     }
   }
 
   render() {
-    this.props._trace(this,"render component", "render");
+    trace(this, "render component", "render");
     const contextValue = {
       currentUserId: this.state.currentUserId,
       currentUser: this.state.currentUser,
@@ -60,7 +104,9 @@ class AuthenticatedUserProvider extends React.Component {
       );
     } else {
       // return nothing until currentUserProfile is set to something
-      return null;
+      return (
+        <AuthenticatedUserContext.Provider></AuthenticatedUserContext.Provider>
+      );
     }
   }
 }
@@ -77,4 +123,4 @@ AuthenticatedUserProvider.defaultProps = {
   children: null,
 };
 
-export default withLogging(AuthenticatedUserProvider);
+export default AuthenticatedUserProvider;

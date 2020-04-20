@@ -5,7 +5,7 @@ import firebase from "firebase";
 
 import { withTheme, Text, Button } from "react-native-paper";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
-import withLogging from "../../contexts/loggingContext/withLogging";
+import trace from "../../services/trace";
 
 import GroupPreview from "../Groups/GroupPreview";
 
@@ -13,14 +13,14 @@ class GroupsWidget extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props._trace(this, "construct component", "constructor");
+    trace(this, "construct component", "constructor");
     this.state = {
       groups: new Array(),
     };
   }
 
   componentDidMount() {
-    this.props._trace(this, "get group from user profile", "componentDidMount");
+    trace(this, "get group from user profile", "componentDidMount");
     const groupIds = [];
     for (
       let i = this.props._currentUserProfile.groups.length - 1;
@@ -41,13 +41,13 @@ class GroupsWidget extends React.Component {
           });
       })
     ).then((groups) => {
-      this.props._trace(this, "set groups state", "componentDidMount");
+      trace(this, "set groups state", "componentDidMount");
       this.setState({ groups: groups });
     });
   }
 
   render() {
-    this.props._trace(this, "render component", "render");
+    trace(this, "render component", "render");
     const colors = this.props.theme.colors;
     return (
       <Block style={{ marginTop: 16 }}>
@@ -92,4 +92,4 @@ class GroupsWidget extends React.Component {
   }
 }
 
-export default withLogging(withTheme(withAuthenticatedUser(GroupsWidget)));
+export default withTheme(withAuthenticatedUser(GroupsWidget));
