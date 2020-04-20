@@ -175,7 +175,6 @@ class Profile extends React.Component {
       ),
     });
     const colors = this.props.theme.colors;
-    let currentUserProfile = this.props._currentUserProfile;
     if (this.state.complete) {
       return (
         <>

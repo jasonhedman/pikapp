@@ -3,12 +3,14 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import * as firebase from "firebase";
+import {Block} from 'galio-framework';
 
 import withLogging from "../contexts/loggingContext/withLogging";
 
 import AuthenticatedUserProvider from "../contexts/authenticatedUserContext/AuthenticatedUserProvider";
 import MainTabNavigator from "./MainTabNavigator";
 import AuthNavigation from "./AuthNavigation";
+import { withTheme } from "react-native-paper";
 
 class AppNavigator extends React.Component {
   constructor(props) {
@@ -78,7 +80,7 @@ class AppNavigator extends React.Component {
     var view = null;
     if (this.state.loading) {
       // show nothing while loading. just sit on splash page.
-      view = null
+      view = <Block flex style={{backgroundColor:this.props.theme.colors.dBlue}} />
     } else if (this.state.hasCurrentUser) {
       view = <AuthenticatedUserProvider currentUserId={firebase.auth().currentUser.uid} >
             <MainTabNavigator />
@@ -154,4 +156,4 @@ class AppNavigator extends React.Component {
   };
 }
 
-export default withLogging(AppNavigator);
+export default withLogging(withTheme(AppNavigator));
