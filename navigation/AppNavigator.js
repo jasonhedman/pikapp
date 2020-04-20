@@ -23,6 +23,7 @@ class AppNavigator extends React.Component {
     this.unsubscribe = null;
 
     this.state = {
+      loading: true,
       hasCurrentUser: false,
     };
     this.registerForPushNotificationsAsync = this.registerForPushNotificationsAsync.bind(
@@ -41,7 +42,7 @@ class AppNavigator extends React.Component {
         );
         this.registerForPushNotificationsAsync(user.uid);
         this.props._trace(this, "set hasCurrentUser true", "componentDidMount");
-        this.setState({ hasCurrentUser: true });
+        this.setState({ hasCurrentUser: true, loading: false });
       } else {
         this.props._trace(
           this,
@@ -53,7 +54,7 @@ class AppNavigator extends React.Component {
           "set hasCurrentUser false",
           "componentDidMount"
         );
-        this.setState({ hasCurrentUser: false });
+        this.setState({ hasCurrentUser: false, loading: false });
       }
     });
     this.unsubscribe = unsubscribe;
@@ -73,17 +74,22 @@ class AppNavigator extends React.Component {
 
   render() {
     this.props._trace(this, "start", "render component");
-    return (
-      <NavigationContainer>
-        {this.state.hasCurrentUser ? (
-          <AuthenticatedUserProvider
-            currentUserId={firebase.auth().currentUser.uid}
-          >
+
+    var view = null;
+    if (this.state.loading) {
+      // show nothing while loading. just sit on splash page.
+      view = null
+    } else if (this.state.hasCurrentUser) {
+      view = <AuthenticatedUserProvider currentUserId={firebase.auth().currentUser.uid} >
             <MainTabNavigator />
           </AuthenticatedUserProvider>
-        ) : (
-          <AuthNavigation />
-        )}
+    } else {
+      view = <AuthNavigation />
+    }
+
+    return (
+      <NavigationContainer>
+        { view }
       </NavigationContainer>
     );
   }

@@ -87,7 +87,8 @@ class App extends React.Component {
                 <StatusBar barStyle="light-content" />
                 <ErrorBoundary
                   onError={(error, stack) => {
-                    console.log("==== AN ERROR HAPPENED =====");
+                    console.log(`==== UNHANDLED ERROR: ${error}`);
+                    console.log(stack);
                   }}
                 >
                   <AppNavigator />

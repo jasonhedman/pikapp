@@ -18,3 +18,5 @@ firebase-debug.log
 _DelSyncFiles/**/*
 .com.greenworldsoft.syncfolderspro
 node_modules
+assets/.DS_Store
+assets/images/.DS_Store
