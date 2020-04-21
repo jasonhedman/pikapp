@@ -24,30 +24,31 @@ import GameResult from "../../components/Profile/GameResult";
 import SportsBreakdown from "../../components/Profile/SportsBreakdown";
 import ProfilePic from "../../components/Utility/ProfilePic";
 import onShare from "../../services/onShare";
+import trace from "../../services/trace";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 const { width, height } = Dimensions.get("window");
 
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
-import withLogging from "../../contexts/loggingContext/withLogging";
 import NoResults from "../../components/Utility/NoResults";
 
 class Profile extends React.Component {
   constructor(props) {
     super(props);
-    this.props._trace(this, "construct component", "constructor");
+    trace(this, "construct component", "constructor");
 
     this.state = {
       proPicUrl: null,
-      gameHistory: null,            // NOTE: This is the state that matters when re-rendering
-      lastThreeGames: new Array(),  // this holds the actual games retrieved
-      complete: false,              // indicates that last 3 games were loaded
+      gameHistory: null, // NOTE: This is the state that matters when re-rendering
+      lastThreeGames: new Array(), // this holds the actual games retrieved
+      complete: false, // indicates that last 3 games were loaded
       settingsVisible: false,
     };
   }
 
   asyncLoadLast3Games() {
-    this.props._trace(this, "start", "asyncLoadLast3Games");
-    const gameHistory = this.props._currentUserProfile.gameHistory
+    trace(this, "start", "asyncLoadLast3Games");
+    const gameHistory = this.props._currentUserProfile.gameHistory;
     this.setState({ gameHistory: gameHistory });
 
     // gets up to last 3 games for this user.
@@ -71,22 +72,22 @@ class Profile extends React.Component {
     }
 
     // when all three are done, write the games to state
-    Promise.all(lastThreeGamePromises).then((games) => {
-      this.setState({
-        lastThreeGames: games,
-        complete: true,
+    Promise.all(lastThreeGamePromises)
+      .then((games) => {
+        this.setState({
+          lastThreeGames: games,
+          complete: true,
+        });
+      })
+      .catch(() => {
+        this.setState({
+          lastThreeGames: [],
+          complete: true,
+        });
       });
-    })
-    .catch(() => {
-      this.setState({
-        lastThreeGames: [],
-        complete: true,
-      });
-    });
   }
 
   asyncLoadPic() {
-
     firebase
       .storage()
       .ref("profilePictures/" + firebase.auth().currentUser.uid)
@@ -97,7 +98,6 @@ class Profile extends React.Component {
       .catch(() => {
         this.setState({ proPicUrl: null });
       });
-
   }
 
   componentDidMount() {
@@ -130,7 +130,6 @@ class Profile extends React.Component {
     }
   }
 
-
   setImage = (proPicUrl, func) => {
     this.setState({ proPicUrl }, func);
   };
@@ -162,7 +161,7 @@ class Profile extends React.Component {
   };
 
   render() {
-    this.props._trace(this, "render component", "render");
+    trace(this, "render component", "render");
     let currentUserProfile = this.props._currentUserProfile;
     this.props.navigation.setOptions({
       title: `${currentUserProfile.username}`,
@@ -268,7 +267,10 @@ class Profile extends React.Component {
             >
               <Block middle style={{ marginBottom: 12 }}>
                 <Block row middle style={{ marginBottom: 8 }}>
-                  <ProfilePic size={80} proPicUrl={this.props._currentUserProfile.proPicUrl} />
+                  <ProfilePic
+                    size={80}
+                    proPicUrl={this.props._currentUserProfile.proPicUrl}
+                  />
                   <Block
                     row
                     flex
@@ -478,4 +480,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withLogging(withTheme(withAuthenticatedUser(Profile)));
+export default withTheme(withAuthenticatedUser(Profile));

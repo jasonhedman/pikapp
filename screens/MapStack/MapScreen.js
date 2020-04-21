@@ -41,6 +41,7 @@ import Invite from "../../components/Notifications/Invite";
 import Follower from "../../components/Notifications/Social/Follower";
 import NewPlayer from "../../components/Notifications/NewPlayer";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
+import trace from "../../services/trace";
 
 const sportMarkers = {
   basketball: basketballMarker,
@@ -56,6 +57,7 @@ const { width, height } = Dimensions.get("screen");
 class MapScreen extends React.Component {
   constructor(props) {
     super(props);
+    trace(this, "constructed component", "constructor");
     this.state = {
       markers: new Array(),
       gameModalVisible: false,
@@ -96,6 +98,7 @@ class MapScreen extends React.Component {
   };
 
   componentDidMount() {
+    trace(this, "mounted component", "componentDidMount");
     // firebase
     //   .firestore()
     //   .collection("users")
@@ -140,6 +143,9 @@ class MapScreen extends React.Component {
                 });
             }
           );
+        }).catch( (error) => {
+          trace(this, `ERRROR: getting location: ${error}`, "componentDidMount");
+
         });
       } else {
         Location.requestPermissionsAsync().then((permission) => {
@@ -364,6 +370,7 @@ class MapScreen extends React.Component {
   };
 
   render() {
+    trace(this, "render", "render");
     const colors = this.props.theme.colors;
     if (this.state.complete) {
       if (this.state.locationEnabled) {
@@ -385,6 +392,7 @@ class MapScreen extends React.Component {
                 }}
               >
                 <GameForm
+                  {...this.props}
                   navToGame={this.navToGame}
                   closeModal={() => this.setGameModalVisible(false)}
                   navigate={this.props.navigation.navigate}
@@ -396,13 +404,12 @@ class MapScreen extends React.Component {
                   location={this.state.location}
                   time={this.state.time}
                   setTimeModalVisible={this.setTimeModalVisible}
-                  currentUserProfile={this.props._currentUserProfile}
                   setLoading={this.setGameFromLoading}
                 />
               </Modal>
             </Portal>
             <SlideModal
-              animationType='slide'
+              animationType="slide"
               isVisible={this.state.lobbyModalVisible}
               onBackdropPress={() => {
                 this.setState({ lobbyModalVisible: false });
@@ -423,7 +430,7 @@ class MapScreen extends React.Component {
               />
             </SlideModal>
             <SlideModal
-              animationType='slide'
+              animationType="slide"
               isVisible={this.state.locationModalVisible}
               onBackdropPress={() => {
                 this.closeLocationModal();
@@ -438,7 +445,7 @@ class MapScreen extends React.Component {
               />
             </SlideModal>
             <SlideModal
-              animationType='slide'
+              animationType="slide"
               isVisible={this.state.timeModalVisible}
               onBackdropPress={() => {
                 this.setTimeModalVisible(false, true);
@@ -520,7 +527,7 @@ class MapScreen extends React.Component {
                     anchor={
                       <>
                         <IconButton
-                          icon='bell'
+                          icon="bell"
                           color={colors.dBlue}
                           size={28}
                           style={{ backgroundColor: colors.white, margin: 0 }}
@@ -553,7 +560,7 @@ class MapScreen extends React.Component {
                     }}
                   >
                     <HeaderBlock
-                      text='Notifications'
+                      text="Notifications"
                       backButton={true}
                       backPress={this.onMenuDismiss}
                     />
@@ -649,8 +656,8 @@ class MapScreen extends React.Component {
                   </Menu>
                 </Block>
                 <FAB
-                  icon='plus'
-                  label='Create Game'
+                  icon="plus"
+                  label="Create Game"
                   onPress={() => {
                     this.setGameModalVisible(true);
                   }}

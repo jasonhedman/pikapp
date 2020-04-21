@@ -5,7 +5,7 @@ import firebase from "firebase";
 
 import { withTheme } from "react-native-paper";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
-import withLogging from "../../contexts/loggingContext/withLogging";
+import trace from "../../services/trace";
 
 import GroupPreview from "../../components/Groups/GroupPreview";
 
@@ -13,14 +13,14 @@ class GroupList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props._trace(this, "construct component", "constructor");
+    trace(this, "construct component", "constructor");
     this.state = {
       groups: new Array(),
     };
   }
 
   componentDidMount() {
-    this.props._trace(this, "get group from user profile", "componentDidMount");
+    trace(this, "get group from user profile", "componentDidMount");
     const groupIds = this.props._currentUserProfile.groups;
 
     Promise.all(
@@ -35,13 +35,13 @@ class GroupList extends React.Component {
           });
       })
     ).then((groups) => {
-      this.props._trace(this, "set groups state", "componentDidMount");
+      trace(this, "set groups state", "componentDidMount");
       this.setState({ groups: groups });
     });
   }
 
   render() {
-    this.props._trace(this, "render component", "render");
+    trace(this, "render component", "render");
     const colors = this.props.theme.colors;
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
@@ -61,4 +61,4 @@ class GroupList extends React.Component {
   }
 }
 
-export default withLogging(withTheme(withAuthenticatedUser(GroupList)));
+export default withTheme(withAuthenticatedUser(GroupList));

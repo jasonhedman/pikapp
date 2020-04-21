@@ -22,6 +22,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 
 import "firebase/firestore";
 import NoResults from "../Utility/NoResults";
+import trace from "../../services/trace";
 
 class SearchPlayers extends React.Component {
   constructor(props) {
@@ -53,6 +54,9 @@ class SearchPlayers extends React.Component {
           this.setState({ userLoc: pos.coords });
         });
       });
+    }).catch( (error) => {
+      console.log("ERROR: location")
+      trace(this, `ERROR doing something with location${error}`, "componentDidMount");
     });
   }
 

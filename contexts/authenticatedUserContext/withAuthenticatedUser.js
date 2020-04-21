@@ -15,14 +15,19 @@ function withAuthenticatedUser(WrappedComponent) {
     render() {
       return (
         <AuthenticatedUserContext.Consumer>
-          {(context) => (
-            <WrappedComponent
-              _currentUserId={context.currentUserId}
-              _currentUser={context.currentUser}
-              _currentUserProfile={context.currentUserProfile}
-              {...this.props}
-            />
-          )}
+          {(context) => {
+            if (context != null) {
+              return (
+                <WrappedComponent
+                  _currentUser={context.currentUser}
+                  _currentUserProfile={context.currentUserProfile}
+                  {...this.props}
+                />
+              );
+            } else {
+              return <WrappedComponent {...this.props} />;
+            }
+          }}
         </AuthenticatedUserContext.Consumer>
       );
     }
