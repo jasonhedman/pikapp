@@ -26,11 +26,9 @@ import ProfilePic from "../../components/Utility/ProfilePic";
 import onShare from "../../services/onShare";
 import trace from "../../services/trace";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
+import NoResults from "../../components/Utility/NoResults";
 
 const { width, height } = Dimensions.get("window");
-
-import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
-import NoResults from "../../components/Utility/NoResults";
 
 class Profile extends React.Component {
   constructor(props) {
