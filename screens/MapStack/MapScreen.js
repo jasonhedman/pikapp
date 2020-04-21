@@ -73,8 +73,9 @@ class MapScreen extends React.Component {
       bringingEquipment: true,
       location: null,
       time: null,
-      joinGameLoading: false,
+      loading: false,
       locationComplete: false,
+      gameFormLoading: false,
     };
   }
 
@@ -101,7 +102,14 @@ class MapScreen extends React.Component {
     //   .get()
     //   .then((users) => {
     //     users.forEach((user) => {
-    //
+    //       if(user.data().location != undefined && user.data().location.geopoint == undefined){
+    //         firebase.firestore().collection('users').doc(user.id).update({
+    //           location: geo.point(
+    //             user.data().location.latitude,
+    //             user.data().location.longitude,
+    //           )
+    //         })
+    //       }
     //     });
     //   });
     Location.hasServicesEnabledAsync().then((locationEnabled) => {
@@ -150,32 +158,12 @@ class MapScreen extends React.Component {
       )
       .within(this.props._currentUserProfile.location, 10, "location");
     query.subscribe((markersArray) => {
-      let markers = {}
+      let markers = {};
       markersArray.forEach((marker) => {
         markers[marker.id] = marker;
-      })
-      this.setState({markers});
+      });
+      this.setState({ markers });
     });
-    // const unsubscribe = firebase
-    //   .firestore()
-    //   .collection("games")
-    //   .onSnapshot((docs) => {
-    //     let markers = {};
-    //     docs.forEach((doc) => {
-    //       if (doc.data().gameState == "created") {
-    //         markers[doc.id] = doc.data();
-    //         markers[doc.id].id = doc.id;
-    //       }
-    //     });
-    //     this.setState({ markers });
-    //   });
-    // this.unsubscribe = unsubscribe;
-  }
-
-  componentWillUnmount() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
   }
 
   navToGame = () => {
@@ -184,7 +172,7 @@ class MapScreen extends React.Component {
   };
 
   addToTeam = (gameId) => {
-    this.setState({ joinGameLoading: true, lobbyModalVisible: false });
+    this.setState({ loading: true, lobbyModalVisible: false });
     firebase
       .firestore()
       .collection("games")
@@ -253,8 +241,9 @@ class MapScreen extends React.Component {
               senderName: null,
             }),
         ]).then(() => {
-          this.setState({ joinGameLoading: false });
-          this.props.navigation.navigate("GameStack");
+          this.setState({ loading: false }, () => {
+            this.props.navigation.navigate("GameStack");
+          });
         });
       });
   };
@@ -262,8 +251,6 @@ class MapScreen extends React.Component {
   navToUserProfile = (id) => {
     if (id != firebase.auth().currentUser.uid) {
       this.props.navigation.navigate("UserProfile", { userId: id });
-    } else {
-      this.props.navigation.navigate("ProfileStack");
     }
   };
 
@@ -370,20 +357,27 @@ class MapScreen extends React.Component {
     this.setTimeModalVisible(false, true);
   };
 
+  setGameFromLoading = (gameFormLoading, func) => {
+    this.setState({ gameFormLoading }, () => {
+      func();
+    });
+  };
+
   render() {
     const colors = this.props.theme.colors;
     if (this.state.complete) {
       if (this.state.locationEnabled) {
         return (
           <>
-            {this.state.joinGameLoading ? <LoadingOverlay /> : null}
+            {this.state.loading ? <LoadingOverlay /> : null}
             <Portal>
+              {this.state.gameFormLoading ? <LoadingOverlay /> : null}
               <Modal
                 contentContainerStyle={{
                   marginLeft: "auto",
                   marginRight: "auto",
                   width: "100%",
-                  padding: 32,
+                  padding: 16,
                 }}
                 visible={this.state.gameModalVisible}
                 onDismiss={() => {
@@ -403,6 +397,7 @@ class MapScreen extends React.Component {
                   time={this.state.time}
                   setTimeModalVisible={this.setTimeModalVisible}
                   currentUserProfile={this.props._currentUserProfile}
+                  setLoading={this.setGameFromLoading}
                 />
               </Modal>
             </Portal>

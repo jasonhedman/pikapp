@@ -8,6 +8,8 @@ import {
 import { Block } from "galio-framework";
 import { withTheme, TextInput } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { connectSearchBox } from 'react-instantsearch-native';
+
 
 class SocialHeader extends React.Component {
   constructor() {
@@ -40,6 +42,11 @@ class SocialHeader extends React.Component {
     }).start();
   };
 
+  onSearch = (search) => {
+    this.props.onSearch(search);
+    this.props.refine(search);
+  }
+
   render() {
     let colors = this.props.theme.colors;
     return (
@@ -58,8 +65,8 @@ class SocialHeader extends React.Component {
               roundness: "50%",
             }}
             placeholder={"Search"}
-            onChangeText={this.props.onSearch}
-            value={this.props.search}
+            onChangeText={this.onSearch}
+            value={this.props.currentRefinement}
             dense={true}
             onFocus={this.onFocus}
             onBlur={this.onBlur}
@@ -109,4 +116,4 @@ class SocialHeader extends React.Component {
   }
 }
 
-export default withTheme(SocialHeader);
+export default withTheme(connectSearchBox( SocialHeader));

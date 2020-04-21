@@ -23,6 +23,7 @@ import soccer from "../../assets/images/Soccer.png";
 import spikeball from "../../assets/images/Spikeball.png";
 import volleyball from "../../assets/images/Volleyball.png";
 import football from "../../assets/images/Football.png";
+import NoResults from "../../components/Utility/NoResults";
 
 const sports = {
   basketball: basketball,
@@ -181,21 +182,7 @@ class SerachGroups extends React.Component {
                         );
                       })
                     ) : (
-                      <Block
-                        row
-                        center
-                        middle
-                        style={{
-                          borderColor: colors.grey,
-                          borderWidth: 1,
-                          borderRadius: 8,
-                          padding: 10,
-                          width: "100%",
-                          marginBottom: 10,
-                        }}
-                      >
-                        <Text style={{ color: "#fff" }}>No Results</Text>
-                      </Block>
+                      <NoResults border={true} />
                     )}
                   </ScrollView>
                 </>

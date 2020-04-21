@@ -20,7 +20,7 @@ class MessageBoard extends React.Component {
   }
 
   componentDidMount() {
-      firebase
+      const unsubscribe = firebase
         .firestore()
         .collection(this.props.route.params.collection)
         .doc(this.props.route.params.doc)
@@ -36,7 +36,13 @@ class MessageBoard extends React.Component {
           });
           this.setState({ messages, complete: true });
         })
-      
+      this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount(){
+    if(this.unsubscribe){
+      this.unsubscribe();
+    }
   }
 
   onSend = (prop) => {

@@ -30,7 +30,7 @@ class GroupScreen extends React.Component {
         });
         this.setState({ group: group.data(), complete: true });
       });
-      const messagesUnsubscribe = firebase
+    const messagesUnsubscribe = firebase
       .firestore()
       .collection("groups")
       .doc(this.props.route.params.groupId)
@@ -46,17 +46,14 @@ class GroupScreen extends React.Component {
         });
         this.setState({ messages });
       });
-      this.unsubscribe = [
-        groupUnsubscribe,
-        messagesUnsubscribe,
-      ];
+    this.unsubscribe = [groupUnsubscribe, messagesUnsubscribe];
   }
 
-  componentWillUnmount(){
-    if(this.unsubscribe){
+  componentWillUnmount() {
+    if (this.unsubscribe) {
       this.unsubscribe.forEach((func) => {
         func();
-      })
+      });
     }
   }
 

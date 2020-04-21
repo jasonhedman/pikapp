@@ -3,11 +3,12 @@ import { TouchableOpacity } from "react-native";
 import { Block } from "galio-framework";
 import firebase from "firebase";
 
-import { withTheme, Text, Button } from "react-native-paper";
+import { withTheme, Text, Button, ActivityIndicator } from "react-native-paper";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 import withLogging from "../../contexts/loggingContext/withLogging";
 
 import GroupPreview from "../Groups/GroupPreview";
+import NoResults from "../Utility/NoResults";
 
 class GroupsWidget extends React.Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class GroupsWidget extends React.Component {
     this.props._trace(this, "construct component", "constructor");
     this.state = {
       groups: new Array(),
+      groupsComplete: false,
     };
   }
 
@@ -42,7 +44,7 @@ class GroupsWidget extends React.Component {
       })
     ).then((groups) => {
       this.props._trace(this, "set groups state", "componentDidMount");
-      this.setState({ groups: groups });
+      this.setState({ groups, groupsComplete: true });
     });
   }
 
@@ -51,42 +53,56 @@ class GroupsWidget extends React.Component {
     const colors = this.props.theme.colors;
     return (
       <Block style={{ marginTop: 16 }}>
-        <TouchableOpacity onPress={() => this.props.navigate("GroupList")}>
-          <Text
-            style={{
-              color: "white",
-              fontFamily: "ralewayBold",
-              marginBottom: 4,
-            }}
-          >
-            Your Groups ►
-          </Text>
-        </TouchableOpacity>
-        {this.state.groups.map((group, index) => {
-          return (
-            <GroupPreview
-              key={index}
-              group={group}
-              navigate={this.props.navigate}
-            />
-          );
-        })}
-        <Block middle>
-          <TouchableOpacity
-            style={{ padding: 4 }}
-            onPress={() => this.props.navigate("GroupList")}
-          >
-            <Text
-              style={{
-                color: colors.orange,
-                fontFamily: "ralewayBold",
-                marginBottom: 4,
-              }}
-            >
-              See More
-            </Text>
-          </TouchableOpacity>
-        </Block>
+        {this.state.groupsComplete ? (
+          <>
+            <TouchableOpacity onPress={() => this.props.navigate("GroupList")}>
+              <Text
+                style={{
+                  color: "white",
+                  fontFamily: "ralewayBold",
+                  marginBottom: 4,
+                }}
+              >
+                Your Groups ►
+              </Text>
+            </TouchableOpacity>
+            {this.state.groups.map((group, index) => {
+              return (
+                <GroupPreview
+                  key={index}
+                  group={group}
+                  navigate={this.props.navigate}
+                />
+              );
+            })}
+            {this.state.groups.length > 0 ? (
+              <Block middle>
+                <TouchableOpacity
+                  style={{ padding: 4 }}
+                  onPress={() => this.props.navigate("GroupList")}
+                >
+                  <Text
+                    style={{
+                      color: colors.orange,
+                      fontFamily: "ralewayBold",
+                      marginBottom: 4,
+                    }}
+                  >
+                    See More
+                  </Text>
+                </TouchableOpacity>
+              </Block>
+            ) : (
+              <NoResults border={true} />
+            )}
+          </>
+        ) : (
+          <ActivityIndicator
+            animating={true}
+            color={this.props.theme.colors.orange}
+            size={"small"}
+          />
+        )}
       </Block>
     );
   }

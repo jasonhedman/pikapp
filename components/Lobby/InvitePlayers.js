@@ -28,6 +28,7 @@ import {
   Button,
   ActivityIndicator,
 } from "react-native-paper";
+import NoResults from "../Utility/NoResults";
 
 const { height } = Dimensions.get("screen");
 
@@ -45,7 +46,6 @@ class InvitePlayers extends React.Component {
   }
 
   componentDidMount() {
-    let nearby = new Object();
     const query = geo
       .query(firebase.firestore().collection("users"))
       .within(this.props.user.location, 10, "location");
@@ -93,7 +93,7 @@ class InvitePlayers extends React.Component {
         >
           <Headline style={{color:colors.white,fontSize:20,marginBottom:8}}>Nearby Players</Headline>
           {this.state.nearbyComplete ? (
-            Object.keys(this.state.nearby).length > 0 ? (
+            this.state.nearby.length > 0 ? (
               <ScrollView style={styles.scrollview}>
                 {this.state.nearby.map((user, key) => {
                   if (
@@ -159,38 +159,7 @@ class InvitePlayers extends React.Component {
                 </TouchableOpacity>
               </ScrollView>
             ) : (
-              <Block
-                center
-                style={{
-                  borderColor: colors.white,
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  width: "100%",
-                  padding: 16,
-                }}
-              >
-                <Headline
-                  style={{
-                    color: colors.grey,
-                    fontSize: 20,
-                    textAlign: "center",
-                    marginBottom: 8,
-                  }}
-                >
-                  No nearby players.
-                </Headline>
-                <Button
-                  mode='contained'
-                  dark={true}
-                  onPress={onShare}
-                  theme={{
-                    colors: { primary: colors.orange },
-                    fonts: { medium: this.props.theme.fonts.regular },
-                  }}
-                >
-                  Invite Friends
-                </Button>
-              </Block>
+              <NoResults users={true} />
             )
           ) : (
             <ActivityIndicator
@@ -211,8 +180,6 @@ const styles = StyleSheet.create({
     width: "100%",
     maxHeight: height * 0.5,
     borderRadius: 8,
-    padding: 4,
-    paddingBottom:0
   },
 });
 

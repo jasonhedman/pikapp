@@ -26,7 +26,7 @@ import PendingRequests from "../screens/SocialStack/PendingRequests";
 import GroupInvite from "../screens/SocialStack/GroupInvite";
 import SocialNotifications from "../screens/SocialStack/SocialNotifications";
 import GroupInvitations from "../screens/SocialStack/GroupInvitations";
-import { useSafeArea } from "react-native-safe-area-view";
+import InvitePlayers from "../screens/GameStack/InvitePlayers";
 
 const Tab = createMaterialBottomTabNavigator();
 const MapStackNav = createStackNavigator();
@@ -340,6 +340,14 @@ function GameStack() {
           options={{
             headerRight: null,
             title: "",
+          }}
+        />
+        <GameStackNav.Screen
+          name='InvitePlayers'
+          component={InvitePlayers}
+          options={{
+            headerRight: null,
+            title: "Invite Players",
           }}
         />
         <GameStackNav.Screen

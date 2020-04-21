@@ -14,11 +14,14 @@ import {
   Text,
   ActivityIndicator,
   Subheading,
+  IconButton,
 } from "react-native-paper";
 import { getDistance } from "geolib";
 const fetch = require("node-fetch");
+import Icon from "react-native-vector-icons/FontAwesome";
 
 import "firebase/firestore";
+import NoResults from "../Utility/NoResults";
 
 class SearchPlayers extends React.Component {
   constructor(props) {
@@ -95,25 +98,35 @@ class SearchPlayers extends React.Component {
         >
           <SafeAreaView style={{ backgroundColor: colors.dBlue, flex: 1 }}>
             <Block flex style={{ padding: 8 }}>
-              <TextInput
-                mode={"outlined"}
-                theme={{
-                  colors: {
-                    text: colors.white,
-                    placeholder: colors.white,
-                    underlineColor: colors.orange,
-                    selectionColor: colors.orange,
-                    primary: colors.orange,
-                  },
-                }}
-                placeholder={"Search Nearby Locations..."}
-                onChangeText={this.onSearch}
-                value={this.state.search}
-                style={{ marginBottom: 16 }}
-                onBlur={this.onSearchBlur}
-                returnKeyType="search"
-                onSubmitEditing={this.onSearchBlur}
-              />
+              <Block middle row style={{ marginBottom: 16 }}>
+                <TextInput
+                  mode={"outlined"}
+                  theme={{
+                    colors: {
+                      text: colors.white,
+                      placeholder: colors.white,
+                      underlineColor: colors.orange,
+                      selectionColor: colors.orange,
+                      primary: colors.orange,
+                    },
+                  }}
+                  placeholder={"Search Nearby Locations..."}
+                  onChangeText={this.onSearch}
+                  value={this.state.search}
+                  style={{ flex: 1 }}
+                  onBlur={this.onSearchBlur}
+                  returnKeyType='search'
+                  onSubmitEditing={this.onSearchBlur}
+                  dense={true}
+                />
+                <TouchableOpacity
+                  onPress={this.props.closeModal}
+                  style={{ paddingHorizontal: 15 }}
+                >
+                  <Icon name='times' size={20} color={colors.orange} />
+                </TouchableOpacity>
+              </Block>
+
               <Subheading
                 style={{
                   textAlign: "center",
@@ -129,60 +142,64 @@ class SearchPlayers extends React.Component {
               <ScrollView>
                 {this.state.search == "" || !this.state.searchComplete ? (
                   this.state.nearbyLocationsComplete ? (
-                    this.state.nearbyLocations.map((value, index) => {
-                      let distance = Math.round(
-                        getDistance(
-                          value.geometry.location,
-                          this.state.userLoc
-                        ) * 0.00062137
-                      );
-                      return (
-                        <TouchableOpacity
-                          key={index}
-                          style={{ width: "100%" }}
-                          onPress={() =>
-                            this.props.selectLocation(value.name, {
-                              longitude: value.geometry.location.lng,
-                              latitude: value.geometry.location.lat,
-                            })
-                          }
-                        >
-                          <Block
-                            row
-                            center
-                            style={{
-                              borderColor: colors.white,
-                              borderWidth: 1,
-                              borderRadius: 8,
-                              padding: 16,
-                              marginBottom: 10,
-                              width: "100%",
-                              justifyContent: "space-between",
-                            }}
+                    this.state.nearbyLocations.length > 0 ? (
+                      this.state.nearbyLocations.map((value, index) => {
+                        let distance = Math.round(
+                          getDistance(
+                            value.geometry.location,
+                            this.state.userLoc
+                          ) * 0.00062137
+                        );
+                        return (
+                          <TouchableOpacity
+                            key={index}
+                            style={{ width: "100%" }}
+                            onPress={() =>
+                              this.props.selectLocation(value.name, {
+                                longitude: value.geometry.location.lng,
+                                latitude: value.geometry.location.lat,
+                              })
+                            }
                           >
-                            <Text
-                              style={{ color: "#fff", textAlign: "center" }}
+                            <Block
+                              row
+                              center
+                              style={{
+                                borderColor: colors.white,
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                padding: 16,
+                                marginBottom: 10,
+                                width: "100%",
+                                justifyContent: "space-between",
+                              }}
                             >
-                              {value.name}
-                            </Text>
-                            <Text
-                              style={{ color: "#fff", textAlign: "center" }}
-                            >{`${distance} ${
-                              distance < 2 ? "Mile" : "Miles"
-                            } Away`}</Text>
-                          </Block>
-                        </TouchableOpacity>
-                      );
-                    })
+                              <Text
+                                style={{ color: "#fff", textAlign: "center" }}
+                              >
+                                {value.name}
+                              </Text>
+                              <Text
+                                style={{ color: "#fff", textAlign: "center" }}
+                              >{`${distance} ${
+                                distance < 2 ? "Mile" : "Miles"
+                              } Away`}</Text>
+                            </Block>
+                          </TouchableOpacity>
+                        );
+                      })
+                    ) : (
+                      <NoResults border={true} />
+                    )
                   ) : (
                     <ActivityIndicator
                       style={{ opacity: 1 }}
                       animating={true}
                       color={this.props.theme.colors.orange}
-                      size={"medium"}
+                      size={"small"}
                     />
                   )
-                ) : (
+                ) : this.state.searchResults.length > 0 ? (
                   this.state.searchResults.map((value, index) => {
                     let distance = Math.round(
                       getDistance(value.geometry.location, this.state.userLoc) *
@@ -224,6 +241,8 @@ class SearchPlayers extends React.Component {
                       </TouchableOpacity>
                     );
                   })
+                ) : (
+                  <NoResults border={true} />
                 )}
               </ScrollView>
 

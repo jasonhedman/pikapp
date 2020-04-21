@@ -64,6 +64,7 @@ class ChooseTime extends React.Component {
                 colors: { primary: colors.white },
                 fonts: { medium: this.props.theme.fonts.regular },
               }}
+              uppercase={false}
             >
               Now
             </Button>
@@ -90,6 +91,7 @@ class ChooseTime extends React.Component {
                 colors: { primary: colors.orange },
                 fonts: { medium: this.props.theme.fonts.regular },
               }}
+              uppercase={false}
             >
               Select
             </Button>
