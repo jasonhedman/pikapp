@@ -19,6 +19,7 @@ import { getDistance } from "geolib";
 const fetch = require("node-fetch");
 
 import "firebase/firestore";
+import trace from "../../services/trace";
 
 class SearchPlayers extends React.Component {
   constructor(props) {
@@ -50,6 +51,9 @@ class SearchPlayers extends React.Component {
           this.setState({ userLoc: pos.coords });
         });
       });
+    }).catch( (error) => {
+      console.log("ERROR: location")
+      trace(this, `ERROR doing something with location${error}`, "componentDidMount");
     });
   }
 

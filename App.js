@@ -2,18 +2,31 @@ import React from "react";
 import { StyleSheet, View, Dimensions, StatusBar } from "react-native";
 import { Appearance } from "react-native-appearance";
 import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import { NavigationContainer } from "@react-navigation/native";
+import { SafeAreaProvider } from "react-native-safe-area-view";
+import ignoreWarnings from "react-native-ignore-warnings";
+import {
+  REACT_APP_FIREBASE_API_KEY,
+  REACT_APP_FIREBASE_AUTH_DOMAIN,
+  REACT_APP_FIREBASE_DATABASE_URL,
+  REACT_APP_FIREBASE_PROJECT_ID,
+  REACT_APP_FIREBASE_STORAGE_BUCKET,
+  REACT_APP_FIREBASE_MESSAGE_SENDER_ID,
+  REACT_APP_FIREBASE_APP_ID
+} from 'react-native-dotenv'
 
 import { AppLoading } from "expo";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import * as Permissions from "expo-permissions";
-import * as firebase from "firebase";
-import ErrorBoundary from "./ErrorBoundary";
 
-import LogglyProvider from "./contexts/loggingContext/LogglyProvider";
-import ignoreWarnings from "react-native-ignore-warnings";
-import AppNavigator from "./navigation/AppNavigator";
-import { SafeAreaProvider } from "react-native-safe-area-view";
+import * as firebase from "firebase";
+
+import ErrorBoundary from "./ErrorBoundary";
+import MainTabNavigator from "./navigation/MainTabNavigator";
+import AuthNavigation from "./navigation/AuthNavigation";
+import AuthenticatedUserProvider from "./contexts/authenticatedUserContext/AuthenticatedUserProvider";
+import trace from "./services/trace";
 
 const { height, width } = Dimensions.get("window");
 
@@ -36,8 +49,11 @@ let theme = {
 class App extends React.Component {
   constructor() {
     super();
+    trace(this, "constructing component", "constructor");
 
     this.state = {
+      hasCurrentUser: false,
+      isLoadingAuthCompolete: true,
       isLoadingComplete: false,
     };
 
@@ -45,6 +61,9 @@ class App extends React.Component {
 
     this.loadResourcesAsync = this.loadResourcesAsync.bind(this);
     this.handleLoadingError = this.handleLoadingError.bind(this);
+    this.registerForPushNotificationsAsync = this.registerForPushNotificationsAsync.bind(
+      this
+    );
 
     if (Appearance.getColorScheme() == "light") {
       theme.colors.iosBackground = "#fff";
@@ -61,7 +80,7 @@ class App extends React.Component {
   }
 
   render() {
-    if (!this.state.isLoadingComplete) {
+    if (!this.state.isLoadingComplete || !this.state.isLoadingComplete) {
       return (
         <AppLoading
           style={{
@@ -79,10 +98,6 @@ class App extends React.Component {
       return (
         <View style={styles.container}>
           <SafeAreaProvider>
-            <LogglyProvider
-              token="59059019-605b-4aee-8c56-614fd989cab7"
-              logToConsole={true}
-            >
               <PaperProvider theme={theme}>
                 <StatusBar barStyle="light-content" />
                 <ErrorBoundary
@@ -91,10 +106,17 @@ class App extends React.Component {
                     console.log(stack);
                   }}
                 >
-                  <AppNavigator />
+                  {this.state.hasCurrentUser ? (
+                    <AuthenticatedUserProvider
+                      currentUserId={firebase.auth().currentUser.uid}
+                    >
+                      <NavigationContainer><MainTabNavigator /></NavigationContainer>
+                    </AuthenticatedUserProvider>
+                  ) : (
+                    <NavigationContainer><AuthNavigation /></NavigationContainer>
+                  )}
                 </ErrorBoundary>
               </PaperProvider>
-            </LogglyProvider>
           </SafeAreaProvider>
         </View>
       );
@@ -103,13 +125,13 @@ class App extends React.Component {
 
   async loadResourcesAsync() {
     const firebaseConfig = {
-      apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-      authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-      databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
-      projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-      storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGE_SENDER_ID,
-      appId: process.env.REACT_APP_FIREBASE_APP_ID,
+      apiKey: REACT_APP_FIREBASE_API_KEY,
+      authDomain: REACT_APP_FIREBASE_AUTH_DOMAIN,
+      databaseURL: REACT_APP_FIREBASE_DATABASE_URL,
+      projectId: REACT_APP_FIREBASE_PROJECT_ID,
+      storageBucket: REACT_APP_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: REACT_APP_FIREBASE_MESSAGE_SENDER_ID,
+      appId: REACT_APP_FIREBASE_APP_ID,
     };
 
     await Promise.all([
@@ -135,6 +157,106 @@ class App extends React.Component {
       console.log("app: ***** loadResourcesAsync PROMISE ERROR ***");
       console.log(err);
     });
+
+    this.authUserSnapshotListener()
+
+  }
+
+  authUserSnapshotListener() {
+    trace(this, "subscribe to auth changes", "authUserSnapshotListener");
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      trace(this, "authStateChanged", "authUserSnapshotListener");
+      if (user != null) {
+        trace(
+          this,
+          `isAuthenticated ${user.email}`,
+          "authUserSnapshotListener"
+        );
+        this.registerForPushNotificationsAsync(user.uid);
+        trace(this, "set hasCurrentUser true", "authUserSnapshotListener");
+        this.setState({ hasCurrentUser: true, isLoadingAuthCompolete: true });
+      } else {
+        trace(this, "authStateChanged - NO USER", "authUserSnapshotListener");
+        trace(this, "set hasCurrentUser false", "authUserSnapshotListener");
+        this.setState({ hasCurrentUser: false, isLoadingAuthCompolete: true });
+      }
+    });
+    this.unsubscribe = unsubscribe;
+  }
+
+  unsubscribeAuthUserSnapshotListener() {
+    if (this.unsubscribe) {
+      trace(
+        this,
+        "unsubscribe auth listener",
+        "unsubscribeAuthUserSnapshotListener"
+      );
+      this.unsubscribe();
+    }
+  }
+
+  registerForPushNotificationsAsync = async (uid) => {
+    trace(
+      this,
+      "registering push notification",
+      "registerForPushNotificationsAsync"
+    );
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      trace(
+        this,
+        `push notification status: ${finalStatus}`,
+        "registerForPushNotificationsAsync"
+      );
+      return;
+    } else {
+      trace(
+        this,
+        "push notification granted",
+        "registerForPushNotificationsAsync"
+      );
+    }
+
+    let token = await Notifications.getExpoPushTokenAsync();
+
+    firebase
+      .firestore()
+      .collection("users")
+      .where("pushToken", "==", token)
+      .get()
+      .then((users) => {
+        users.forEach((user) => {
+          if (user.id != uid) {
+            firebase.firestore().collection("users").doc(user.id).update({
+              pushToken: firebase.firestore.FieldValue.delete(),
+            });
+          }
+        });
+      })
+      .then(() => {
+        firebase.firestore().collection("users").doc(uid).update({
+          pushToken: token,
+        });
+      })
+      .catch((err) => {
+        trace(
+          this,
+          `Error Updating User Push Tokens: ${err}`,
+          "registerForPushNotificationsAsync"
+        );
+      });
+  };
+
+  componentWillUnmount() {
+    trace(this, "component will unmount", "componentWillUnmount");
+    this.unsubscribeAuthUserSnapshotListener();
   }
 
   handleLoadingError(error) {

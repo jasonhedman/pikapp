@@ -135,6 +135,9 @@ class MapScreen extends React.Component {
                 });
             }
           );
+        }).catch( (error) => {
+          trace(this, `ERRROR: getting location: ${error}`, "componentDidMount");
+
         });
       } else {
         Location.requestPermissionsAsync().then((permission) => {
