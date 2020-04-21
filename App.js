@@ -103,13 +103,13 @@ class App extends React.Component {
 
   async loadResourcesAsync() {
     const firebaseConfig = {
-      apiKey: "AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE",
-      authDomain: "pickapp-4dcc0.firebaseapp.com",
-      databaseURL: "https://pickapp-4dcc0.firebaseio.com",
-      projectId: "pickapp-4dcc0",
-      storageBucket: "pickapp-4dcc0.appspot.com",
-      messagingSenderId: "322765285697",
-      appId: "1:322765285697:web:ecd162e09c8d5a3f",
+      apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+      authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+      databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
+      projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+      storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGE_SENDER_ID,
+      appId: process.env.REACT_APP_FIREBASE_APP_ID,
     };
 
     await Promise.all([
@@ -145,7 +145,7 @@ class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121D28'
+    backgroundColor: "#121D28",
   },
 });
 
