@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Dimensions, StatusBar } from "react-native";
+import { StyleSheet, View, Dimensions, StatusBar, Platform } from "react-native";
 import { Appearance } from "react-native-appearance";
 import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
@@ -51,10 +51,11 @@ class App extends React.Component {
   constructor() {
     super();
     trace(this, "constructing component", "constructor");
+    trace(this, `Running on ${Platform.OS}`, "constructor");
 
     this.state = {
       hasCurrentUser: false,
-      isLoadingAuthComplete: true,
+      isLoadingAuthComplete: false,
       isLoadingComplete: false,
     };
 
