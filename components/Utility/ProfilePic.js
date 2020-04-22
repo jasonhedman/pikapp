@@ -13,9 +13,7 @@ class ProfilePic extends React.Component {
     };
   }
 
-  componentDidMount() {
-    
-  }
+  componentDidMount() {}
 
   render() {
     colors = this.props.theme.colors;
@@ -25,7 +23,7 @@ class ProfilePic extends React.Component {
         center
         middle
         style={{
-          borderRadius: "50%",
+          borderRadius: 8,
           borderWidth: 2,
           borderColor: this.props.theme.colors.orange,
           padding: 0,

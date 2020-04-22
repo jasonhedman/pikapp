@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { Block } from "galio-framework";
 import { Button, withTheme } from "react-native-paper";
 import * as firebase from "firebase";
@@ -139,7 +145,10 @@ class EditProfile extends React.Component {
   render() {
     colors = this.props.theme.colors;
     return (
-      <>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+      >
         {this.state.loading ? <LoadingOverlay /> : null}
         <SlideModal
           animationIn="slideInUp"
@@ -212,76 +221,76 @@ class EditProfile extends React.Component {
             </Button>
           </Block>
         </SlideModal>
-            <Block
-              flex
-              style={{
-                backgroundColor: colors.dBlue,
+        <Block
+          flex
+          style={{
+            backgroundColor: colors.dBlue,
+          }}
+        >
+          <Form>
+            <TouchableOpacity
+              onPress={() => this.setState({ visible: true })}
+              style={{ marginBottom: 12 }}
+            >
+              <ProfilePic
+                size={80}
+                proPicUrl={this.state.image}
+                addEnabled={true}
+              />
+            </TouchableOpacity>
+            <InputBlock
+              value={this.state.name}
+              placeholder="Name"
+              onChange={this.onNameChange}
+              onBlur={() => this.setState({ nameBlur: true })}
+            >
+              <HelperText
+                visible={!this.state.name.length > 0 && this.state.nameBlur}
+                text="Please enter your name."
+              />
+            </InputBlock>
+            <InputBlock
+              value={this.state.username}
+              placeholder="Username"
+              onChange={(val) => {
+                this.onUsernameChange(val.toLowerCase(), () => {
+                  if (this.state.usernameBlur) {
+                    this.checkUsername();
+                  }
+                });
+              }}
+              onBlur={() => {
+                this.checkUsername();
+                this.setState({ usernameBlur: true });
               }}
             >
-              <Form>
-                <TouchableOpacity
-                  onPress={() => this.setState({ visible: true })}
-                  style={{ marginBottom: 12 }}
-                >
-                  <ProfilePic
-                    size={80}
-                    proPicUrl={this.state.image}
-                    addEnabled={true}
-                  />
-                </TouchableOpacity>
-                <InputBlock
-                  value={this.state.name}
-                  placeholder="Name"
-                  onChange={this.onNameChange}
-                  onBlur={() => this.setState({ nameBlur: true })}
-                >
-                  <HelperText
-                    visible={!this.state.name.length > 0 && this.state.nameBlur}
-                    text="Please enter your name."
-                  />
-                </InputBlock>
-                <InputBlock
-                  value={this.state.username}
-                  placeholder='Username'
-                  onChange={(val) => {
-                    this.onUsernameChange(val.toLowerCase(), () => {
-                      if (this.state.usernameBlur) {
-                        this.checkUsername();
-                      }
-                    });
-                  }}
-                  onBlur={() => {
-                    this.checkUsername();
-                    this.setState({ usernameBlur: true });
-                  }}
-                >
-                  <HelperText
-                    visible={
-                      (!this.state.username.length > 0 ||
-                        this.state.usernameTaken) &&
-                      this.state.usernameBlur
-                    }
-                    text={
-                      this.state.username.length <= 0
-                        ? "Please enter a username."
-                        : this.state.usernameTaken
-                        ? "This username is taken. Please try another."
-                        : null
-                    }
-                  />
-                </InputBlock>
-                <ButtonBlock
-                  text="Save Changes"
-                  disabled={this.state.usernameTaken}
-                  disabledStyles={{
-                    opacity: 0.3,
-                    backgroundColor: colors.orange,
-                  }}
-                  onPress={this.onSubmit}
-                ></ButtonBlock>
-              </Form>
-            </Block>
-      </>
+              <HelperText
+                visible={
+                  (!this.state.username.length > 0 ||
+                    this.state.usernameTaken) &&
+                  this.state.usernameBlur
+                }
+                text={
+                  this.state.username.length <= 0
+                    ? "Please enter a username."
+                    : this.state.usernameTaken
+                    ? "This username is taken. Please try another."
+                    : null
+                }
+              />
+            </InputBlock>
+            <ButtonBlock
+              text="Save Changes"
+              disabled={this.state.usernameTaken}
+              disabledStyles={{
+                opacity: 0.3,
+                backgroundColor: colors.orange,
+              }}
+              onPress={this.onSubmit}
+            ></ButtonBlock>
+          </Form>
+        </Block>
+      </KeyboardAvoidingView>
     );
   }
 }

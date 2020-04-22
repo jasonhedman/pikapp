@@ -59,7 +59,7 @@ class GroupResult extends React.Component {
                   key={index}
                   style={{
                     borderWidth: 1,
-                    borderRadius: "50%",
+                    borderRadius: 8,
                     borderColor: colors.orange,
                     padding: 6,
                     backgroundColor: colors.dBlue,
@@ -72,11 +72,11 @@ class GroupResult extends React.Component {
             })}
           </Block>
           <Block flex>
-            <Text style={{ }}>
+            <Text style={{}}>
               <Text
                 style={{ color: colors.white, flex: -1 }}
                 numberOfLines={1}
-                ellipsizeMode='tail'
+                ellipsizeMode="tail"
               >
                 {this.props.group.title}
               </Text>
@@ -84,7 +84,7 @@ class GroupResult extends React.Component {
                 this.props.group.users
               } ${this.props.group.users == 1 ? "User" : "Users"}`}</Text>
             </Text>
-            <Text style={{ color:colors.grey }}>
+            <Text style={{ color: colors.grey }}>
               {this.props.group.private ? "Private Group" : "Open Group"}
             </Text>
           </Block>

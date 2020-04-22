@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import TabBarIcon from "../components/Utility/TabBarIcon";
@@ -146,10 +146,10 @@ function SocialStack(props) {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "#121D28" }}
-      behavior='padding'
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
     >
       <SocialStackNav.Navigator
-        initialRouteName='SocialScreen'
+        initialRouteName="SocialScreen"
         screenOptions={({ navigation, route }) => ({
           headerStyle: styles.header,
           headerTitleStyle: styles.headerText,
@@ -159,8 +159,8 @@ function SocialStack(props) {
           headerTruncatedBackTitle: null,
           headerLeft: () => (
             <IconButton
-              icon='chevron-left'
-              color='#E68A54'
+              icon="chevron-left"
+              color="#E68A54"
               size={30}
               onPress={() => navigation.goBack()}
             />
@@ -168,28 +168,28 @@ function SocialStack(props) {
         })}
       >
         <SocialStackNav.Screen
-          name='SearchPlayers'
+          name="SearchPlayers"
           component={SearchPlayers}
           options={({ navigation, route }) => ({
             title: "Search Users",
           })}
         />
         <SocialStackNav.Screen
-          name='SocialScreen'
+          name="SocialScreen"
           component={SocialScreen}
           options={({ navigation, route }) => ({
             title: "Social",
           })}
         />
         <SocialStackNav.Screen
-          name='GroupProfile'
+          name="GroupProfile"
           component={GroupScreen}
           options={({ navigation, route }) => ({
             title: route.params.groupTitle,
             headerRight: () => (
               <IconButton
-                icon='information-outline'
-                color='#E68A54'
+                icon="information-outline"
+                color="#E68A54"
                 size={30}
                 onPress={() =>
                   navigation.navigate("GroupInfo", {
@@ -203,28 +203,28 @@ function SocialStack(props) {
           })}
         />
         <SocialStackNav.Screen
-          name='UserProfile'
+          name="UserProfile"
           component={UserProfile}
           options={({ navigation, route }) => ({
             title: "",
           })}
         />
         <SocialStackNav.Screen
-          name='UserList'
+          name="UserList"
           component={UserList}
           options={({ navigation, route }) => ({
             title: route.params.listType,
           })}
         />
         <SocialStackNav.Screen
-          name='SearchGroups'
+          name="SearchGroups"
           component={SearchGroups}
           options={({ navigation, route }) => ({
             title: "Search Groups",
             headerRight: () => (
               <IconButton
-                icon='plus'
-                color='#E68A54'
+                icon="plus"
+                color="#E68A54"
                 size={30}
                 onPress={() => navigation.navigate("CreateGroup")}
                 style={{ marginTop: 12, marginBottom: 12 }}
@@ -233,14 +233,14 @@ function SocialStack(props) {
           })}
         />
         <SocialStackNav.Screen
-          name='GroupList'
+          name="GroupList"
           component={GroupList}
           options={({ navigation, route }) => ({
             title: "Groups",
             headerRight: () => (
               <IconButton
-                icon='plus'
-                color='#E68A54'
+                icon="plus"
+                color="#E68A54"
                 size={30}
                 onPress={() => navigation.navigate("CreateGroup")}
                 style={{ marginTop: 12, marginBottom: 12 }}
@@ -249,49 +249,49 @@ function SocialStack(props) {
           })}
         />
         <SocialStackNav.Screen
-          name='CreateGroup'
+          name="CreateGroup"
           component={CreateGroup}
           options={({ navigation, route }) => ({
             title: "Create Group",
           })}
         />
         <SocialStackNav.Screen
-          name='GroupInfo'
+          name="GroupInfo"
           component={GroupInfo}
           options={({ navigation, route }) => ({
             title: route.params.groupTitle,
           })}
         />
         <SocialStackNav.Screen
-          name='EditGroup'
+          name="EditGroup"
           component={EditGroup}
           options={({ navigation, route }) => ({
             title: "Edit Group",
           })}
         />
         <SocialStackNav.Screen
-          name='PendingRequests'
+          name="PendingRequests"
           component={PendingRequests}
           options={({ navigation, route }) => ({
             title: "Pending Requests",
           })}
         />
         <SocialStackNav.Screen
-          name='GroupInvite'
+          name="GroupInvite"
           component={GroupInvite}
           options={({ navigation, route }) => ({
             title: "Invite Users",
           })}
         />
         <SocialStackNav.Screen
-          name='SocialNotifications'
+          name="SocialNotifications"
           component={SocialNotifications}
           options={({ navigation, route }) => ({
             title: "Activity",
           })}
         />
         <SocialStackNav.Screen
-          name='GroupInvitations'
+          name="GroupInvitations"
           component={GroupInvitations}
           options={({ navigation, route }) => ({
             title: "Group Invitations",
@@ -306,10 +306,10 @@ function GameStack() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "#121D28" }}
-      behavior='padding'
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
     >
       <GameStackNav.Navigator
-        initialRouteName='GameLandingScreen'
+        initialRouteName="GameLandingScreen"
         screenOptions={({ navigation, route }) => ({
           headerStyle: styles.header,
           headerTitleStyle: styles.headerText,
@@ -318,8 +318,8 @@ function GameStack() {
           headerTruncatedBackTitle: null,
           headerLeft: () => (
             <IconButton
-              icon='chevron-left'
-              color='#E68A54'
+              icon="chevron-left"
+              color="#E68A54"
               size={30}
               onPress={() => navigation.goBack()}
             />
@@ -327,7 +327,7 @@ function GameStack() {
         })}
       >
         <GameStackNav.Screen
-          name='GameLandingScreen'
+          name="GameLandingScreen"
           component={GameLandingScreen}
           options={{
             headerLeft: null,
@@ -335,7 +335,7 @@ function GameStack() {
           }}
         />
         <GameStackNav.Screen
-          name='GameLobby'
+          name="GameLobby"
           component={GameLobby}
           options={{
             headerRight: null,
@@ -343,7 +343,7 @@ function GameStack() {
           }}
         />
         <GameStackNav.Screen
-          name='InvitePlayers'
+          name="InvitePlayers"
           component={InvitePlayers}
           options={{
             headerRight: null,
@@ -351,21 +351,21 @@ function GameStack() {
           }}
         />
         <GameStackNav.Screen
-          name='UserProfile'
+          name="UserProfile"
           component={UserProfile}
           options={({ navigation, route }) => ({
             title: "",
           })}
         />
         <GameStackNav.Screen
-          name='UserList'
+          name="UserList"
           component={UserList}
           options={({ navigation, route }) => ({
             title: route.params.listType,
           })}
         />
         <GameStackNav.Screen
-          name='Messages'
+          name="Messages"
           component={MessageBoard}
           options={({ navigation, route }) => ({
             title: "Messages",
@@ -385,14 +385,14 @@ class MainTabNavigator extends React.Component {
     return (
       // <UserContext.Provider value={this.state}>
       <Tab.Navigator
-        initialRouteName='MapStack'
-        activeColor='#E68A54'
-        inactiveColor='#fff'
+        initialRouteName="MapStack"
+        activeColor="#E68A54"
+        inactiveColor="#fff"
         barStyle={{ backgroundColor: "#121D28" }}
         keyboardHidesNavigationBar={false}
       >
         <Tab.Screen
-          name='GameStack'
+          name="GameStack"
           component={GameStack}
           options={{
             tabBarLabel: "Games",
@@ -407,7 +407,7 @@ class MainTabNavigator extends React.Component {
           }}
         />
         <Tab.Screen
-          name='MapStack'
+          name="MapStack"
           component={MapStack}
           options={{
             tabBarLabel: "Map",
@@ -420,7 +420,7 @@ class MainTabNavigator extends React.Component {
           }}
         />
         <Tab.Screen
-          name='SocialStack'
+          name="SocialStack"
           component={SocialStack}
           options={{
             tabBarLabel: "Social",
@@ -433,7 +433,7 @@ class MainTabNavigator extends React.Component {
           }}
         />
         <Tab.Screen
-          name='ProfileStack'
+          name="ProfileStack"
           component={ProfileStack}
           options={{
             tabBarLabel: "Profile",

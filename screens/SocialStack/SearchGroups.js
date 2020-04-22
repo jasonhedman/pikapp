@@ -136,7 +136,7 @@ class SerachGroups extends React.Component {
                                         key={index}
                                         style={{
                                           borderWidth: 1,
-                                          borderRadius: "50%",
+                                          borderRadius: 8,
                                           borderColor: colors.orange,
                                           padding: 6,
                                           backgroundColor: colors.dBlue,

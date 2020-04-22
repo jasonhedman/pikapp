@@ -8,7 +8,7 @@ import {
 import { Block } from "galio-framework";
 import { withTheme, TextInput } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { connectSearchBox } from 'react-instantsearch-native';
+import { connectSearchBox } from "react-instantsearch-native";
 
 
 class SocialHeader extends React.Component {
@@ -45,13 +45,13 @@ class SocialHeader extends React.Component {
   onSearch = (search) => {
     this.props.onSearch(search);
     this.props.refine(search);
-  }
+  };
 
   render() {
     let colors = this.props.theme.colors;
     return (
       <SafeAreaView style={{ backgroundColor: colors.dBlue }}>
-        <Block row middle style={{ }}>
+        <Block row middle style={{}}>
           <TextInput
             mode={"outlined"}
             theme={{
@@ -62,7 +62,7 @@ class SocialHeader extends React.Component {
                 selectionColor: colors.orange,
                 primary: colors.orange,
               },
-              roundness: "50%",
+              roundness: 8,
             }}
             placeholder={"Search"}
             onChangeText={this.onSearch}
@@ -116,4 +116,4 @@ class SocialHeader extends React.Component {
   }
 }
 
-export default withTheme(connectSearchBox( SocialHeader));
+export default withTheme(connectSearchBox(SocialHeader));

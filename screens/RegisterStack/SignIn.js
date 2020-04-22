@@ -4,6 +4,8 @@ import {
   Dimensions,
   TouchableOpacity,
   SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Block } from "galio-framework";
 import { Caption, Button, withTheme, Text } from "react-native-paper";
@@ -65,51 +67,62 @@ class Register extends React.Component {
     colors = this.props.theme.colors;
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
-        <Form>
-          <InputBlock
-            value={this.state.email}
-            placeholder="Email"
-            onChange={this.onEmailChange}
-          />
-          <InputBlock
-            value={this.state.password}
-            placeholder="Password"
-            onChange={this.onPasswordChange}
-            secureTextEntry={true}
-          />
-          <ButtonBlock onPress={this.onSignIn} uppercase={false} text="Sign In">
-            <>
-              <HelperText
-                visible={this.state.error}
-                text="Incorrect Email or Password."
-                styles={{ marginBottom: 8 }}
-              />
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate("ForgotPassword")}
-              >
-                <Text style={{ color: colors.grey }}>Forgot Password?</Text>
-              </TouchableOpacity>
-            </>
-          </ButtonBlock>
-        </Form>
-        <Block center middle width={width} style={{}}>
-          <Caption style={{ color: colors.grey }}>
-            If do not already have an account
-          </Caption>
-          <Button
-            uppercase={false}
-            mode="text"
-            onPress={this.toSignUp}
-            dark={true}
-            style={styles.createButton}
-            theme={{
-              colors: { primary: colors.lGreen },
-              fonts: { medium: this.props.theme.fonts.regular },
-            }}
-          >
-            Sign Up
-          </Button>
-        </Block>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+        >
+          <Form>
+            <InputBlock
+              value={this.state.email}
+              placeholder="Email"
+              onChange={this.onEmailChange}
+            />
+            <InputBlock
+              value={this.state.password}
+              placeholder="Password"
+              onChange={this.onPasswordChange}
+              secureTextEntry={true}
+            />
+            <ButtonBlock
+              onPress={this.onSignIn}
+              uppercase={false}
+              text="Sign In"
+            >
+              <>
+                <HelperText
+                  visible={this.state.error}
+                  text="Incorrect Email or Password."
+                  styles={{ marginBottom: 8 }}
+                />
+                <TouchableOpacity
+                  onPress={() =>
+                    this.props.navigation.navigate("ForgotPassword")
+                  }
+                >
+                  <Text style={{ color: colors.grey }}>Forgot Password?</Text>
+                </TouchableOpacity>
+              </>
+            </ButtonBlock>
+          </Form>
+          <Block center middle width={width} style={{}}>
+            <Caption style={{ color: colors.grey }}>
+              If do not already have an account
+            </Caption>
+            <Button
+              uppercase={false}
+              mode="text"
+              onPress={this.toSignUp}
+              dark={true}
+              style={styles.createButton}
+              theme={{
+                colors: { primary: colors.lGreen },
+                fonts: { medium: this.props.theme.fonts.regular },
+              }}
+            >
+              Sign Up
+            </Button>
+          </Block>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }

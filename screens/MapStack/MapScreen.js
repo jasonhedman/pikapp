@@ -118,35 +118,40 @@ class MapScreen extends React.Component {
     Location.hasServicesEnabledAsync().then((locationEnabled) => {
       this.setState({ locationEnabled, complete: true });
       if (locationEnabled == true) {
-        Location.getCurrentPositionAsync().then((pos) => {
-          let region = {
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          };
-          this.setState(
-            { region, userLoc: pos.coords, locationComplete: true },
-            () => {
-              Location.watchPositionAsync({}, (pos) => {
-                this.setState({ userLoc: pos.coords });
-              });
-              firebase
-                .firestore()
-                .collection("users")
-                .doc(firebase.auth().currentUser.uid)
-                .update({
-                  location: geo.point(
-                    pos.coords.latitude,
-                    pos.coords.longitude
-                  ),
+        Location.getCurrentPositionAsync()
+          .then((pos) => {
+            let region = {
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            };
+            this.setState(
+              { region, userLoc: pos.coords, locationComplete: true },
+              () => {
+                Location.watchPositionAsync({}, (pos) => {
+                  this.setState({ userLoc: pos.coords });
                 });
-            }
-          );
-        }).catch( (error) => {
-          trace(this, `ERRROR: getting location: ${error}`, "componentDidMount");
-
-        });
+                firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(firebase.auth().currentUser.uid)
+                  .update({
+                    location: geo.point(
+                      pos.coords.latitude,
+                      pos.coords.longitude
+                    ),
+                  });
+              }
+            );
+          })
+          .catch((error) => {
+            trace(
+              this,
+              `ERRROR: getting location: ${error}`,
+              "componentDidMount"
+            );
+          });
       } else {
         Location.requestPermissionsAsync().then((permission) => {
           if (permission.status == "granted") {
@@ -538,7 +543,7 @@ class MapScreen extends React.Component {
                             style={{
                               height: 0.29 * (3 / 2) * 28,
                               width: 0.29 * (3 / 2) * 28,
-                              borderRadius: "50%",
+                              borderRadius: (0.29 * (3 / 2) * 28) / 2,
                               position: "absolute",
                               left: 0,
                               top: 0,

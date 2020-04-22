@@ -138,7 +138,7 @@ class LeaderboardScreen extends React.Component {
           </Caption>
           <Block center middle style={{ width: "100%" }}>
             <Button
-              mode='contained'
+              mode="contained"
               dark={true}
               onPress={() => onShare()}
               theme={{

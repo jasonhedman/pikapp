@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
 } from "react-native";
 import { Block } from "galio-framework";
 
@@ -21,7 +22,11 @@ class Form extends React.Component {
     let colors = this.props.theme.colors;
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
-        <KeyboardAvoidingView enabled behavior="padding" style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          enabled
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
           <Block
             flex
             middle

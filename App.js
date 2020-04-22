@@ -59,7 +59,10 @@ class App extends React.Component {
       isLoadingComplete: false,
     };
 
-    ignoreWarnings(["componentWillMount has been renamed"]);
+    ignoreWarnings([
+      "componentWillMount has been renamed",
+      "Setting a timer"
+    ]);
 
     this.loadResourcesAsync = this.loadResourcesAsync.bind(this);
     this.handleLoadingError = this.handleLoadingError.bind(this);
