@@ -53,7 +53,7 @@ class App extends React.Component {
 
     this.state = {
       hasCurrentUser: false,
-      isLoadingAuthCompolete: true,
+      isLoadingAuthComplete: true,
       isLoadingComplete: false,
     };
 
@@ -80,7 +80,7 @@ class App extends React.Component {
   }
 
   render() {
-    if (!this.state.isLoadingComplete || !this.state.isLoadingComplete) {
+    if (!this.state.isLoadingComplete || !this.state.isLoadingAuthComplete) {
       return (
         <AppLoading
           style={{
@@ -174,11 +174,11 @@ class App extends React.Component {
         );
         this.registerForPushNotificationsAsync(user.uid);
         trace(this, "set hasCurrentUser true", "authUserSnapshotListener");
-        this.setState({ hasCurrentUser: true, isLoadingAuthCompolete: true });
+        this.setState({ hasCurrentUser: true, isLoadingAuthComplete: true });
       } else {
         trace(this, "authStateChanged - NO USER", "authUserSnapshotListener");
         trace(this, "set hasCurrentUser false", "authUserSnapshotListener");
-        this.setState({ hasCurrentUser: false, isLoadingAuthCompolete: true });
+        this.setState({ hasCurrentUser: false, isLoadingAuthComplete: true });
       }
     });
     this.unsubscribe = unsubscribe;
