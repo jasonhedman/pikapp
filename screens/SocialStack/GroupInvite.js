@@ -16,6 +16,7 @@ import "firebase/firestore";
 import NearbyUsers from "../../components/Utility/NearbyUsers";
 import FriendsList from "../../components/Utility/FriendsList";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
+import NoResults from "../../components/Utility/NoResults";
 
 class GroupInvite extends React.Component {
   constructor(props) {
@@ -194,7 +195,7 @@ class GroupInvite extends React.Component {
                     Search Results
                   </Subheading>
                   <ScrollView style={{ width: "100%" }}>
-                    {this.state.filteredUsers.map((userId, key) => {
+                    {this.state.filteredUsers.length > 0 ? this.state.filteredUsers.map((userId, key) => {
                       let user = this.state.users[userId];
                       return (
                         <TouchableOpacity
@@ -226,7 +227,7 @@ class GroupInvite extends React.Component {
                           </Block>
                         </TouchableOpacity>
                       );
-                    })}
+                    }) : <NoResults users={true} border={true} />}
                   </ScrollView>
                 </>
               ) : (

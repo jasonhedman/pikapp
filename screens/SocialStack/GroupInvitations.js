@@ -5,6 +5,7 @@ import { Block } from "galio-framework";
 import firebase from "firebase";
 import GroupInviteNotification from "../../components/Notifications/GroupInvitations/GroupInviteNotification";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
+import NoResults from "../../components/Utility/NoResults";
 
 class GroupInvitations extends React.Component {
   constructor() {
@@ -63,7 +64,7 @@ class GroupInvitations extends React.Component {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
         <ScrollView flex style={{ padding: 16 }}>
-          {this.state.invitations.map((invitation, index) => {
+          {this.state.invitations.length > 0 ? this.state.invitations.map((invitation, index) => {
             return (
               <GroupInviteNotification
                 group={invitation.group}
@@ -74,7 +75,7 @@ class GroupInvitations extends React.Component {
                 navigate={this.props.navigation.navigate}
               />
             );
-          })}
+          }) : <NoResults border={true} />}
         </ScrollView>
       </SafeAreaView>
     );

@@ -5,6 +5,7 @@ import { withTheme, Text, ActivityIndicator } from "react-native-paper";
 
 import * as firebase from "firebase";
 import "firebase/firestore";
+import NoResults from "./NoResults";
 
 class GroupInvite extends React.Component {
   constructor(props) {
@@ -87,21 +88,7 @@ class GroupInvite extends React.Component {
                 );
               })
             ) : (
-              <Block
-                row
-                center
-                middle
-                style={{
-                  borderColor: colors.grey,
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  padding: 10,
-                  width: "100%",
-                  marginBottom: 10,
-                }}
-              >
-                <Text style={{ color: "#fff" }}>No Results</Text>
-              </Block>
+              <NoResults users={true} border={true}/>
             )
           ) : (
             <ActivityIndicator

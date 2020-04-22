@@ -26,6 +26,7 @@ import ProfilePic from "../../components/Utility/ProfilePic";
 import onShare from "../../services/onShare";
 import trace from "../../services/trace";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
+import NoResults from "../../components/Utility/NoResults";
 
 const { width, height } = Dimensions.get("window");
 
@@ -171,6 +172,7 @@ class Profile extends React.Component {
         ></IconButton>
       ),
     });
+    console.log(currentUserProfile.location.geopoint._lat)
     const colors = this.props.theme.colors;
     if (this.state.complete) {
       return (
@@ -403,50 +405,7 @@ class Profile extends React.Component {
                   })}
                 </Block>
               ) : (
-                <Block
-                  flex
-                  center
-                  middle
-                  style={{
-                    backgroundColor: colors.dBlue,
-                    width: width,
-                    paddingLeft: 16,
-                    paddingRight: 16,
-                  }}
-                >
-                  <Block
-                    center
-                    style={{
-                      borderWidth: 1,
-                      borderColor: colors.orange,
-                      borderRadius: 8,
-                      padding: 16,
-                      width: "100%",
-                    }}
-                  >
-                    <Headline
-                      style={{
-                        color: colors.white,
-                        fontSize: 20,
-                        marginBottom: 8,
-                        textAlign: "center",
-                      }}
-                    >
-                      You have not completed any games.
-                    </Headline>
-                    <Button
-                      mode="contained"
-                      dark={true}
-                      onPress={() => this.props.navigation.navigate("MapStack")}
-                      theme={{
-                        colors: { primary: colors.orange },
-                        fonts: { medium: this.props.theme.fonts.regular },
-                      }}
-                    >
-                      Find a Game
-                    </Button>
-                  </Block>
-                </Block>
+                <NoResults border={true} />
               )}
             </ScrollView>
             <Block

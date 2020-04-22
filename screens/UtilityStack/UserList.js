@@ -12,6 +12,7 @@ import { withTheme, Text, Headline } from "react-native-paper";
 
 import * as firebase from "firebase";
 import "firebase/firestore";
+import NoResults from "../../components/Utility/NoResults";
 
 const { height, width } = Dimensions.get("window");
 
@@ -72,9 +73,9 @@ class UserList extends React.Component {
             style={{ backgroundColor: colors.dBlue, width, padding: 16 }}
           >
             {this.state.complete ? (
-              this.state.users.length > 0 ? (
-                <ScrollView style={{ width: "100%" }}>
-                  {this.state.users.map((user, key) => {
+              <ScrollView style={{ width: "100%" }}>
+                {this.state.users.length > 0 ? (
+                  this.state.users.map((user, key) => {
                     return (
                       <TouchableOpacity
                         onPress={() => this.navToUserProfile(user.id)}
@@ -107,31 +108,11 @@ class UserList extends React.Component {
                         </Block>
                       </TouchableOpacity>
                     );
-                  })}
-                </ScrollView>
-              ) : (
-                <Block
-                  center
-                  middle
-                  style={{
-                    borderColor: colors.orange,
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    width: "100%",
-                    padding: 8,
-                  }}
-                >
-                  <Headline
-                    style={{
-                      color: colors.grey,
-                      fontSize: 20,
-                      textAlign: "center",
-                    }}
-                  >
-                    No Users
-                  </Headline>
-                </Block>
-              )
+                  })
+                ) : (
+                  <NoResults users={true} border={true} />
+                )}
+              </ScrollView>
             ) : null}
           </Block>
         </TouchableWithoutFeedback>

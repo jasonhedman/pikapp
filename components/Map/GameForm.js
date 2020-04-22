@@ -5,6 +5,7 @@ import { withTheme, Switch, Text, Button } from "react-native-paper";
 import HeaderBlock from "../Utility/HeaderBlock";
 import MenuBlock from "../Utility/MenuBlock";
 import ButtonBlock from "../Utility/ButtonBlock";
+import LoadingOverlay from "../Utility/LoadingOverlay";
 import * as firebase from "firebase";
 import * as geofirex from "geofirex";
 const geo = geofirex.init(firebase);
@@ -17,6 +18,7 @@ class GameForm extends React.Component {
     super(props);
     trace(this, "construct component", "constructor");
     this.state = {
+      loading:false,
       sport: this.props.sport,
       intensity: this.props.intensity,
       bringingEquipment: this.props.bringingEquipment,
@@ -62,7 +64,8 @@ class GameForm extends React.Component {
   };
 
   onCreate = () => {
-    let equipment = this.state.bringingEquipment
+    this.props.setLoading(true, () => {
+      let equipment = this.state.bringingEquipment
       ? [firebase.auth().currentUser.uid]
       : [];
     firebase
@@ -158,17 +161,19 @@ class GameForm extends React.Component {
           //   time: moment().toDate(),
           //   expire: moment(this.props.time.time).add(1, 'h').toDate()
           // })
-        ]);
-
-        this.props.navToGame();
+        ]).then(() => {
+          this.props.setLoading(false, () => {
+            this.props.navToGame();
+          })
+        });
       });
+    })
   };
 
   render() {
     trace(this, "render component", "render");
     const colors = this.props.theme.colors;
     return (
-      <>
         <Block
           center
           middle
@@ -282,7 +287,6 @@ class GameForm extends React.Component {
             disabledStyles={{ opacity: 0.3, backgroundColor: colors.orange }}
           />
         </Block>
-      </>
     );
   }
 }

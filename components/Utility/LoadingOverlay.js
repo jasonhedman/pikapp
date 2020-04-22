@@ -11,9 +11,8 @@ class LoadingOverlay extends React.Component {
       <Block
         center
         middle
+        flex
         style={{
-          height,
-          width,
           position: "absolute",
           top: 0,
           bottom: 0,

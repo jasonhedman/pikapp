@@ -5,6 +5,7 @@ import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-view";
 import ignoreWarnings from "react-native-ignore-warnings";
+import { Notifications } from "expo";
 import {
   REACT_APP_FIREBASE_API_KEY,
   REACT_APP_FIREBASE_AUTH_DOMAIN,

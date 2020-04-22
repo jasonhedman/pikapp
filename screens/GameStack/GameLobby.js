@@ -56,7 +56,6 @@ class GameLobby extends React.Component {
       .collection("games")
       .doc(this.props.route.params.gameId)
       .onSnapshot((game) => {
-        if (game.data().gameState == "created") {
           this.setState({ game: game.data(), complete: true }, () => {
             this.props.navigation.setOptions({
               title: `${
@@ -81,9 +80,6 @@ class GameLobby extends React.Component {
               ),
             });
           });
-        } else {
-          this.props.navigation.navigate("GameLandingScreen");
-        }
       });
     this.unsubscribe = unsubscribe;
   }
@@ -106,8 +102,8 @@ class GameLobby extends React.Component {
     this.setState({ modalVisible });
   };
 
-  setCancelModalVisible = (cancelModalVisible) => {
-    this.setState({ cancelModalVisible });
+  setCancelModalVisible = (cancelModalVisible, func) => {
+    this.setState({ cancelModalVisible }, func);
   };
 
   setInviteModalVisible = (inviteModalVisible) => {
@@ -189,8 +185,9 @@ class GameLobby extends React.Component {
           gameState: "cancelled",
         }),
     ]).then(() => {
-      this.props.navigation.navigate("GameLandingScreen");
-      this.navToMap();
+      this.setCancelModalVisible(false, () => {
+        this.props.navigation.navigate("GameLandingScreen");
+      });
     });
   };
 
@@ -219,22 +216,18 @@ class GameLobby extends React.Component {
             dob: this.props._currentUserProfile.dob,
           }),
         }),
-    ])
-      .then(() => {
-        firebase
-          .firestore()
-          .collection("users")
-          .doc(firebase.auth().currentUser.uid)
-          .update({
-            calendar: firebase.firestore.FieldValue.arrayRemove(
-              this.props.route.params.gameId
-            ),
-          });
-      })
-      .then(() => {
-        this.props.navigation.navigate("GameLandingScreen");
-        this.navToMap();
-      });
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .update({
+          calendar: firebase.firestore.FieldValue.arrayRemove(
+            this.props.route.params.gameId
+          ),
+        }),
+    ]).then(() => {
+      this.props.navigation.navigate("GameLandingScreen");
+    });
   };
 
   toSocialScreen = () => {
@@ -469,7 +462,7 @@ class GameLobby extends React.Component {
                       </Button>
                       <Button
                         mode='contained'
-                        onPress={() => this.setInviteModalVisible(true)}
+                        onPress={() => this.props.navigation.navigate("InvitePlayers", {game:this.state.game})}
                         theme={{
                           colors: { primary: colors.white },
                           fonts: { medium: this.props.theme.fonts.regular },
@@ -512,12 +505,12 @@ class GameLobby extends React.Component {
                         }}
                         uppercase={false}
                       >
-                        Leave Game
+                        Leave
                       </Button>
                       <Button
                         mode='contained'
                         dark={true}
-                        onPress={() => this.setInviteModalVisible(true)}
+                        onPress={() => this.props.navigation.navigate("InvitePlayers", {game:this.state.game})}
                         theme={{
                           colors: { primary: colors.orange },
                           fonts: { medium: this.props.theme.fonts.regular },
