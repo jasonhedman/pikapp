@@ -17,25 +17,47 @@ class GroupInput extends React.Component {
     this.setState({ message });
   };
 
-    sendMessage = () => {
-        firebase.firestore().collection('groups').doc(this.props.doc).collection('messages').add({
-            type:'message',
-            content: this.state.message,
-            created: new Date(),
-            senderId: this.props.user.id,
-            sender: {
-                username: this.props.user.username,
-                proPicUrl: this.props.user.proPicUrl
-            }
-        })
-        this.setState({message:''})
-        Keyboard.dismiss()
-    }
+  sendMessage = () => {
+    firebase.firestore
+    firebase
+      .firestore()
+      .collection("groups")
+      .doc(this.props.group.id)
+      .update({
+        updated: new Date()
+      })
+    firebase
+      .firestore()
+      .collection("groups")
+      .doc(this.props.group.id)
+      .collection("messages")
+      .add({
+        type: "message",
+        content: this.state.message,
+        created: new Date(),
+        senderId: this.props.user.id,
+        sender: {
+          username: this.props.user.username,
+          proPicUrl: this.props.user.proPicUrl,
+        },
+      });
+    this.setState({ message: "" });
+    Keyboard.dismiss();
+  };
+
+  navToGameForm = () => {
+    this.props.navigate('GameForm', {group: {id: this.props.group.id, title: this.props.group.title}})
+  }
 
   render() {
     colors = this.props.theme.colors;
     return (
-      <Block row middle style={{ padding: 8 }}>
+      <Block row middle style={{}}>
+        <IconButton
+          onPress={this.navToGameForm}
+          color={colors.orange}
+          icon='plus'
+        />
         <TextInput
           value={this.state.message}
           theme={{
@@ -54,17 +76,14 @@ class GroupInput extends React.Component {
           multiline={true}
           onSubmitEditing={this.sendMessage}
           returnKeyType={"send"}
-          style={{ flex: 1, marginTop: 0 }}
+          style={{ flex: 1, marginTop: -8 }}
           dense={true}
         />
-        <Block>
-          <IconButton
-            onPress={this.sendMessage}
-            color={colors.orange}
-            icon="send"
-            style={{ marginTop: 8 }}
-          />
-        </Block>
+        <IconButton
+          onPress={this.sendMessage}
+          color={colors.orange}
+          icon='send'
+        />
       </Block>
     );
   }

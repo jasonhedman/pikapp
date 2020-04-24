@@ -49,7 +49,7 @@ class GamePreview extends React.Component {
               marginBottom: 16,
             }}
           >
-            <Block column middle>
+            <Block column middle style={{marginBottom:6}}>
               <Title style={{ color: "white" }}>{`${
                 this.state.game.intensity[0].toUpperCase() +
                 this.state.game.intensity.substring(1)
@@ -66,11 +66,20 @@ class GamePreview extends React.Component {
                 theme={{ fonts: { medium: this.props.theme.fonts.regular } }}
               >{`Time: ${this.state.game.startTime.timeString}`}</Text>
               <Text
-                style={{ color: colors.grey, marginBottom: 8 }}
+                style={{ color: colors.grey, marginBottom: 2 }}
                 theme={{ fonts: { medium: this.props.theme.fonts.regular } }}
               >{`Location: ${this.state.game.locationName}`}</Text>
+              {this.state.game.group.title != null ? (
+                <Text
+                  style={{
+                    color: colors.grey,
+                    textAlign: "center",
+                    marginBottom: 2,
+                  }}
+                >{`Group: ${this.state.game.group.title}`}</Text>
+              ) : null}
             </Block>
-            <Block row style={{ width: "100%", flexWrap: "wrap" }}>
+            <Block row middle style={{ width: "100%", flexWrap: "wrap" }}>
               {this.state.game.players.map((player, index) => {
                 return (
                   <Block style={{ flexBasis: "50%", padding: 2 }} key={index}>

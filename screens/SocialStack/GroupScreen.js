@@ -6,6 +6,7 @@ import firebase from "firebase";
 import GroupInput from "../../components/Groups/GroupInput";
 import UserMessage from "../../components/Groups/UserMessage";
 import AdminMessage from "../../components/Groups/AdminMessage";
+import GameMessage from "../../components/Groups/GameMessage";
 import PendingRequestsPreview from "../../components/Groups/PendingRequestsPreview";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
@@ -95,14 +96,17 @@ class GroupScreen extends React.Component {
                 );
               } else if (item.type == "admin") {
                 return <AdminMessage message={item} />;
+              } else if (item.type == "game") {
+                return <GameMessage message={item} navigate={this.props.navigation.navigate}  messageAbove={this.state.messages[index + 1]} messageBelow={this.state.messages[index - 1]} />;
               }
             }}
             inverted={true}
           />
           <GroupInput
             collection='groups'
-            doc={this.props.route.params.groupId}
+            group={this.state.group}
             user={this.props._currentUserProfile}
+            navigate={this.props.navigation.navigate}
           />
         </Block>
       );

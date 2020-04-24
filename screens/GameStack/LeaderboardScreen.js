@@ -63,17 +63,12 @@ class LeaderboardScreen extends React.Component {
     return (
       <Block
         column
-        center
         flex
         style={{
           backgroundColor: colors.dBlue,
-          width,
-          height,
-          padding: 16,
-          paddingTop: 32,
         }}
       >
-        <Block flex style={{ width: "100%" }}>
+        <Block flex style={{ width: "100%", paddingHorizontal: 16 }}>
           <ScrollView style={{ width: "100%" }}>
             {this.state.topTen.map((user, key) => {
               return (
@@ -129,8 +124,7 @@ class LeaderboardScreen extends React.Component {
           style={{
             borderTopWidth: 1,
             borderTopColor: colors.orange,
-            width,
-            paddingTop: 5,
+            padding: 4,
           }}
         >
           <Caption style={{ color: colors.grey, textAlign: "center" }}>
@@ -145,6 +139,7 @@ class LeaderboardScreen extends React.Component {
                 colors: { primary: colors.orange },
                 fonts: { medium: this.props.theme.fonts.regular },
               }}
+              uppercase={false}
             >
               Share
             </Button>

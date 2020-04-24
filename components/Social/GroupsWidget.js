@@ -44,7 +44,7 @@ class GroupsWidget extends React.Component {
       })
     ).then((groups) => {
       trace(this, "set groups state", "componentDidMount");
-      this.setState({ groups: groups });
+      this.setState({ groups, groupsComplete:true });
     });
   }
 

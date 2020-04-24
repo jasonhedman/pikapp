@@ -6,10 +6,12 @@ const fetch = require("node-fetch");
 const algolia = require("./algolia");
 
 exports.sendCollectionToAlgolia = algolia.sendCollectionToAlgolia;
-exports.sendCollectionToAlgolia = algolia.sendCollectionToAlgolia;
-exports.collectionOnCreate = algolia.collectionOnCreate;
-exports.collectionOnUpdate = algolia.collectionOnUpdate;
-exports.collectionOnDelete = algolia.collectionOnDelete;
+exports.userOnCreate = algolia.collectionOnCreate;
+exports.userOnUpdate = algolia.collectionOnUpdate;
+exports.userOnDelete = algolia.collectionOnDelete;
+exports.groupOnCreate = algolia.collectionOnCreate;
+exports.groupOnUpdate = algolia.collectionOnUpdate;
+exports.groupOnDelete = algolia.collectionOnDelete;
 
 exports.clearGamesSchedule = functions.pubsub
   .schedule("every 5 minutes")
@@ -70,12 +72,6 @@ exports.clearGamesSchedule = functions.pubsub
           console.error(err);
         }),
     ]);
-  });
-
-exports.socialNotifications = functions.firestore
-  .document("users/{userId}/social/{notificationId}")
-  .onCreate((doc) => {
-    console.log(doc.data());
   });
 
 exports.sendPushNotification = functions.firestore

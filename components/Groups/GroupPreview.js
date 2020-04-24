@@ -93,21 +93,23 @@ class GroupPreview extends React.Component {
           >
             <Block center middle row style={{ marginRight: 6 }}>
               {Object.keys(this.props.group.sports).map((sport, index) => {
-                return (
-                  <Block
-                    key={index}
-                    style={{
-                      borderWidth: 1,
-                      borderRadius: "50%",
-                      borderColor: colors.orange,
-                      padding: 6,
-                      backgroundColor: colors.dBlue,
-                      marginLeft: index == 0 ? 0 : -18,
-                    }}
-                  >
-                    <Avatar.Image size={24} source={sports[sport]} />
-                  </Block>
-                );
+                if (this.props.group.sports[sport] > 0) {
+                  return (
+                    <Block
+                      key={index}
+                      style={{
+                        borderWidth: 1,
+                        borderRadius: "50%",
+                        borderColor: colors.orange,
+                        padding: 6,
+                        backgroundColor: colors.dBlue,
+                        marginLeft: index == 0 ? 0 : -18,
+                      }}
+                    >
+                      <Avatar.Image size={24} source={sports[sport]} />
+                    </Block>
+                  );
+                }
               })}
             </Block>
             <Block flex>
