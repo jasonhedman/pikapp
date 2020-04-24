@@ -53,7 +53,7 @@ exports.sendCollectionToAlgolia = functions.https.onRequest(
   }
 );
 
-exports.collectionOnCreate = functions.firestore
+exports.userOnCreate = functions.firestore
   .document("users/{uid}")
   .onCreate(async (snapshot, context) => {
     const document = snapshot.data();
@@ -78,7 +78,23 @@ exports.collectionOnCreate = functions.firestore
     await saveDocumentInAlgolia(user);
   });
 
-exports.collectionOnUpdate = functions.firestore
+exports.groupOnCreate = functions.firestore
+  .document("groups/{uid}")
+  .onCreate(async (snapshot, context) => {
+    const document = snapshot.data();
+    const group = {
+      id: document.id,
+      objectID: document.id,
+      private: document.private,
+      sports: document.sports,
+      title: document.title,
+      type: "Group",
+      users: document.users.length,
+    };
+    await saveDocumentInAlgolia(group);
+  });
+
+exports.userOnUpdate = functions.firestore
   .document("users/{uid}")
   .onUpdate(async (change, context) => {
     const document = change.after.data();
@@ -103,7 +119,23 @@ exports.collectionOnUpdate = functions.firestore
     await saveDocumentInAlgolia(user);
   });
 
-exports.collectionOnDelete = functions.firestore
+exports.groupOnCreate = functions.firestore
+  .document("groups/{uid}")
+  .onUpdate(async (change, context) => {
+    const document = change.after.data();
+    const group = {
+      id: document.id,
+      objectID: document.id,
+      private: document.private,
+      sports: document.sports,
+      title: document.title,
+      type: "Group",
+      users: document.users.length,
+    };
+    await saveDocumentInAlgolia(group);
+  });
+
+exports.userOnDelete = functions.firestore
   .document("users/{uid}")
   .onDelete(async (snapshot, context) => {
     const document = snapshot.data();
@@ -126,6 +158,22 @@ exports.collectionOnDelete = functions.firestore
       username: document.username,
     };
     await deleteDocumentFromAlgolia(document);
+  });
+
+exports.groupOnDelete = functions.firestore
+  .document("groups/{uid}")
+  .onDelete(async (snapshot, context) => {
+    const document = snapshot.data();
+    const group = {
+      id: document.id,
+      objectID: document.id,
+      private: document.private,
+      sports: document.sports,
+      title: document.title,
+      type: "Group",
+      users: document.users.length,
+    };
+    await deleteDocumentFromAlgolia(group);
   });
 
 async function saveDocumentInAlgolia(doc) {

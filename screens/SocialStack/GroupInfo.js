@@ -119,6 +119,7 @@ class GroupInfo extends React.Component {
               invites: firebase.firestore.FieldValue.arrayRemove(
                 firebase.auth().currentUser.uid
               ),
+              updated: new Date()
             }),
           firebase
             .firestore()
@@ -173,6 +174,7 @@ class GroupInfo extends React.Component {
           admins: firebase.firestore.FieldValue.arrayRemove(
             firebase.auth().currentUser.uid
           ),
+          updated: new Date()
         }),
       firebase
         .firestore()

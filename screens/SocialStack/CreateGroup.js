@@ -58,18 +58,6 @@ class CreateGroup extends React.Component {
 
   onCreate = () => {
     let currentUser = firebase.auth().currentUser.uid;
-    let sportsObject = {
-      basketball: this.state.basketball,
-      soccer: this.state.soccer,
-      spikeball: this.state.spikeball,
-      volleyball: this.state.volleyball,
-      football: this.state.football,
-    };
-    let sportsList = Object.keys(sportsObject).filter((sport) => {
-      return sportsObject[sport];
-    });
-    let sports = {};
-    sportsList.forEach((sport) => (sports[sport] = 0));
     let groupData = {
       users: [currentUser],
       private: this.state.private,
@@ -81,7 +69,15 @@ class CreateGroup extends React.Component {
       requests: [],
       title: this.state.title,
       description: this.state.description,
-      sports: sports,
+      sports: {
+        basketball: 0,
+        football: 0,
+        soccer: 0,
+        frisbee: 0,
+        volleyball: 0,
+        spikeball:0
+      },
+      updated: new Date()
     };
     firebase
       .firestore()
@@ -167,30 +163,6 @@ class CreateGroup extends React.Component {
               multiline={true}
               dense={true}
             />
-            <Text style={{ color: colors.white, marginBottom: 10 }}>
-              Sports
-            </Text>
-            <Block middle row style={{ flexWrap: "wrap", marginBottom: 10 }}>
-              {Object.keys(sports).map((sport, index) => {
-                return (
-                  <Chip
-                    onPress={() => {
-                      this.setState({
-                        [sport.toLowerCase()]: !this.state[sport.toLowerCase()],
-                      });
-                      Keyboard.dismiss();
-                    }}
-                    selected={this.state[sport.toLowerCase()]}
-                    mode={"outlined"}
-                    style={{ backgroundColor: colors.orange, margin: 2 }}
-                    textStyle={{ color: colors.white }}
-                    key={index}
-                  >
-                    {sport}
-                  </Chip>
-                );
-              })}
-            </Block>
             <Block center middle>
               <Text style={{ color: "#fff", marginBottom: 12 }}>
                 {this.state.private ? "Private Group" : "Open Group"}

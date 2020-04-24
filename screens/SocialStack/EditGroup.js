@@ -34,15 +34,7 @@ class EditGroup extends React.Component {
       title: this.props.route.params.group.title,
       description: this.props.route.params.group.description,
       private: this.props.route.params.group.private,
-      basketball: false,
-      soccer: false,
-      spikeball: false,
-      volleyball: false,
-      football: false,
     };
-    Object.keys(this.props.route.params.group.sports).forEach((sport) => {
-      this.state[sport] = true;
-    });
   }
 
   onTitleChange = (title) => {
@@ -54,24 +46,6 @@ class EditGroup extends React.Component {
   };
 
   update = () => {
-    let sportsObject = {
-      basketball: this.state.basketball,
-      soccer: this.state.soccer,
-      spikeball: this.state.spikeball,
-      volleyball: this.state.volleyball,
-      football: this.state.football,
-    };
-    let sportsList = Object.keys(sportsObject).filter((sport) => {
-      return sportsObject[sport];
-    });
-    let sports = {};
-    sportsList.forEach(
-      (sport) =>
-        (sports[sport] =
-          this.props.route.params.group.sports[sport] == undefined
-            ? 0
-            : this.props.route.params.group.sports[sport])
-    );
     if (this.state.private == false) {
       Promise.all(
         this.props.route.params.group.requests.map((request, index) => {
@@ -104,7 +78,7 @@ class EditGroup extends React.Component {
             private: this.state.private,
             title: this.state.title,
             description: this.state.description,
-            sports: sports,
+            updated: new Date()
           })
           .then(() => {
             firebase
@@ -134,7 +108,6 @@ class EditGroup extends React.Component {
           private: this.state.private,
           title: this.state.title,
           description: this.state.description,
-          sports: sports,
         })
         .then(() => {
           firebase

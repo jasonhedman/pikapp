@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: "white",
     textAlign: "center",
-    fontFamily: "ralewaySemiBold",
+    fontFamily: "ralewayBold",
   },
   header: {
     padding: 16,

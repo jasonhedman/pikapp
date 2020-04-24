@@ -13,10 +13,6 @@ class ProfilePic extends React.Component {
     };
   }
 
-  componentDidMount() {
-    
-  }
-
   render() {
     colors = this.props.theme.colors;
     let chance = new Chance();
@@ -26,7 +22,7 @@ class ProfilePic extends React.Component {
         middle
         style={{
           borderRadius: "50%",
-          borderWidth: 2,
+          borderWidth: 1,
           borderColor: this.props.theme.colors.orange,
           padding: 0,
           backgroundColor: colors.orange,
@@ -61,13 +57,6 @@ class ProfilePic extends React.Component {
               ) : null}
             </>
           )
-          //    this.state.pic == null
-          //     ?null
-          //    :<Avatar.Image
-          //         theme={{colors:{primary:colors.dBlue}}}
-          //         source={{uri:this.state.pic}}
-          //         size={this.props.size}
-          //     />
         }
       </Block>
     );

@@ -61,6 +61,7 @@ class GroupInviteNotification extends React.Component {
               invites: firebase.firestore.FieldValue.arrayRemove(
                 firebase.auth().currentUser.uid
               ),
+              updated: new Date()
             }),
           firebase
             .firestore()

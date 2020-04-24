@@ -14,8 +14,7 @@ class PendingRequestsPreview extends React.Component {
       <TouchableOpacity
         onPress={() => {
           this.props.navigate("PendingRequests", {
-            requests: this.props.requests,
-            groupId: this.props.groupId,
+            group: this.props.group,
           });
         }}
       >
