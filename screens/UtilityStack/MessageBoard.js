@@ -45,9 +45,6 @@ class MessageBoard extends React.Component {
     }
   }
 
-  onSend = (prop) => {
-    console.log(prop);
-  };
 
   render() {
     const colors = this.props.theme.colors;

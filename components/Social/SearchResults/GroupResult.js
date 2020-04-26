@@ -55,7 +55,6 @@ class GroupResult extends React.Component {
         >
           <Block center middle row style={{ marginRight: 6 }}>
               {this.state.sports.map((sport, index) => {
-                console.log(this.props.group.sports[sport]);
                 if (this.props.group.sports[sport] > 0) {
                   return (
                     <Block
