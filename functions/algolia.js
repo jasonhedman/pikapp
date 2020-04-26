@@ -144,6 +144,22 @@ exports.groupOnDelete = functions.firestore
     await deleteDocumentFromAlgolia(group);
   });
 
+exports.groupOnDelete = functions.firestore
+  .document("groups/{uid}")
+  .onDelete(async (snapshot, context) => {
+    const document = snapshot.data();
+    const group = {
+      id: document.id,
+      objectID: document.id,
+      private: document.private,
+      sports: document.sports,
+      title: document.title,
+      type: "Group",
+      users: document.users.length,
+    };
+    await deleteDocumentFromAlgolia(group);
+  });
+
 async function saveDocumentInAlgolia(doc) {
   await collectionIndex.saveObject(doc);
 }
