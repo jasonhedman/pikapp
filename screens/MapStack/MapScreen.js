@@ -33,7 +33,6 @@ const geo = geofirex.init(firebase);
 //     "pk.eyJ1IjoicGlrYXBwLW1vYmlsZSIsImEiOiJjazlmemVzdXUwaWdqM21vYnI3d29mZXBjIn0.W6mkhh3uLBjbhYMBEgRdyQ",
 // });
 
-
 import basketballMarker from "../../assets/images/bball_map.png";
 import spikeballMarker from "../../assets/images/sball_map.png";
 import footballMarker from "../../assets/images/fball_map.png";
@@ -41,7 +40,7 @@ import soccerMarker from "../../assets/images/soccer_map.png";
 import volleyballMarker from "../../assets/images/vball_map.png";
 import frisbeeMarker from "../../assets/images/frisbee_map.png";
 
-// import basketballLocation from "../../assets/images/basketball-15.svg";
+import basketballLocation from "../../assets/images/basketball-15.png";
 
 import HeaderBlock from "../../components/Utility/HeaderBlock";
 import LobbyModal from "../../components/Map/LobbyModal";
@@ -188,8 +187,8 @@ class MapScreen extends React.Component {
     });
   }
 
-  componentWillUnmount(){
-    if(this.subscription){
+  componentWillUnmount() {
+    if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
@@ -379,7 +378,12 @@ class MapScreen extends React.Component {
             >
               {Object.keys(this.state.markers).map((markerId, index) => {
                 let marker = this.state.markers[markerId];
-                if(marker.group.id == null || this.props._currentUserProfile.groups.includes(marker.group.id)){
+                if (
+                  marker.group.id == null ||
+                  this.props._currentUserProfile.groups.includes(
+                    marker.group.id
+                  )
+                ) {
                   return (
                     <Marker
                       key={index}
@@ -406,9 +410,8 @@ class MapScreen extends React.Component {
                       />
                     </Marker>
                   );
-  
                 } else {
-                  return null
+                  return null;
                 }
               })}
             </MapView>
