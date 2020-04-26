@@ -18,7 +18,6 @@ class GroupInput extends React.Component {
   };
 
   sendMessage = () => {
-    firebase.firestore
     firebase
       .firestore()
       .collection("groups")

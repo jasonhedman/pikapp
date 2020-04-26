@@ -21,12 +21,27 @@ import * as Location from "expo-location";
 import * as geofirex from "geofirex";
 const geo = geofirex.init(firebase);
 
+// const mbxTilequery = require("@mapbox/mapbox-sdk/services/tilequery");
+// const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+
+// const tilequeryService = mbxTilequery({
+//   accessToken:
+//     "pk.eyJ1IjoicGlrYXBwLW1vYmlsZSIsImEiOiJjazlmemVzdXUwaWdqM21vYnI3d29mZXBjIn0.W6mkhh3uLBjbhYMBEgRdyQ",
+// });
+// const geocodingService = mbxGeocoding({
+//   accessToken:
+//     "pk.eyJ1IjoicGlrYXBwLW1vYmlsZSIsImEiOiJjazlmemVzdXUwaWdqM21vYnI3d29mZXBjIn0.W6mkhh3uLBjbhYMBEgRdyQ",
+// });
+
+
 import basketballMarker from "../../assets/images/bball_map.png";
 import spikeballMarker from "../../assets/images/sball_map.png";
 import footballMarker from "../../assets/images/fball_map.png";
 import soccerMarker from "../../assets/images/soccer_map.png";
 import volleyballMarker from "../../assets/images/vball_map.png";
 import frisbeeMarker from "../../assets/images/frisbee_map.png";
+
+// import basketballLocation from "../../assets/images/basketball-15.svg";
 
 import HeaderBlock from "../../components/Utility/HeaderBlock";
 import ChooseLocation from "../../components/Map/ChooseLocation";
@@ -76,14 +91,21 @@ class MapScreen extends React.Component {
   };
 
   componentDidUpdate() {
-    if (this.props.route.params && this.props.route.params.markerId != this.state.focusMarker) {
-      this.mapView && this.mapView.animateToRegion({
-        longitude: this.props.route.params.longitude,
-        latitude: this.props.route.params.latitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
+    if (
+      this.props.route.params &&
+      this.props.route.params.markerId != this.state.focusMarker
+    ) {
+      this.mapView &&
+        this.mapView.animateToRegion({
+          longitude: this.props.route.params.longitude,
+          latitude: this.props.route.params.latitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        });
+      this.setState({
+        focusMarker: this.props.route.params.markerId,
+        lobbyModalVisible: true,
       });
-      this.setState({focusMarker: this.props.route.params.markerId, lobbyModalVisible: true})
     }
     return null;
   }
@@ -120,6 +142,24 @@ class MapScreen extends React.Component {
             .update({
               location: geo.point(pos.coords.latitude, pos.coords.longitude),
             });
+          // tilequeryService
+          //   .listFeatures({
+          //     mapIds: ["mapbox.mapbox-streets-v8"],
+          //     coordinates: [pos.coords.longitude, pos.coords.latitude],
+          //     radius: 100000,
+          //     layers: ['landuse', 'poi_label'],
+          //     limit: 50,
+          //     dedupe: false,
+          //   })
+          //   .send()
+          //   .then((response) => {
+          //     return response.body;
+          //   })
+          //   .then((features) => {
+          //     features.features.forEach((feature, index) => {
+          //       console.log(feature.properties.type, feature.properties.maki, feature.properties.name)
+          //     })
+          //   });
         }).catch((error) => {
           trace(
             this,

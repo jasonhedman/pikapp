@@ -13,17 +13,9 @@ exports.sendCollectionToAlgolia = functions.https.onRequest(
     const usersSnapshot = await admin.firestore().collection("users").get();
     usersSnapshot.docs.forEach((doc) => {
       const document = doc.data();
-      const location =
-        document.location !== undefined
-          ? {
-              lat: document.location.geopoint._latitude,
-              lng: document.location.geopoint._longitude,
-            }
-          : null;
       const user = {
         email: document.email,
         gamesPlayed: document.gamesPlayed,
-        _geoLoc: location,
         id: document.id,
         objectID: document.id,
         proPicUrl: document.proPicUrl,
@@ -57,17 +49,9 @@ exports.userOnCreate = functions.firestore
   .document("users/{uid}")
   .onCreate(async (snapshot, context) => {
     const document = snapshot.data();
-    const location =
-      document.location !== undefined
-        ? {
-            lat: document.location.geopoint._latitude,
-            lng: document.location.geopoint._longitude,
-          }
-        : null;
     const user = {
       email: document.email,
       gamesPlayed: document.gamesPlayed,
-      _geoLoc: location,
       id: document.id,
       objectID: document.id,
       proPicUrl: document.proPicUrl,
@@ -98,17 +82,9 @@ exports.userOnUpdate = functions.firestore
   .document("users/{uid}")
   .onUpdate(async (change, context) => {
     const document = change.after.data();
-    const location =
-      document.location !== undefined
-        ? {
-            lat: document.location.geopoint._latitude,
-            lng: document.location.geopoint._longitude,
-          }
-        : null;
     const user = {
       email: document.email,
       gamesPlayed: document.gamesPlayed,
-      _geoLoc: location,
       id: document.id,
       objectID: document.id,
       proPicUrl: document.proPicUrl,
@@ -139,17 +115,9 @@ exports.userOnDelete = functions.firestore
   .document("users/{uid}")
   .onDelete(async (snapshot, context) => {
     const document = snapshot.data();
-    const location =
-      document.location !== undefined
-        ? {
-            lat: document.location.geopoint._latitude,
-            lng: document.location.geopoint._longitude,
-          }
-        : null;
     const user = {
       email: document.email,
       gamesPlayed: document.gamesPlayed,
-      _geoLoc: location,
       id: document.id,
       objectID: document.id,
       proPicUrl: document.proPicUrl,
@@ -157,7 +125,7 @@ exports.userOnDelete = functions.firestore
       type: "User",
       username: document.username,
     };
-    await deleteDocumentFromAlgolia(document);
+    await deleteDocumentFromAlgolia(user);
   });
 
 exports.groupOnDelete = functions.firestore
@@ -177,7 +145,7 @@ exports.groupOnDelete = functions.firestore
   });
 
 async function saveDocumentInAlgolia(doc) {
-  await collectionIndex.saveObject(doc); // Adds or replaces a specific object.
+  await collectionIndex.saveObject(doc);
 }
 
 async function deleteDocumentFromAlgolia(doc) {

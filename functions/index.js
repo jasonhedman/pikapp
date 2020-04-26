@@ -6,12 +6,12 @@ const fetch = require("node-fetch");
 const algolia = require("./algolia");
 
 exports.sendCollectionToAlgolia = algolia.sendCollectionToAlgolia;
-exports.userOnCreate = algolia.collectionOnCreate;
-exports.userOnUpdate = algolia.collectionOnUpdate;
-exports.userOnDelete = algolia.collectionOnDelete;
-exports.groupOnCreate = algolia.collectionOnCreate;
-exports.groupOnUpdate = algolia.collectionOnUpdate;
-exports.groupOnDelete = algolia.collectionOnDelete;
+exports.userOnCreate = algolia.userOnCreate;
+exports.userOnUpdate = algolia.userOnUpdate;
+exports.userOnDelete = algolia.userOnDelete;
+exports.groupOnCreate = algolia.groupOnCreate;
+exports.groupOnUpdate = algolia.groupOnUpdate;
+exports.groupOnDelete = algolia.groupOnDelete;
 
 exports.clearGamesSchedule = functions.pubsub
   .schedule("every 5 minutes")

@@ -11,6 +11,8 @@ import soccer from "../../assets/images/Soccer.png";
 import spikeball from "../../assets/images/Spikeball.png";
 import volleyball from "../../assets/images/Volleyball.png";
 import football from "../../assets/images/Football.png";
+import frisbee from "../../assets/images/Frisbee.png";
+
 
 const sports = {
   basketball: basketball,
@@ -18,6 +20,7 @@ const sports = {
   spikeball: spikeball,
   volleyball: volleyball,
   football: football,
+  frisbee: frisbee,
 };
 
 class GroupPreview extends React.Component {

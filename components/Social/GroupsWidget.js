@@ -23,29 +23,26 @@ class GroupsWidget extends React.Component {
 
   componentDidMount() {
     trace(this, "get group from user profile", "componentDidMount");
-    const groupIds = [];
-    for (
-      let i = this.props._currentUserProfile.groups.length - 1;
-      i >= Math.max(this.props._currentUserProfile.groups.length - 3, 0);
-      i--
-    ) {
-      groupIds.push(this.props._currentUserProfile.groups[i]);
+    const unsubscribe = firebase
+      .firestore()
+      .collection("groups")
+      .where("users", "array-contains", firebase.auth().currentUser.uid)
+      .orderBy("updated", "desc")
+      .limit(3)
+      .onSnapshot((groupsRaw) => {
+        let groups = [];
+        groupsRaw.forEach((group) => {
+          groups.push(group.data());
+        });
+        this.setState({ groups, groupsComplete: true });
+      });
+    this.unsubscribe = unsubscribe;
+  }
+
+  componentWillUnmount(){
+    if(this.unsubscribe){
+      this.unsubscribe();
     }
-    Promise.all(
-      groupIds.map((groupId) => {
-        return firebase
-          .firestore()
-          .collection("groups")
-          .doc(groupId)
-          .get()
-          .then((group) => {
-            return group.data();
-          });
-      })
-    ).then((groups) => {
-      trace(this, "set groups state", "componentDidMount");
-      this.setState({ groups, groupsComplete:true });
-    });
   }
 
   render() {
