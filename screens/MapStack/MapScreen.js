@@ -424,7 +424,7 @@ class MapScreen extends React.Component {
                       onPress={this.switchDirectionsVisible}
                     />
                   </Block> */}
-                <Block style={{ marginLeft: "auto" }}>
+                {/* <Block style={{ marginLeft: "auto" }}>
                   <Menu
                     visible={this.state.menuVisible}
                     anchor={
@@ -557,7 +557,7 @@ class MapScreen extends React.Component {
                       )}
                     </ScrollView>
                   </Menu>
-                </Block>
+                </Block> */}
                 <FAB
                   icon='plus'
                   label='Create Game'
