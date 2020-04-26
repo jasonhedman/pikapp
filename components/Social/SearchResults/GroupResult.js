@@ -21,11 +21,12 @@ const sports = {
 };
 
 class GroupResult extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       mostRecent: {},
       complete: false,
+      sports: Object.keys(this.props.group.sports).filter(sport => this.props.group.sports[sport] > 0)
     };
   }
 
@@ -53,7 +54,7 @@ class GroupResult extends React.Component {
           }}
         >
           <Block center middle row style={{ marginRight: 6 }}>
-              {Object.keys(this.props.group.sports).map((sport, index) => {
+              {this.state.sports.map((sport, index) => {
                 console.log(this.props.group.sports[sport]);
                 if (this.props.group.sports[sport] > 0) {
                   return (

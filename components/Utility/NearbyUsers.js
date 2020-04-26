@@ -29,7 +29,13 @@ class GroupInvite extends React.Component {
     const query = geo
       .query(firebase.firestore().collection("users"))
       .within(this.props._currentUserProfile.location, 10, "location");
-    query.subscribe((users) => this.setState({ users, complete: true }));
+    this.subscription = query.subscribe((users) => this.setState({ users, complete: true }));
+  }
+
+  componentWillUnmount(){
+    if(this.subscription){
+      this.subscription.unsubscribe();
+    }
   }
 
   render() {

@@ -44,10 +44,6 @@ import frisbeeMarker from "../../assets/images/frisbee_map.png";
 // import basketballLocation from "../../assets/images/basketball-15.svg";
 
 import HeaderBlock from "../../components/Utility/HeaderBlock";
-import ChooseLocation from "../../components/Map/ChooseLocation";
-import ChooseTime from "../../components/Map/ChooseTime";
-import LoadingOverlay from "../../components/Utility/LoadingOverlay";
-import GameForm from "../../components/Map/GameForm";
 import LobbyModal from "../../components/Map/LobbyModal";
 
 import NewGameNearby from "../../components/Notifications/NewGameNearby";
@@ -183,18 +179,19 @@ class MapScreen extends React.Component {
           .where("gameState", "==", "created")
       )
       .within(this.props._currentUserProfile.location, 10, "location");
-    query.subscribe((markersArray) => {
-      markersArray = markersArray.filter(
-        (marker) =>
-          marker.group.id == null ||
-          this.props._currentUserProfile.groups.includes(marker.group.id)
-      );
+    this.subscription = query.subscribe((markersArray) => {
       let markers = {};
       markersArray.forEach((marker) => {
         markers[marker.id] = marker;
       });
       this.setState({ markers });
     });
+  }
+
+  componentWillUnmount(){
+    if(this.subscription){
+      this.subscription.unsubscribe();
+    }
   }
 
   addToTeam = (gameId) => {
@@ -382,32 +379,37 @@ class MapScreen extends React.Component {
             >
               {Object.keys(this.state.markers).map((markerId, index) => {
                 let marker = this.state.markers[markerId];
-                return (
-                  <Marker
-                    key={index}
-                    coordinate={{
-                      longitude: marker.location.geopoint._long,
-                      latitude: marker.location.geopoint._lat,
-                    }}
-                    onPress={() => {
-                      this.mapView.animateToRegion(
-                        {
-                          longitude: marker.location.geopoint._long,
-                          latitude: marker.location.geopoint._lat,
-                          latitudeDelta: 0.0622,
-                          longitudeDelta: 0.0221,
-                        },
-                        500
-                      );
-                      this.setLobbyModalVisible(true, markerId);
-                    }}
-                  >
-                    <Image
-                      source={sportMarkers[marker.sport]}
-                      style={{ height: 50, width: 50 }}
-                    />
-                  </Marker>
-                );
+                if(marker.group.id == null || this.props._currentUserProfile.groups.includes(marker.group.id)){
+                  return (
+                    <Marker
+                      key={index}
+                      coordinate={{
+                        longitude: marker.location.geopoint._long,
+                        latitude: marker.location.geopoint._lat,
+                      }}
+                      onPress={() => {
+                        this.mapView.animateToRegion(
+                          {
+                            longitude: marker.location.geopoint._long,
+                            latitude: marker.location.geopoint._lat,
+                            latitudeDelta: 0.0622,
+                            longitudeDelta: 0.0221,
+                          },
+                          500
+                        );
+                        this.setLobbyModalVisible(true, markerId);
+                      }}
+                    >
+                      <Image
+                        source={sportMarkers[marker.sport]}
+                        style={{ height: 50, width: 50 }}
+                      />
+                    </Marker>
+                  );
+  
+                } else {
+                  return null
+                }
               })}
             </MapView>
 

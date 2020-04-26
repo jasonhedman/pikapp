@@ -40,7 +40,7 @@ class GameForm extends React.Component {
     const query = geo
       .query(firebase.firestore().collection("users"))
       .within(this.props._currentUserProfile.location, 10, "location");
-    query.subscribe((nearby) =>
+    this.subscription = query.subscribe((nearby) =>
       this.setState({
         nearby: nearby.filter(
           (user) => user.id != firebase.auth().currentUser.uid
@@ -52,6 +52,12 @@ class GameForm extends React.Component {
       this.setState({
         location: this.props.route.params.location,
       });
+    }
+  }
+
+  componentWillUnmount(){
+    if(this.subscription){
+      this.subscription.unsubscribe();
     }
   }
 

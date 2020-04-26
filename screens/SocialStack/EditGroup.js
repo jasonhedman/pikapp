@@ -10,22 +10,7 @@ import { withTheme, Switch, Text, Chip } from "react-native-paper";
 import ButtonBlock from "../../components/Utility/ButtonBlock";
 import "firebase/firestore";
 import InputBlock from "../../components/Utility/InputBlock";
-
-import basketball from "../../assets/images/Basketball.png";
-import soccer from "../../assets/images/Soccer.png";
-import spikeball from "../../assets/images/Spikeball.png";
-import volleyball from "../../assets/images/Volleyball.png";
-import football from "../../assets/images/Football.png";
-
 import firebase from "firebase";
-
-const sports = {
-  Basketball: basketball,
-  Soccer: soccer,
-  Spikeball: spikeball,
-  Volleyball: volleyball,
-  Football: football,
-};
 
 class EditGroup extends React.Component {
   constructor(props) {
@@ -162,30 +147,6 @@ class EditGroup extends React.Component {
               multiline={true}
               dense={true}
             />
-            <Text style={{ color: colors.white, marginBottom: 10 }}>
-              Sports
-            </Text>
-            <Block middle row style={{ flexWrap: "wrap", marginBottom: 10 }}>
-              {Object.keys(sports).map((sport, index) => {
-                return (
-                  <Chip
-                    onPress={() => {
-                      this.setState({
-                        [sport.toLowerCase()]: !this.state[sport.toLowerCase()],
-                      });
-                      Keyboard.dismiss();
-                    }}
-                    selected={this.state[sport.toLowerCase()]}
-                    mode={"outlined"}
-                    style={{ backgroundColor: colors.orange, margin: 2 }}
-                    textStyle={{ color: colors.white }}
-                    key={index}
-                  >
-                    {sport}
-                  </Chip>
-                );
-              })}
-            </Block>
             <Block center middle>
               <Text style={{ color: "#fff", marginBottom: 12 }}>
                 {this.state.private ? "Private Group" : "Open Group"}

@@ -39,8 +39,8 @@ class GroupsWidget extends React.Component {
     this.unsubscribe = unsubscribe;
   }
 
-  componentWillUnmount(){
-    if(this.unsubscribe){
+  componentWillUnmount() {
+    if (this.unsubscribe) {
       this.unsubscribe();
     }
   }
@@ -50,19 +50,19 @@ class GroupsWidget extends React.Component {
     const colors = this.props.theme.colors;
     return (
       <Block style={{ marginTop: 16 }}>
+        <TouchableOpacity onPress={() => this.props.navigate("GroupList")}>
+          <Text
+            style={{
+              color: "white",
+              fontFamily: "ralewayBold",
+              marginBottom: 4,
+            }}
+          >
+            Your Groups ►
+          </Text>
+        </TouchableOpacity>
         {this.state.groupsComplete ? (
-          <>
-            <TouchableOpacity onPress={() => this.props.navigate("GroupList")}>
-              <Text
-                style={{
-                  color: "white",
-                  fontFamily: "ralewayBold",
-                  marginBottom: 4,
-                }}
-              >
-                Your Groups ►
-              </Text>
-            </TouchableOpacity>
+          <Block>
             {this.state.groups.map((group, index) => {
               return (
                 <GroupPreview
@@ -92,7 +92,7 @@ class GroupsWidget extends React.Component {
             ) : (
               <NoResults border={true} />
             )}
-          </>
+          </Block>
         ) : (
           <ActivityIndicator
             animating={true}

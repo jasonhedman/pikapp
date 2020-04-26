@@ -53,9 +53,15 @@ class InvitePlayers extends React.Component {
     const query = geo
       .query(firebase.firestore().collection("users"))
       .within(this.props._currentUserProfile.location, 10, "location");
-    query.subscribe((nearby) =>
+    this.subscription = query.subscribe((nearby) =>
       this.setState({ nearby, nearbyComplete: true })
     );
+  }
+
+  componentWillUnmount(){
+    if(this.subscription){
+      this.subscription.unsubscribe();
+    }
   }
 
   onPress = (user) => {
