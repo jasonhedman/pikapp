@@ -21,6 +21,19 @@ import * as Location from "expo-location";
 import * as geofirex from "geofirex";
 const geo = geofirex.init(firebase);
 
+// const mbxTilequery = require("@mapbox/mapbox-sdk/services/tilequery");
+// const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+
+// const tilequeryService = mbxTilequery({
+//   accessToken:
+//     "pk.eyJ1IjoicGlrYXBwLW1vYmlsZSIsImEiOiJjazlmemVzdXUwaWdqM21vYnI3d29mZXBjIn0.W6mkhh3uLBjbhYMBEgRdyQ",
+// });
+// const geocodingService = mbxGeocoding({
+//   accessToken:
+//     "pk.eyJ1IjoicGlrYXBwLW1vYmlsZSIsImEiOiJjazlmemVzdXUwaWdqM21vYnI3d29mZXBjIn0.W6mkhh3uLBjbhYMBEgRdyQ",
+// });
+
+
 import basketballMarker from "../../assets/images/bball_map.png";
 import spikeballMarker from "../../assets/images/sball_map.png";
 import footballMarker from "../../assets/images/fball_map.png";
@@ -28,11 +41,9 @@ import soccerMarker from "../../assets/images/soccer_map.png";
 import volleyballMarker from "../../assets/images/vball_map.png";
 import frisbeeMarker from "../../assets/images/frisbee_map.png";
 
+// import basketballLocation from "../../assets/images/basketball-15.svg";
+
 import HeaderBlock from "../../components/Utility/HeaderBlock";
-import ChooseLocation from "../../components/Map/ChooseLocation";
-import ChooseTime from "../../components/Map/ChooseTime";
-import LoadingOverlay from "../../components/Utility/LoadingOverlay";
-import GameForm from "../../components/Map/GameForm";
 import LobbyModal from "../../components/Map/LobbyModal";
 
 import NewGameNearby from "../../components/Notifications/NewGameNearby";
@@ -60,42 +71,40 @@ class MapScreen extends React.Component {
     trace(this, "constructed component", "constructor");
     this.state = {
       markers: new Array(),
-      gameModalVisible: false,
       lobbyModalVisible: false,
-      timeModalVisible: false,
       complete: false,
-      user: {},
       userLoc: {},
-      modalGameId: "",
+      focusMarker: null,
       locationEnabled: false,
       menuVisible: false,
       userNotifications: new Array(),
-      sport: null,
-      intensity: null,
-      bringingEquipment: true,
-      location: null,
-      time: null,
       loading: false,
-      locationComplete: false,
-      gameFormLoading: false,
     };
   }
 
-  setGameModalVisible = (visible) => {
-    this.setState({ gameModalVisible: visible });
+  setLobbyModalVisible = (visible, focusMarker) => {
+    this.setState({ lobbyModalVisible: visible, focusMarker });
   };
 
-  setCreateGameState = (sport, intensity, bringingEquipment) => {
-    this.setState({ sport, intensity, bringingEquipment });
-  };
-
-  setLobbyModalVisible = (visible, gameId) => {
-    if (gameId != undefined) {
-      this.setState({ lobbyModalVisible: visible, modalGameId: gameId });
-    } else {
-      this.setState({ lobbyModalVisible: visible });
+  componentDidUpdate() {
+    if (
+      this.props.route.params &&
+      this.props.route.params.markerId != this.state.focusMarker
+    ) {
+      this.mapView &&
+        this.mapView.animateToRegion({
+          longitude: this.props.route.params.longitude,
+          latitude: this.props.route.params.latitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        });
+      this.setState({
+        focusMarker: this.props.route.params.markerId,
+        lobbyModalVisible: true,
+      });
     }
-  };
+    return null;
+  }
 
   componentDidMount() {
     trace(this, "mounted component", "componentDidMount");
@@ -105,53 +114,55 @@ class MapScreen extends React.Component {
     //   .get()
     //   .then((users) => {
     //     users.forEach((user) => {
-    //       if(user.data().location != undefined && user.data().location.geopoint == undefined){
-    //         firebase.firestore().collection('users').doc(user.id).update({
-    //           location: geo.point(
-    //             user.data().location.latitude,
-    //             user.data().location.longitude,
-    //           )
-    //         })
-    //       }
     //     });
     //   });
     Location.hasServicesEnabledAsync().then((locationEnabled) => {
-      this.setState({ locationEnabled, complete: true });
       if (locationEnabled == true) {
-        Location.getCurrentPositionAsync()
-          .then((pos) => {
-            let region = {
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            };
-            this.setState(
-              { region, userLoc: pos.coords, locationComplete: true },
-              () => {
-                Location.watchPositionAsync({}, (pos) => {
-                  this.setState({ userLoc: pos.coords });
-                });
-                firebase
-                  .firestore()
-                  .collection("users")
-                  .doc(firebase.auth().currentUser.uid)
-                  .update({
-                    location: geo.point(
-                      pos.coords.latitude,
-                      pos.coords.longitude
-                    ),
-                  });
-              }
-            );
-          })
-          .catch((error) => {
-            trace(
-              this,
-              `ERRROR: getting location: ${error}`,
-              "componentDidMount"
-            );
+        Location.watchPositionAsync({}, (pos) => {
+          let region = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          };
+          this.setState({
+            region,
+            userLoc: pos.coords,
+            locationEnabled,
+            complete: true,
           });
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(firebase.auth().currentUser.uid)
+            .update({
+              location: geo.point(pos.coords.latitude, pos.coords.longitude),
+            });
+          // tilequeryService
+          //   .listFeatures({
+          //     mapIds: ["mapbox.mapbox-streets-v8"],
+          //     coordinates: [pos.coords.longitude, pos.coords.latitude],
+          //     radius: 100000,
+          //     layers: ['landuse', 'poi_label'],
+          //     limit: 50,
+          //     dedupe: false,
+          //   })
+          //   .send()
+          //   .then((response) => {
+          //     return response.body;
+          //   })
+          //   .then((features) => {
+          //     features.features.forEach((feature, index) => {
+          //       console.log(feature.properties.type, feature.properties.maki, feature.properties.name)
+          //     })
+          //   });
+        }).catch((error) => {
+          trace(
+            this,
+            `ERRROR: getting location: ${error}`,
+            "componentDidMount"
+          );
+        });
       } else {
         Location.requestPermissionsAsync().then((permission) => {
           if (permission.status == "granted") {
@@ -168,7 +179,7 @@ class MapScreen extends React.Component {
           .where("gameState", "==", "created")
       )
       .within(this.props._currentUserProfile.location, 10, "location");
-    query.subscribe((markersArray) => {
+    this.subscription = query.subscribe((markersArray) => {
       let markers = {};
       markersArray.forEach((marker) => {
         markers[marker.id] = marker;
@@ -177,10 +188,11 @@ class MapScreen extends React.Component {
     });
   }
 
-  navToGame = () => {
-    this.setGameModalVisible(false);
-    this.props.navigation.navigate("GameStack");
-  };
+  componentWillUnmount(){
+    if(this.subscription){
+      this.subscription.unsubscribe();
+    }
+  }
 
   addToTeam = (gameId) => {
     this.setState({ loading: true, lobbyModalVisible: false });
@@ -269,10 +281,6 @@ class MapScreen extends React.Component {
     this.setState({ menuVisible: false });
   };
 
-  onFilterDismiss = () => {
-    this.setState({ filterVisible: false });
-  };
-
   setMenuVisible = () => {
     this.setState({ menuVisible: true });
   };
@@ -329,51 +337,6 @@ class MapScreen extends React.Component {
       });
   };
 
-  switchDirectionsVisible = () => {
-    this.setState({ directionsVisible: !this.state.directionsVisible });
-  };
-
-  showLocationModal = () => {
-    this.setState({ locationModalVisible: true, gameModalVisible: false });
-  };
-
-  closeLocationModal = () => {
-    this.setState({ locationModalVisible: false, gameModalVisible: true });
-  };
-
-  setTimeModalVisible = (timeModalVisible, gameModalVisible) => {
-    this.setState({ timeModalVisible, gameModalVisible });
-  };
-
-  selectLocation = (name, location) => {
-    this.setState(
-      {
-        locationModalVisible: false,
-        location: {
-          name: name,
-          coordinates: {
-            longitude: location.longitude,
-            latitude: location.latitude,
-          },
-        },
-      },
-      () => {
-        this.setGameModalVisible(true);
-      }
-    );
-  };
-
-  selectTime = (time, timeString) => {
-    this.setState({ time: { time, timeString } });
-    this.setTimeModalVisible(false, true);
-  };
-
-  setGameFromLoading = (gameFormLoading, func) => {
-    this.setState({ gameFormLoading }, () => {
-      func();
-    });
-  };
-
   render() {
     trace(this, "render", "render");
     const colors = this.props.theme.colors;
@@ -382,39 +345,8 @@ class MapScreen extends React.Component {
         return (
           <>
             {this.state.loading ? <LoadingOverlay /> : null}
-            <Portal>
-              {this.state.gameFormLoading ? <LoadingOverlay /> : null}
-              <Modal
-                contentContainerStyle={{
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                  width: "100%",
-                  padding: 16,
-                }}
-                visible={this.state.gameModalVisible}
-                onDismiss={() => {
-                  this.setGameModalVisible(false);
-                }}
-              >
-                <GameForm
-                  {...this.props}
-                  navToGame={this.navToGame}
-                  closeModal={() => this.setGameModalVisible(false)}
-                  navigate={this.props.navigation.navigate}
-                  sport={this.state.sport}
-                  intensity={this.state.intensity}
-                  bringingEquipment={this.state.bringingEquipment}
-                  setCreateGameState={this.setCreateGameState}
-                  navToLocationScreen={this.showLocationModal}
-                  location={this.state.location}
-                  time={this.state.time}
-                  setTimeModalVisible={this.setTimeModalVisible}
-                  setLoading={this.setGameFromLoading}
-                />
-              </Modal>
-            </Portal>
             <SlideModal
-              animationType="slide"
+              animationType='slide'
               isVisible={this.state.lobbyModalVisible}
               onBackdropPress={() => {
                 this.setState({ lobbyModalVisible: false });
@@ -431,50 +363,23 @@ class MapScreen extends React.Component {
                 userLoc={this.state.userLoc}
                 user={this.props._currentUserProfile}
                 addToTeam={this.addToTeam}
-                marker={this.state.markers[this.state.modalGameId]}
+                marker={this.state.markers[this.state.focusMarker]}
               />
             </SlideModal>
-            <SlideModal
-              animationType="slide"
-              isVisible={this.state.locationModalVisible}
-              onBackdropPress={() => {
-                this.closeLocationModal();
+            <MapView
+              onRegionChangeComplete={(region) => {
+                this.setState({ region });
               }}
-              backdropOpacity={0}
-              coverScreen={false}
-              style={{ margin: 0, justifyContent: "flex-end", flex: 1 }}
+              ref={(mapView) => (this.mapView = mapView)}
+              customMapStyle={mapStyles}
+              provider={PROVIDER_GOOGLE}
+              style={{ flex: 1 }}
+              initialRegion={this.state.region}
+              showsUserLocation
             >
-              <ChooseLocation
-                selectLocation={this.selectLocation}
-                closeModal={this.closeLocationModal}
-              />
-            </SlideModal>
-            <SlideModal
-              animationType="slide"
-              isVisible={this.state.timeModalVisible}
-              onBackdropPress={() => {
-                this.setTimeModalVisible(false, true);
-              }}
-              backdropOpacity={0}
-              coverScreen={false}
-              style={{ width, margin: 0, justifyContent: "flex-end" }}
-            >
-              <ChooseTime onPress={this.selectTime} />
-            </SlideModal>
-            {this.state.locationComplete ? (
-              <MapView
-                onRegionChangeComplete={(region) => {
-                  this.setState({ region });
-                }}
-                ref={(mapView) => (this.mapView = mapView)}
-                customMapStyle={mapStyles}
-                provider={PROVIDER_GOOGLE}
-                style={{ flex: 1 }}
-                initialRegion={this.state.region}
-                showsUserLocation
-              >
-                {Object.keys(this.state.markers).map((markerId, index) => {
-                  let marker = this.state.markers[markerId];
+              {Object.keys(this.state.markers).map((markerId, index) => {
+                let marker = this.state.markers[markerId];
+                if(marker.group.id == null || this.props._currentUserProfile.groups.includes(marker.group.id)){
                   return (
                     <Marker
                       key={index}
@@ -492,7 +397,7 @@ class MapScreen extends React.Component {
                           },
                           500
                         );
-                        this.setLobbyModalVisible(true, marker.id);
+                        this.setLobbyModalVisible(true, markerId);
                       }}
                     >
                       <Image
@@ -501,20 +406,13 @@ class MapScreen extends React.Component {
                       />
                     </Marker>
                   );
-                })}
-                {this.state.directionsVisible ? (
-                  <MapViewDirections
-                    origin={this.state.userLoc}
-                    destination={this.state.currentGame.location}
-                    apikey={"AIzaSyBxFRIxQAqgsTsBQmz0nIGFkMuzbsOpBOE"}
-                    strokeWidth={5}
-                    strokeColor={colors.orange}
-                  />
-                ) : null}
-              </MapView>
-            ) : (
-              <Block style={{ backgroundColor: colors.dBlue }} flex></Block>
-            )}
+  
+                } else {
+                  return null
+                }
+              })}
+            </MapView>
+
             {this.state.lobbyModalVisible ? null : (
               <Block style={{ position: "absolute", bottom: 8, right: 8 }}>
                 {/* <Block style={{ marginLeft: 'auto', marginBottom: 8 }}>
@@ -532,7 +430,7 @@ class MapScreen extends React.Component {
                     anchor={
                       <>
                         <IconButton
-                          icon="bell"
+                          icon='bell'
                           color={colors.dBlue}
                           size={28}
                           style={{ backgroundColor: colors.white, margin: 0 }}
@@ -565,7 +463,7 @@ class MapScreen extends React.Component {
                     }}
                   >
                     <HeaderBlock
-                      text="Notifications"
+                      text='Notifications'
                       backButton={true}
                       backPress={this.onMenuDismiss}
                     />
@@ -661,10 +559,10 @@ class MapScreen extends React.Component {
                   </Menu>
                 </Block>
                 <FAB
-                  icon="plus"
-                  label="Create Game"
+                  icon='plus'
+                  label='Create Game'
                   onPress={() => {
-                    this.setGameModalVisible(true);
+                    this.props.navigation.navigate("GameForm");
                   }}
                   style={[
                     styles.fab,

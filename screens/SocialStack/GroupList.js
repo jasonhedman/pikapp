@@ -21,23 +21,27 @@ class GroupList extends React.Component {
 
   componentDidMount() {
     trace(this, "get group from user profile", "componentDidMount");
-    const groupIds = this.props._currentUserProfile.groups;
+    
+    const unsubscribe = firebase
+      .firestore()
+      .collection("groups")
+      .where("users", "array-contains", firebase.auth().currentUser.uid)
+      .orderBy("updated", "desc")
+      .onSnapshot((groupsRaw) => {
+        let groups = [];
+        groupsRaw.forEach((group) => {
+          groups.push(group.data());
+        });
+        trace(this, "set groups state", "componentDidMount");
+        this.setState({ groups, groupsComplete: true });
+      });
+    this.unsubscribe = unsubscribe;
+  }
 
-    Promise.all(
-      groupIds.map((groupId) => {
-        return firebase
-          .firestore()
-          .collection("groups")
-          .doc(groupId)
-          .get()
-          .then((group) => {
-            return group.data();
-          });
-      })
-    ).then((groups) => {
-      trace(this, "set groups state", "componentDidMount");
-      this.setState({ groups: groups });
-    });
+  componentWillUnmount(){
+    if(this.unsubscribe){
+      this.unsubscribe();
+    }
   }
 
   render() {

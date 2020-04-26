@@ -29,8 +29,9 @@ class MenuBlock extends React.Component {
                 colors: { primary: colors.white },
                 fonts: { medium: this.props.theme.fonts.regular },
               }}
+              uppercase={false}
             >
-              {this.props.value != null ? this.props.value : this.props.title}
+              {this.props.value != null ? this.props.value[0].toUpperCase() + this.props.value.substring(1) : this.props.title}
             </Button>
           </Block>
         }

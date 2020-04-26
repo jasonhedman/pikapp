@@ -16,12 +16,28 @@ class PendingRequests extends React.Component {
   }
 
   componentDidMount() {
+    firebase.firestore().collection('groups').doc(this.props.route.params.group.id).onSnapshot((group) => {
+      Promise.all(
+        group.data().requests.map((request) => {
+          return firebase
+            .firestore()
+            .collection("users")
+            .doc(request)
+            .get()
+            .then((user) => {
+              return user.data();
+            });
+        })
+      ).then((requests) => {
+        this.setState({requests});
+      });
+    })
     
   }
 
   accept = (request) => {
     Promise.all(
-      this.props.group.users
+      this.props.route.params.group.users
         .map((user) => {
           firebase
             .firestore()
@@ -31,7 +47,7 @@ class PendingRequests extends React.Component {
             .add({
               type: "groupMember",
               from: request,
-              group: this.props.group,
+              group: this.props.route.params.group,
               time: new Date(),
             });
         })
@@ -39,10 +55,11 @@ class PendingRequests extends React.Component {
           firebase
             .firestore()
             .collection("groups")
-            .doc(this.props.route.params.groupId)
+            .doc(this.props.route.params.group.id)
             .update({
               requests: firebase.firestore.FieldValue.arrayRemove(request.id),
               users: firebase.firestore.FieldValue.arrayUnion(request.id),
+              updated: new Date()
             }),
           firebase
             .firestore()
@@ -50,13 +67,13 @@ class PendingRequests extends React.Component {
             .doc(request.id)
             .update({
               groups: firebase.firestore.FieldValue.arrayUnion(
-                this.props.route.params.groupId
+                this.props.route.params.group.id
               ),
             }),
           firebase
             .firestore()
             .collection("groups")
-            .doc(this.props.route.params.groupId)
+            .doc(this.props.route.params.group.id)
             .collection("messages")
             .add({
               content: `${request.name} (@${request.username}) joined the group.`,
@@ -82,69 +99,67 @@ class PendingRequests extends React.Component {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
         <ScrollView flex style={{ padding: 16 }}>
-          {this.props.group.requests.map((request, index) => {
-            return (
-              <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate("UserProfile", {
-                    userId: request.id,
-                  })
-                }
-                style={{ marginBottom: 8 }}
-              >
-                <Block
-                  key={index}
-                  style={{
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    borderColor: colors.orange,
-                    padding: 8,
-                  }}
-                  row
-                  middle
+          {
+            this.state.requests.map((request, index) => {
+              return (
+                <TouchableOpacity
+                  onPress={() =>
+                    this.props.navigation.navigate("UserProfile", {
+                      userId: request.id,
+                    })
+                  }
+                  style={{ marginBottom: 8 }}
+                  key={request.id}
                 >
-                    <ProfilePic
-                      proPicUrl={request.proPicUrl}
-                      size={35}
-                    />
-                  <Block style={{ marginLeft: 8, marginRight: "auto" }}>
-                    <Text style={{ color: colors.white }}>
-                      @{request.username}
-                    </Text>
-                    <Text style={{ color: colors.grey }}>{request.name}</Text>
+                  <Block
+                    style={{
+                      borderWidth: 1,
+                      borderRadius: 8,
+                      borderColor: colors.orange,
+                      padding: 8,
+                    }}
+                    row
+                    middle
+                  >
+                    <ProfilePic proPicUrl={request.proPicUrl} size={35} />
+                    <Block style={{ marginLeft: 8, marginRight: "auto" }}>
+                      <Text style={{ color: colors.white }}>
+                        @{request.username}
+                      </Text>
+                      <Text style={{ color: colors.grey }}>{request.name}</Text>
+                    </Block>
+                    <Block row>
+                      <Button
+                        mode='contained'
+                        dark={true}
+                        onPress={() => this.accept(request)}
+                        theme={{
+                          colors: { primary: colors.orange },
+                          fonts: { medium: this.props.theme.fonts.regular },
+                        }}
+                        uppercase={false}
+                        compact={true}
+                      >
+                        Accept
+                      </Button>
+                      <Button
+                        mode='text'
+                        dark={false}
+                        onPress={() => this.decline(request.id)}
+                        theme={{
+                          colors: { primary: colors.white },
+                          fonts: { medium: this.props.theme.fonts.regular },
+                        }}
+                        uppercase={false}
+                        compact={true}
+                      >
+                        Decline
+                      </Button>
+                    </Block>
                   </Block>
-                  <Block row>
-                    <Button
-                      mode="contained"
-                      dark={true}
-                      onPress={() => this.accept(request)}
-                      theme={{
-                        colors: { primary: colors.orange },
-                        fonts: { medium: this.props.theme.fonts.regular },
-                      }}
-                      uppercase={false}
-                      compact={true}
-                    >
-                      Accept
-                    </Button>
-                    <Button
-                      mode="text"
-                      dark={false}
-                      onPress={() => this.decline(request.id)}
-                      theme={{
-                        colors: { primary: colors.white },
-                        fonts: { medium: this.props.theme.fonts.regular },
-                      }}
-                      uppercase={false}
-                      compact={true}
-                    >
-                      Decline
-                    </Button>
-                  </Block>
-                </Block>
-              </TouchableOpacity>
-            );
-          })}
+                </TouchableOpacity>
+              );
+            })}
         </ScrollView>
       </SafeAreaView>
     );

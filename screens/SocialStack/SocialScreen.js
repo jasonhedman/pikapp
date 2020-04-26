@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { SafeAreaView, StyleSheet, Keyboard, ScrollView } from "react-native";
 import { Block } from "galio-framework";
 import { withTheme } from "react-native-paper";
 import SocialHeader from "../../components/Social/SocialHeader";
@@ -8,8 +8,6 @@ import GroupsWidget from "../../components/Social/GroupsWidget";
 import MutualFriendsWidget from "../../components/Social/MutualFriendsWidget";
 import {
   InstantSearch,
-  connectInfiniteHits,
-  connectSearchBox,
 } from "react-instantsearch-native";
 import algoliasearch from "algoliasearch";
 import SearchResults from "../../components/Social/SearchResults";
@@ -39,14 +37,13 @@ class SocialScreen extends React.Component {
     this.props.navigation.navigate("UserProfile", { userId: id });
   };
 
-  onSearch = (search) => {
-    this.setState({ search });
+  onSearch = (search, func) => {
+    this.setState({ search }, func);
   };
 
   render() {
     const colors = this.props.theme.colors;
     return (
-      // <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
         <Block flex style={{ paddingHorizontal: 8, overflow: "visible" }}>
           <InstantSearch searchClient={searchClient} indexName='social'>
@@ -70,7 +67,6 @@ class SocialScreen extends React.Component {
           </InstantSearch>
         </Block>
       </SafeAreaView>
-      // </TouchableWithoutFeedback>
     );
   }
 }

@@ -30,6 +30,7 @@ class NoResults extends React.Component {
             }}
             compact={true}
             style={{ marginTop: 10 }}
+            uppercase={false}
           >
             Invite Friends
           </Button>

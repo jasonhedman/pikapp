@@ -1,6 +1,6 @@
 import React from "react";
 import { FlatList, Dimensions } from "react-native";
-import { withTheme, Text } from "react-native-paper";
+import { withTheme, Text, ActivityIndicator } from "react-native-paper";
 import { getDistance } from "geolib";
 
 import { Block } from "galio-framework";
@@ -9,12 +9,14 @@ import * as firebase from "firebase";
 import "firebase/firestore";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 import UserPreview from "./UserPreview";
+import NoResults from "../Utility/NoResults";
 
 class MutualFriendsWidget extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       mutualFriends: new Array(),
+      mutualFriendsComplete: false,
     };
   }
 
@@ -28,6 +30,7 @@ class MutualFriendsWidget extends React.Component {
     }).then((result) => {
       this.setState({
         mutualFriends: result.data,
+        mutualFriendsComplete: true,
       });
     });
   }
@@ -41,19 +44,31 @@ class MutualFriendsWidget extends React.Component {
         >
           Mutual Friends
         </Text>
-        <FlatList
-          data={this.state.mutualFriends}
-          renderItem={({ item, index }) => (
-            <UserPreview
-              user={item}
-              navToUserProfile={this.props.navToUserProfile}
+        {this.state.mutualFriendsComplete ? (
+          this.state.mutualFriends.length > 0 ? (
+            <FlatList
+              data={this.state.mutualFriends}
+              renderItem={({ item, index }) => (
+                <UserPreview
+                  user={item}
+                  navToUserProfile={this.props.navToUserProfile}
+                />
+              )}
+              keyExtractor={(item) => item.id}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={{ width, marginLeft: -8 }}
             />
-          )}
-          keyExtractor={(item) => item.id}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          style={{ width, marginLeft: -8 }}
-        />
+          ) : (
+            <NoResults users={true} border={true} />
+          )
+        ) : (
+          <ActivityIndicator
+            animating={true}
+            color={this.props.theme.colors.orange}
+            size={"small"}
+          />
+        )}
       </Block>
     );
   }

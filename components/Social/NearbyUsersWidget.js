@@ -1,6 +1,6 @@
 import React from "react";
 import { FlatList, Dimensions } from "react-native";
-import { withTheme, Text } from "react-native-paper";
+import { withTheme, Text, ActivityIndicator } from "react-native-paper";
 import { getDistance } from "geolib";
 
 import { Block } from "galio-framework";
@@ -17,7 +17,7 @@ class NearbyUsersWidget extends React.Component {
     super(props);
     this.state = {
       nearbyUsers: new Array(),
-      complete: false,
+      nearbyComplete: false,
     };
   }
 
@@ -25,7 +25,15 @@ class NearbyUsersWidget extends React.Component {
     const query = geo
       .query(firebase.firestore().collection("users"))
       .within(this.props._currentUserProfile.location, 10, "location");
-    query.subscribe((nearbyUsers) => this.setState({nearbyUsers}));
+    this.subscription = query.subscribe((nearbyUsers) =>
+      this.setState({ nearbyUsers, nearbyComplete: true })
+    );
+  }
+
+  componentWillUnmount(){
+    if(this.subscription){
+      this.subscription.unsubscribe();
+    }
   }
 
   render() {
@@ -37,19 +45,31 @@ class NearbyUsersWidget extends React.Component {
         >
           Nearby Users
         </Text>
-        <FlatList
-          data={this.state.nearbyUsers}
-          renderItem={({ item, index }) => (
-            <UserPreview
-              user={item}
-              navToUserProfile={this.props.navToUserProfile}
+        {this.state.nearbyComplete ? (
+          this.state.nearbyUsers.length > 0 ? (
+            <FlatList
+              data={this.state.nearbyUsers}
+              renderItem={({ item, index }) => (
+                <UserPreview
+                  user={item}
+                  navToUserProfile={this.props.navToUserProfile}
+                />
+              )}
+              keyExtractor={(item) => item.id}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={{ width, marginLeft: -8 }}
             />
-          )}
-          keyExtractor={(item) => item.id}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          style={{ width, marginLeft: -8 }}
-        />
+          ) : (
+            <NoResults users={true} border={true} />
+          )
+        ) : (
+          <ActivityIndicator
+            animating={true}
+            color={this.props.theme.colors.orange}
+            size={"small"}
+          />
+        )}
       </Block>
     );
   }

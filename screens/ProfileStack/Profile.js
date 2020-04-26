@@ -172,7 +172,6 @@ class Profile extends React.Component {
         ></IconButton>
       ),
     });
-    console.log(currentUserProfile.location.geopoint._lat)
     const colors = this.props.theme.colors;
     if (this.state.complete) {
       return (
