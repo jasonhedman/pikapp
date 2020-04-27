@@ -23,7 +23,13 @@ class SocialScreen extends React.Component {
     super();
     this.state = {
       search: "",
+      mutualFriends: new Array(),
+      nearbyUsers: new Array(),
     };
+  }
+
+  setParentState = (key, value) => {
+    this.setState({[key]: value})
   }
 
   componentDidMount() {
@@ -54,9 +60,9 @@ class SocialScreen extends React.Component {
             />
             {this.state.search == "" ? (
               <>
-                <NearbyUsersWidget navToUserProfile={this.navToUserProfile} />
+                <NearbyUsersWidget navToUserProfile={this.navToUserProfile} setParentState={this.setParentState} nearbyUsers={this.state.nearbyUsers}/>
                 <GroupsWidget navigate={this.props.navigation.navigate} />
-                <MutualFriendsWidget navToUserProfile={this.navToUserProfile} />
+                <MutualFriendsWidget navToUserProfile={this.navToUserProfile} setParentState={this.setParentState} mutualFriends={this.state.nearbyUsers}/>
               </>
             ) : (
               <>

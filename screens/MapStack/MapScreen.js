@@ -113,6 +113,9 @@ class MapScreen extends React.Component {
     //   .get()
     //   .then((users) => {
     //     users.forEach((user) => {
+    //       if(user.data().followers === undefined){
+    //         console.log(user.data().username)
+    //       }
     //     });
     //   });
     Location.hasServicesEnabledAsync().then((locationEnabled) => {

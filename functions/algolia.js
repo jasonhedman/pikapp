@@ -15,6 +15,7 @@ exports.sendCollectionToAlgolia = functions.https.onRequest(
       const document = doc.data();
       const user = {
         email: document.email,
+        followers: document.followers,
         gamesPlayed: document.gamesPlayed,
         id: document.id,
         objectID: document.id,
@@ -35,7 +36,7 @@ exports.sendCollectionToAlgolia = functions.https.onRequest(
         sports: document.sports,
         title: document.title,
         type: "Group",
-        users: document.users.length,
+        users: document.users,
       };
       algoliaRecords.push(group);
     });
@@ -51,6 +52,7 @@ exports.userOnCreate = functions.firestore
     const document = snapshot.data();
     const user = {
       email: document.email,
+      followers: document.followers,
       gamesPlayed: document.gamesPlayed,
       id: document.id,
       objectID: document.id,
@@ -73,7 +75,7 @@ exports.groupOnCreate = functions.firestore
       sports: document.sports,
       title: document.title,
       type: "Group",
-      users: document.users.length,
+      users: document.users,
     };
     await saveDocumentInAlgolia(group);
   });
@@ -84,6 +86,7 @@ exports.userOnUpdate = functions.firestore
     const document = change.after.data();
     const user = {
       email: document.email,
+      followers: document.followers,
       gamesPlayed: document.gamesPlayed,
       id: document.id,
       objectID: document.id,
@@ -106,7 +109,7 @@ exports.groupOnCreate = functions.firestore
       sports: document.sports,
       title: document.title,
       type: "Group",
-      users: document.users.length,
+      users: document.users,
     };
     await saveDocumentInAlgolia(group);
   });
@@ -117,6 +120,7 @@ exports.userOnDelete = functions.firestore
     const document = snapshot.data();
     const user = {
       email: document.email,
+      followers: document.followers,
       gamesPlayed: document.gamesPlayed,
       id: document.id,
       objectID: document.id,
@@ -139,7 +143,7 @@ exports.groupOnDelete = functions.firestore
       sports: document.sports,
       title: document.title,
       type: "Group",
-      users: document.users.length,
+      users: document.users,
     };
     await deleteDocumentFromAlgolia(group);
   });
@@ -155,7 +159,7 @@ exports.groupOnDelete = functions.firestore
       sports: document.sports,
       title: document.title,
       type: "Group",
-      users: document.users.length,
+      users: document.users,
     };
     await deleteDocumentFromAlgolia(group);
   });

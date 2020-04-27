@@ -2,10 +2,14 @@ import React from "react";
 import * as firebase from "firebase";
 import { withTheme, Button } from "react-native-paper";
 import { Block } from "galio-framework";
+import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 
 class FollowButton extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      following: this.props.user.followers.includes(firebase.auth().currentUser.uid)
+    }
   }
 
   follow = () => {
@@ -30,7 +34,7 @@ class FollowButton extends React.Component {
         }),
       firebase.firestore().collection("notifications").add({
         type: "follower",
-        from: this.props.currentUser,
+        from: this.props._currentUserProfile,
         to: this.props.user,
         time: new Date(),
       }),
@@ -41,10 +45,13 @@ class FollowButton extends React.Component {
         .collection("social")
         .add({
           type: "follower",
-          from: this.props.currentUser,
+          from: this.props._currentUserProfile,
           to: this.props.user,
           time: new Date(),
         }),
+      this.setState({
+        following:true
+      })
     ]);
   };
 
@@ -67,11 +74,14 @@ class FollowButton extends React.Component {
           firebase.auth().currentUser.uid
         ),
       });
+    this.setState({
+      following:false
+    })
   };
 
   render() {
     let colors = this.props.theme.colors;
-    if (this.props.user.followers.includes(firebase.auth().currentUser.uid)) {
+    if (this.state.following) {
       return (
         <Block
           style={{
@@ -111,4 +121,4 @@ class FollowButton extends React.Component {
   }
 }
 
-export default withTheme(FollowButton);
+export default withTheme(withAuthenticatedUser (FollowButton));

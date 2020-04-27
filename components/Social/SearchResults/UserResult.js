@@ -1,24 +1,36 @@
 import React from "react";
-import {
-  TouchableOpacity,
-} from "react-native";
+import { TouchableOpacity } from "react-native";
 import { withTheme, Text } from "react-native-paper";
 
 import { Block } from "galio-framework";
-import "firebase/firestore";
+import firebase from "firebase";
 import ProfilePic from "../../Utility/ProfilePic";
+import FollowButton from "../../Utility/FollowButton";
 
 class UserResult extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    if (this.props.user.followers === undefined) {
+      console.log(this.props.user.name);
+    }
+    this.state = {
+      // following: this.props.user.followers.includes(
+      //   firebase.auth().currentUser.uid
+      // ),
+    };
   }
+
+  follow = () => {};
+
+  unfollow = () => {};
 
   render() {
     const colors = this.props.theme.colors;
     return (
       <TouchableOpacity
-        onPress={() => this.props.navigate("UserProfile", { userId: this.props.user.id })}
+        onPress={() =>
+          this.props.navigate("UserProfile", { userId: this.props.user.id })
+        }
         style={{ width: "100%" }}
       >
         <Block
@@ -34,9 +46,12 @@ class UserResult extends React.Component {
           }}
         >
           <ProfilePic proPicUrl={this.props.user.proPicUrl} size={35} />
-          <Block column style={{ marginLeft: 8 }}>
+          <Block flex column style={{ marginLeft: 8 }}>
             <Text style={{ color: "#fff" }}>{this.props.user.name}</Text>
             <Text style={{ color: "#fff" }}>@{this.props.user.username}</Text>
+          </Block>
+          <Block>
+            <FollowButton user={this.props.user} />
           </Block>
         </Block>
       </TouchableOpacity>
