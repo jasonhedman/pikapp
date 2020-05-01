@@ -42,6 +42,7 @@ import Follower from "../../components/Notifications/Social/Follower";
 import NewPlayer from "../../components/Notifications/NewPlayer";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 import trace from "../../services/trace";
+import { upsertUserLocation } from "../../repository/activeUserLocations"
 
 const sportMarkers = {
   basketball: basketballMarker,
@@ -142,6 +143,20 @@ class MapScreen extends React.Component {
                       pos.coords.longitude
                     ),
                   });
+
+                // Update current location for this user and mark them as online.
+                // NOTE: I do this here so that the timestamps set below
+                // are identical. It's "possible" (although unlikely) that
+                // the two calls to new Date() if used in the structure, would
+                // have different times.
+                const tsNow = new Date();
+                const lastLocation = geo.point(
+                      pos.coords.latitude,
+                      pos.coords.longitude
+                    )
+
+                upsertUserLocation(firebase.auth().currentUser.uid, lastLocation)
+
               }
             );
           })

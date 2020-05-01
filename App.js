@@ -28,6 +28,8 @@ import MainTabNavigator from "./navigation/MainTabNavigator";
 import AuthNavigation from "./navigation/AuthNavigation";
 import AuthenticatedUserProvider from "./contexts/authenticatedUserContext/AuthenticatedUserProvider";
 import trace from "./services/trace";
+import {AppState} from 'react-native'
+import { upsertUserStatus } from "./repository/activeUserLocations"
 
 const { height, width } = Dimensions.get("window");
 
@@ -56,7 +58,7 @@ class App extends React.Component {
     this.state = {
       hasCurrentUser: false,
       isLoadingAuthComplete: false,
-      isLoadingComplete: false,
+      isLoadingComplete: false
     };
 
     ignoreWarnings([
@@ -64,11 +66,13 @@ class App extends React.Component {
       "Setting a timer"
     ]);
 
+    this.getCurrentState = this.getCurrentState.bind(this);
     this.loadResourcesAsync = this.loadResourcesAsync.bind(this);
     this.handleLoadingError = this.handleLoadingError.bind(this);
     this.registerForPushNotificationsAsync = this.registerForPushNotificationsAsync.bind(
       this
     );
+    this._handleAppStateChange = this._handleAppStateChange.bind(this);
 
     if (Appearance.getColorScheme() == "light") {
       theme.colors.iosBackground = "#fff";
@@ -82,6 +86,11 @@ class App extends React.Component {
       fontFamily: "raleway",
     };
     theme.fonts.bold = { fontFamily: "ralewaySemiBold" };
+  }
+
+  getCurrentState() {
+    const { currentState } = AppState;
+    this._handleAppStateChange(currentState);
   }
 
   render() {
@@ -180,6 +189,7 @@ class App extends React.Component {
         this.registerForPushNotificationsAsync(user.uid);
         trace(this, "set hasCurrentUser true", "authUserSnapshotListener");
         this.setState({ hasCurrentUser: true, isLoadingAuthComplete: true });
+        this.getCurrentState();
       } else {
         trace(this, "authStateChanged - NO USER", "authUserSnapshotListener");
         trace(this, "set hasCurrentUser false", "authUserSnapshotListener");
@@ -259,10 +269,43 @@ class App extends React.Component {
       });
   };
 
+  componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+  }
+
   componentWillUnmount() {
     trace(this, "component will unmount", "componentWillUnmount");
     this.unsubscribeAuthUserSnapshotListener();
+
+    AppState.removeEventListener('change', this._handleAppStateChange);
   }
+
+  _handleAppStateChange = (nextAppState) => {
+    console.log('new state: ' + nextAppState  )
+    if (this.state.hasCurrentUser) {
+      if (nextAppState == 'active') {
+        // update user location/state
+
+      } else if (nextAppState == 'background') {
+
+      } else if (nextAppState == 'inactive') {
+
+      }
+
+      const currentUserId = firebase.auth().currentUser.uid
+      if (currentUserId) {
+        upsertUserStatus(currentUserId, nextAppState )
+      }
+
+    }
+
+    this.appState = nextAppState;
+  }
+
+  markAppOffline() {
+
+  }
+
 
   handleLoadingError(error) {
     console.warn(error);
