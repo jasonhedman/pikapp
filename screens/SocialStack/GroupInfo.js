@@ -39,7 +39,7 @@ class GroupInfo extends React.Component {
       .doc(this.props.route.params.groupId)
       .onSnapshot((group) => {
         if (group.exists) {
-          this.setState({ group: group.data(), complete:true }, () => {
+          this.setState({ group: group.data(), complete: true }, () => {
             if (!group.data().users.includes(firebase.auth().currentUser.uid)) {
               if (
                 group.data().private == true &&
@@ -119,6 +119,7 @@ class GroupInfo extends React.Component {
               invites: firebase.firestore.FieldValue.arrayRemove(
                 firebase.auth().currentUser.uid
               ),
+              updated: new Date(),
             }),
           firebase
             .firestore()
@@ -140,7 +141,9 @@ class GroupInfo extends React.Component {
               type: "admin",
             }),
         ])
-    );
+    ).then(() => {
+      this.props.navigation.navigate('GroupProfile', {groupId: this.props.route.params.groupId})
+    });
   };
 
   requestGroup = () => {
@@ -173,6 +176,7 @@ class GroupInfo extends React.Component {
           admins: firebase.firestore.FieldValue.arrayRemove(
             firebase.auth().currentUser.uid
           ),
+          updated: new Date(),
         }),
       firebase
         .firestore()
@@ -370,11 +374,13 @@ class GroupInfo extends React.Component {
                       <Button
                         mode='text'
                         color={colors.orange}
-                        onPress={() =>
+                        onPress={() => {
+                          let group = this.state.group;
+                          group.updated = group.updated.toString();
                           this.props.navigation.navigate("EditGroup", {
                             group: this.state.group,
-                          })
-                        }
+                          });
+                        }}
                         compact={true}
                         uppercase={false}
                       >

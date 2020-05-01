@@ -10,22 +10,7 @@ import { withTheme, Switch, Text, Chip } from "react-native-paper";
 import ButtonBlock from "../../components/Utility/ButtonBlock";
 import "firebase/firestore";
 import InputBlock from "../../components/Utility/InputBlock";
-
-import basketball from "../../assets/images/Basketball.png";
-import soccer from "../../assets/images/Soccer.png";
-import spikeball from "../../assets/images/Spikeball.png";
-import volleyball from "../../assets/images/Volleyball.png";
-import football from "../../assets/images/Football.png";
-
 import firebase from "firebase";
-
-const sports = {
-  Basketball: basketball,
-  Soccer: soccer,
-  Spikeball: spikeball,
-  Volleyball: volleyball,
-  Football: football,
-};
 
 class EditGroup extends React.Component {
   constructor(props) {
@@ -34,15 +19,7 @@ class EditGroup extends React.Component {
       title: this.props.route.params.group.title,
       description: this.props.route.params.group.description,
       private: this.props.route.params.group.private,
-      basketball: false,
-      soccer: false,
-      spikeball: false,
-      volleyball: false,
-      football: false,
     };
-    Object.keys(this.props.route.params.group.sports).forEach((sport) => {
-      this.state[sport] = true;
-    });
   }
 
   onTitleChange = (title) => {
@@ -54,24 +31,6 @@ class EditGroup extends React.Component {
   };
 
   update = () => {
-    let sportsObject = {
-      basketball: this.state.basketball,
-      soccer: this.state.soccer,
-      spikeball: this.state.spikeball,
-      volleyball: this.state.volleyball,
-      football: this.state.football,
-    };
-    let sportsList = Object.keys(sportsObject).filter((sport) => {
-      return sportsObject[sport];
-    });
-    let sports = {};
-    sportsList.forEach(
-      (sport) =>
-        (sports[sport] =
-          this.props.route.params.group.sports[sport] == undefined
-            ? 0
-            : this.props.route.params.group.sports[sport])
-    );
     if (this.state.private == false) {
       Promise.all(
         this.props.route.params.group.requests.map((request, index) => {
@@ -104,7 +63,7 @@ class EditGroup extends React.Component {
             private: this.state.private,
             title: this.state.title,
             description: this.state.description,
-            sports: sports,
+            updated: new Date()
           })
           .then(() => {
             firebase
@@ -134,7 +93,6 @@ class EditGroup extends React.Component {
           private: this.state.private,
           title: this.state.title,
           description: this.state.description,
-          sports: sports,
         })
         .then(() => {
           firebase
@@ -189,30 +147,6 @@ class EditGroup extends React.Component {
               multiline={true}
               dense={true}
             />
-            <Text style={{ color: colors.white, marginBottom: 10 }}>
-              Sports
-            </Text>
-            <Block middle row style={{ flexWrap: "wrap", marginBottom: 10 }}>
-              {Object.keys(sports).map((sport, index) => {
-                return (
-                  <Chip
-                    onPress={() => {
-                      this.setState({
-                        [sport.toLowerCase()]: !this.state[sport.toLowerCase()],
-                      });
-                      Keyboard.dismiss();
-                    }}
-                    selected={this.state[sport.toLowerCase()]}
-                    mode={"outlined"}
-                    style={{ backgroundColor: colors.orange, margin: 2 }}
-                    textStyle={{ color: colors.white }}
-                    key={index}
-                  >
-                    {sport}
-                  </Chip>
-                );
-              })}
-            </Block>
             <Block center middle>
               <Text style={{ color: "#fff", marginBottom: 12 }}>
                 {this.state.private ? "Private Group" : "Open Group"}

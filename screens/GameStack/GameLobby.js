@@ -37,7 +37,7 @@ class GameLobby extends React.Component {
       newModalVisible: false,
       topTen: new Array(),
       user: {},
-      games: new Object(),
+      game: new Object(),
       cancelModalVisible: false,
     };
   }
@@ -56,30 +56,30 @@ class GameLobby extends React.Component {
       .collection("games")
       .doc(this.props.route.params.gameId)
       .onSnapshot((game) => {
-          this.setState({ game: game.data(), complete: true }, () => {
-            this.props.navigation.setOptions({
-              title: `${
-                this.state.game.intensity[0].toUpperCase() +
-                this.state.game.intensity.substring(1)
-              } ${
-                this.state.game.sport[0].toUpperCase() +
-                this.state.game.sport.substring(1)
-              }`,
-              headerRight: () => (
-                <IconButton
-                  icon='message'
-                  color={this.props.theme.colors.orange}
-                  onPress={() =>
-                    this.props.navigation.navigate("Messages", {
-                      collection: "games",
-                      doc: this.props.route.params.gameId,
-                    })
-                  }
-                  size={20}
-                />
-              ),
-            });
+        this.setState({ game: game.data(), complete: true }, () => {
+          this.props.navigation.setOptions({
+            title: `${
+              this.state.game.intensity[0].toUpperCase() +
+              this.state.game.intensity.substring(1)
+            } ${
+              this.state.game.sport[0].toUpperCase() +
+              this.state.game.sport.substring(1)
+            }`,
+            headerRight: () => (
+              <IconButton
+                icon='message'
+                color={this.props.theme.colors.orange}
+                onPress={() =>
+                  this.props.navigation.navigate("Messages", {
+                    collection: "games",
+                    doc: this.props.route.params.gameId,
+                  })
+                }
+                size={20}
+              />
+            ),
           });
+        });
       });
     this.unsubscribe = unsubscribe;
   }
@@ -237,47 +237,79 @@ class GameLobby extends React.Component {
   completeGame = () => {
     let users = this.state.game.players;
     Promise.all([
-      firebase
-        .firestore()
-        .collection("games")
-        .doc(this.props.route.params.gameId)
-        .update({
-          gameState: "completed",
-        }),
-      users.map((user) => {
-        return firebase
-          .firestore()
-          .collection("users")
-          .doc(user.id)
-          .update({
-            gamesPlayed: firebase.firestore.FieldValue.increment(1),
-            points: firebase.firestore.FieldValue.increment(3),
-            calendar: firebase.firestore.FieldValue.arrayRemove(
-              this.props.route.params.gameId
-            ),
-            "sports.basketball.gamesPlayed": firebase.firestore.FieldValue.increment(
-              this.state.game.sport == "basketball" ? 1 : 0
-            ),
-            "sports.football.gamesPlayed": firebase.firestore.FieldValue.increment(
-              this.state.game.sport == "football" ? 1 : 0
-            ),
-            "sports.frisbee.gamesPlayed": firebase.firestore.FieldValue.increment(
-              this.state.game.sport === "frisbee" ? 1 : 0
-            ),
-            "sports.volleyball.gamesPlayed": firebase.firestore.FieldValue.increment(
-              this.state.game.sport == "volleyball" ? 1 : 0
-            ),
-            "sports.soccer.gamesPlayed": firebase.firestore.FieldValue.increment(
-              this.state.game.sport == "soccer" ? 1 : 0
-            ),
-            "sports.spikeball.gamesPlayed": firebase.firestore.FieldValue.increment(
-              this.state.game.sport == "spikeball" ? 1 : 0
-            ),
-            gameHistory: firebase.firestore.FieldValue.arrayUnion(
-              this.props.route.params.gameId
-            ),
-          });
-      }),
+      users
+        .map((user) => {
+          return firebase
+            .firestore()
+            .collection("users")
+            .doc(user.id)
+            .update({
+              gamesPlayed: firebase.firestore.FieldValue.increment(1),
+              points: firebase.firestore.FieldValue.increment(3),
+              calendar: firebase.firestore.FieldValue.arrayRemove(
+                this.props.route.params.gameId
+              ),
+              "sports.basketball.gamesPlayed": firebase.firestore.FieldValue.increment(
+                this.state.game.sport == "basketball" ? 1 : 0
+              ),
+              "sports.football.gamesPlayed": firebase.firestore.FieldValue.increment(
+                this.state.game.sport == "football" ? 1 : 0
+              ),
+              "sports.frisbee.gamesPlayed": firebase.firestore.FieldValue.increment(
+                this.state.game.sport === "frisbee" ? 1 : 0
+              ),
+              "sports.volleyball.gamesPlayed": firebase.firestore.FieldValue.increment(
+                this.state.game.sport == "volleyball" ? 1 : 0
+              ),
+              "sports.soccer.gamesPlayed": firebase.firestore.FieldValue.increment(
+                this.state.game.sport == "soccer" ? 1 : 0
+              ),
+              "sports.spikeball.gamesPlayed": firebase.firestore.FieldValue.increment(
+                this.state.game.sport == "spikeball" ? 1 : 0
+              ),
+              gameHistory: firebase.firestore.FieldValue.arrayUnion(
+                this.props.route.params.gameId
+              ),
+            });
+        })
+        .concat([
+          firebase
+            .firestore()
+            .collection("games")
+            .doc(this.props.route.params.gameId)
+            .update({
+              gameState: "completed",
+            }),
+          this.state.game.group.id != null
+            ? firebase
+                .firestore()
+                .collection("groups")
+                .doc(this.state.game.group.id)
+                .update({
+                  "sports.basketball": firebase.firestore.FieldValue.increment(
+                    this.state.game.sport == "basketball" ? 1 : 0
+                  ),
+                  "sports.football": firebase.firestore.FieldValue.increment(
+                    this.state.game.sport == "football" ? 1 : 0
+                  ),
+                  "sports.frisbee": firebase.firestore.FieldValue.increment(
+                    this.state.game.sport === "frisbee" ? 1 : 0
+                  ),
+                  "sports.volleyball": firebase.firestore.FieldValue.increment(
+                    this.state.game.sport == "volleyball" ? 1 : 0
+                  ),
+                  "sports.soccer": firebase.firestore.FieldValue.increment(
+                    this.state.game.sport == "soccer" ? 1 : 0
+                  ),
+                  "sports.spikeball": firebase.firestore.FieldValue.increment(
+                    this.state.game.sport == "spikeball" ? 1 : 0
+                  ),
+                  gameHistory: firebase.firestore.FieldValue.arrayUnion(
+                    this.props.route.params.gameId
+                  ),
+                })
+            : null,
+        ]),
     ]).then(() => {
       this.setState({
         game: null,
@@ -462,7 +494,11 @@ class GameLobby extends React.Component {
                       </Button>
                       <Button
                         mode='contained'
-                        onPress={() => this.props.navigation.navigate("InvitePlayers", {game:this.state.game})}
+                        onPress={() =>
+                          this.props.navigation.navigate("InvitePlayers", {
+                            game: this.state.game,
+                          })
+                        }
                         theme={{
                           colors: { primary: colors.white },
                           fonts: { medium: this.props.theme.fonts.regular },
@@ -510,7 +546,11 @@ class GameLobby extends React.Component {
                       <Button
                         mode='contained'
                         dark={true}
-                        onPress={() => this.props.navigation.navigate("InvitePlayers", {game:this.state.game})}
+                        onPress={() =>
+                          this.props.navigation.navigate("InvitePlayers", {
+                            game: this.state.game,
+                          })
+                        }
                         theme={{
                           colors: { primary: colors.orange },
                           fonts: { medium: this.props.theme.fonts.regular },

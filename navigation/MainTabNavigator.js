@@ -17,6 +17,7 @@ import ChangePassword from "../screens/ProfileStack/ChangePassword";
 import ChangeEmail from "../screens/ProfileStack/ChangeEmail";
 import UserProfile from "../screens/UtilityStack/UserProfile";
 import UserList from "../screens/UtilityStack/UserList";
+import GameForm from "../screens/UtilityStack/GameForm";
 import MessageBoard from "../screens/UtilityStack/MessageBoard";
 import CreateGroup from "../screens/SocialStack/CreateGroup";
 import { withTheme, IconButton } from "react-native-paper";
@@ -27,6 +28,8 @@ import GroupInvite from "../screens/SocialStack/GroupInvite";
 import SocialNotifications from "../screens/SocialStack/SocialNotifications";
 import GroupInvitations from "../screens/SocialStack/GroupInvitations";
 import InvitePlayers from "../screens/GameStack/InvitePlayers";
+import ChooseLocation from "../screens/UtilityStack/ChooseLocation";
+import ChooseTime from "../screens/UtilityStack/ChooseTime";
 
 const Tab = createMaterialBottomTabNavigator();
 const MapStackNav = createStackNavigator();
@@ -37,7 +40,7 @@ const GameStackNav = createStackNavigator();
 function MapStack() {
   return (
     <MapStackNav.Navigator
-      initialRouteName="MapScreen"
+      initialRouteName='MapScreen'
       screenOptions={({ navigation, route }) => ({
         headerStyle: styles.header,
         headerTitleStyle: styles.headerText,
@@ -46,8 +49,8 @@ function MapStack() {
         headerTruncatedBackTitle: null,
         headerLeft: () => (
           <IconButton
-            icon="chevron-left"
-            color="#E68A54"
+            icon='chevron-left'
+            color='#E68A54'
             size={30}
             onPress={() => navigation.goBack()}
           />
@@ -55,7 +58,7 @@ function MapStack() {
       })}
     >
       <MapStackNav.Screen
-        name="MapScreen"
+        name='MapScreen'
         component={MapScreen}
         options={{
           headerLeft: null,
@@ -63,9 +66,30 @@ function MapStack() {
           title: null,
         }}
       />
-      <MapStackNav.Screen name="UserProfile" component={UserProfile} />
+      <MapStackNav.Screen name='UserProfile' component={UserProfile} />
       <MapStackNav.Screen
-        name="UserList"
+        name='GameForm'
+        component={GameForm}
+        options={{
+          title: "Create Game",
+        }}
+      />
+      <MapStackNav.Screen
+        name='ChooseLocation'
+        component={ChooseLocation}
+        options={{
+          title: "Choose Location",
+        }}
+      />
+      <MapStackNav.Screen
+        name='ChooseTime'
+        component={ChooseTime}
+        options={{
+          title: "Choose Time",
+        }}
+      />
+      <MapStackNav.Screen
+        name='UserList'
         component={UserList}
         options={({ navigation, route }) => ({
           title: route.params.listType,
@@ -78,7 +102,7 @@ function MapStack() {
 function ProfileStack() {
   return (
     <ProfileStackNav.Navigator
-      initialRouteName="Profile"
+      initialRouteName='Profile'
       screenOptions={({ navigation, route }) => ({
         headerStyle: styles.header,
         headerTitleStyle: styles.headerText,
@@ -87,8 +111,8 @@ function ProfileStack() {
         headerTruncatedBackTitle: null,
         headerLeft: () => (
           <IconButton
-            icon="chevron-left"
-            color="#E68A54"
+            icon='chevron-left'
+            color='#E68A54'
             size={30}
             onPress={() => navigation.goBack()}
           />
@@ -96,21 +120,21 @@ function ProfileStack() {
       })}
     >
       <ProfileStackNav.Screen
-        name="UserProfile"
+        name='UserProfile'
         component={UserProfile}
         options={{
           title: "",
         }}
       />
       <ProfileStackNav.Screen
-        name="EditProfile"
+        name='EditProfile'
         component={EditProfile}
         options={{
           title: "Edit Profile",
         }}
       />
       <ProfileStackNav.Screen
-        name="Profile"
+        name='Profile'
         component={Profile}
         options={{
           title: "",
@@ -118,21 +142,21 @@ function ProfileStack() {
         }}
       />
       <ProfileStackNav.Screen
-        name="UserList"
+        name='UserList'
         component={UserList}
         options={({ navigation, route }) => ({
           title: route.params.listType,
         })}
       />
       <ProfileStackNav.Screen
-        name="ChangeEmail"
+        name='ChangeEmail'
         component={ChangeEmail}
         options={{
           title: "Change Email",
         }}
       />
       <ProfileStackNav.Screen
-        name="ChangePassword"
+        name='ChangePassword'
         component={ChangePassword}
         options={{
           title: "Change Password",
@@ -297,6 +321,27 @@ function SocialStack(props) {
             title: "Group Invitations",
           })}
         />
+        <SocialStackNav.Screen
+        name='GameForm'
+        component={GameForm}
+        options={{
+          title: "Create Group Game",
+        }}
+      />
+      <SocialStackNav.Screen
+        name='ChooseLocation'
+        component={ChooseLocation}
+        options={{
+          title: "Choose Location",
+        }}
+      />
+      <SocialStackNav.Screen
+        name='ChooseTime'
+        component={ChooseTime}
+        options={{
+          title: "Choose Time",
+        }}
+      />
       </SocialStackNav.Navigator>
     </KeyboardAvoidingView>
   );

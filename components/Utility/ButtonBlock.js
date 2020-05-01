@@ -17,10 +17,9 @@ class ButtonBlock extends React.Component {
           disabled={this.props.disabled}
           mode="contained"
           dark={true}
-          style={[
-            styles.createButton,
-            this.props.disabled ? this.props.disabledStyles : null,
-          ]}
+          style={
+            this.props.disabled ? this.props.disabledStyles : null
+          }
           onPress={this.props.onPress}
           theme={{
             colors: { primary: colors.orange },
@@ -37,9 +36,6 @@ class ButtonBlock extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  createButton: {
-    marginBottom: 8,
-  },
   buttonBlock: {
     marginTop: 8,
     width: "100%",

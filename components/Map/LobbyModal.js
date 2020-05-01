@@ -53,6 +53,15 @@ class LobbyModal extends React.Component {
           <Text
             style={{ color: colors.grey, textAlign: "center", marginBottom: 2 }}
           >{`Location: ${marker.locationName}`}</Text>
+          {marker.group.title != null ? (
+            <Text
+              style={{
+                color: colors.grey,
+                textAlign: "center",
+                marginBottom: 2,
+              }}
+            >{`Group: ${marker.group.title}`}</Text>
+          ) : null}
           <Block column middle style={{ padding: 8 }}>
             <ScrollView style={{ width: "100%", maxHeight: height * 0.4 }}>
               <Block row style={{ flexWrap: "wrap" }}>
@@ -78,7 +87,7 @@ class LobbyModal extends React.Component {
               </Block>
             </ScrollView>
             <Button
-              mode="contained"
+              mode='contained'
               dark={true}
               disabled={
                 !marker.gameState == "created" ||

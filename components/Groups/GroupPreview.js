@@ -11,6 +11,8 @@ import soccer from "../../assets/images/Soccer.png";
 import spikeball from "../../assets/images/Spikeball.png";
 import volleyball from "../../assets/images/Volleyball.png";
 import football from "../../assets/images/Football.png";
+import frisbee from "../../assets/images/Frisbee.png";
+
 
 const sports = {
   basketball: basketball,
@@ -18,6 +20,7 @@ const sports = {
   spikeball: spikeball,
   volleyball: volleyball,
   football: football,
+  frisbee: frisbee,
 };
 
 class GroupPreview extends React.Component {
@@ -93,21 +96,23 @@ class GroupPreview extends React.Component {
           >
             <Block center middle row style={{ marginRight: 6 }}>
               {Object.keys(this.props.group.sports).map((sport, index) => {
-                return (
-                  <Block
-                    key={index}
-                    style={{
-                      borderWidth: 1,
-                      borderRadius: 8,
-                      borderColor: colors.orange,
-                      padding: 6,
-                      backgroundColor: colors.dBlue,
-                      marginLeft: index == 0 ? 0 : -18,
-                    }}
-                  >
-                    <Avatar.Image size={24} source={sports[sport]} />
-                  </Block>
-                );
+                if (this.props.group.sports[sport] > 0) {
+                  return (
+                    <Block
+                      key={index}
+                      style={{
+                        borderWidth: 1,
+                        borderRadius: "50%",
+                        borderColor: colors.orange,
+                        padding: 6,
+                        backgroundColor: colors.dBlue,
+                        marginLeft: index == 0 ? 0 : -18,
+                      }}
+                    >
+                      <Avatar.Image size={24} source={sports[sport]} />
+                    </Block>
+                  );
+                }
               })}
             </Block>
             <Block flex>
