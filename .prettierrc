@@ -1,7 +1,7 @@
 {
   "bracketSpacing": true,
   "printWidth": 80,
-  "trailingComma": "none",
+  "trailingComma": "es5",
   "tabWidth": 4,
   "useTabs": false,
   "react/jsx-max-props-per-line": [1, { "maximum": 1, "when": "always" }]
