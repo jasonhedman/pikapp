@@ -45,14 +45,11 @@ import basketballLocation from "../../assets/images/basketball-15.png";
 import HeaderBlock from "../../components/Utility/HeaderBlock";
 import LobbyModal from "../../components/Map/LobbyModal";
 
-import NewGameNearby from "../../components/Notifications/NewGameNearby";
-import NewGame from "../../components/Notifications/NewGame";
-import Invite from "../../components/Notifications/Invite";
-import Follower from "../../components/Notifications/Social/Follower";
-import NewPlayer from "../../components/Notifications/NewPlayer";
+import LoadingOverlay from "../../components/Utility/LoadingOverlay";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 import trace from "../../services/trace";
 import { upsertUserLocation } from "../../repository/activeUserLocations";
+import createUser from "../../services/createUser";
 
 const sportMarkers = {
     basketball: basketballMarker,
@@ -107,6 +104,7 @@ class MapScreen extends React.Component {
     }
 
     componentDidMount() {
+        // createUser();
         trace(this, "mounted component", "componentDidMount");
         // firebase
         //   .firestore()
@@ -114,29 +112,20 @@ class MapScreen extends React.Component {
         //   .get()
         //   .then((users) => {
         //     users.forEach((user) => {
+        //       if(user.data().followers === undefined){
+        //         console.log(user.data().username)
+        //       }
         //     });
         //   });
         Location.hasServicesEnabledAsync().then((locationEnabled) => {
             if (locationEnabled == true) {
                 Location.watchPositionAsync({}, (pos) => {
-                    // set last location in collection that holds user status
-                    const lastLocation = geo.point(
-                        pos.coords.latitude,
-                        pos.coords.longitude
-                    );
-
-                    upsertUserLocation(
-                        firebase.auth().currentUser.uid,
-                        lastLocation
-                    );
-
                     let region = {
                         latitude: pos.coords.latitude,
                         longitude: pos.coords.longitude,
                         latitudeDelta: 0.0922,
                         longitudeDelta: 0.0421,
                     };
-
                     this.setState({
                         region,
                         userLoc: pos.coords,
@@ -153,6 +142,31 @@ class MapScreen extends React.Component {
                                 pos.coords.longitude
                             ),
                         });
+                    if (this.subscription) {
+                        this.subscription.unsubscribe();
+                    }
+                    const query = geo
+                        .query(
+                            firebase
+                                .firestore()
+                                .collection("games")
+                                .where("gameState", "==", "created")
+                        )
+                        .within(
+                            geo.point(
+                                pos.coords.latitude,
+                                pos.coords.longitude
+                            ),
+                            10,
+                            "location"
+                        );
+                    this.subscription = query.subscribe((markersArray) => {
+                        let markers = {};
+                        markersArray.forEach((marker) => {
+                            markers[marker.id] = marker;
+                        });
+                        this.setState({ markers });
+                    });
                     // tilequeryService
                     //   .listFeatures({
                     //     mapIds: ["mapbox.mapbox-streets-v8"],
@@ -178,28 +192,26 @@ class MapScreen extends React.Component {
                         "componentDidMount"
                     );
                 });
-            } else {
-                Location.requestPermissionsAsync().then((permission) => {
-                    if (permission.status == "granted") {
-                        this.setState({ locationEnabled: true });
-                    }
+                const query = geo
+                    .query(
+                        firebase
+                            .firestore()
+                            .collection("games")
+                            .where("gameState", "==", "created")
+                    )
+                    .within(
+                        this.props._currentUserProfile.location,
+                        10,
+                        "location"
+                    );
+                this.subscription = query.subscribe((markersArray) => {
+                    let markers = {};
+                    markersArray.forEach((marker) => {
+                        markers[marker.id] = marker;
+                    });
+                    this.setState({ markers });
                 });
             }
-        });
-        const query = geo
-            .query(
-                firebase
-                    .firestore()
-                    .collection("games")
-                    .where("gameState", "==", "created")
-            )
-            .within(this.props._currentUserProfile.location, 10, "location");
-        this.subscription = query.subscribe((markersArray) => {
-            let markers = {};
-            markersArray.forEach((marker) => {
-                markers[marker.id] = marker;
-            });
-            this.setState({ markers });
         });
     }
 

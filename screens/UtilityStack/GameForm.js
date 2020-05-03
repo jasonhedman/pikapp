@@ -331,6 +331,7 @@ class GameForm extends React.Component {
               this.state.time == null
             }
             disabledStyles={{ opacity: 0.3, backgroundColor: colors.orange }}
+            uppercase={false}
           />
         </Block>
       </Block>

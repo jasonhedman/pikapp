@@ -21,6 +21,7 @@ class MutualFriendsWidget extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true
     let findMutualFriends = firebase
       .functions()
       .httpsCallable("findMutualFriends");
@@ -28,11 +29,17 @@ class MutualFriendsWidget extends React.Component {
       user: this.props._currentUserProfile,
       id: this.props._currentUserProfile.id,
     }).then((result) => {
-      this.setState({
-        mutualFriends: result.data,
-        mutualFriendsComplete: true,
-      });
+      if(this.mounted){
+        this.setState({
+          mutualFriends: result.data,
+          mutualFriendsComplete: true,
+        });
+        }
     });
+  }
+
+  componentWillUnmount(){
+    this.mounted = false
   }
 
   render() {

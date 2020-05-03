@@ -4,6 +4,7 @@ admin.initializeApp();
 const moment = require("moment");
 const fetch = require("node-fetch");
 const algolia = require("./algolia");
+const createUser = require("./createUser");
 
 exports.sendCollectionToAlgolia = algolia.sendCollectionToAlgolia;
 exports.userOnCreate = algolia.userOnCreate;
@@ -12,6 +13,8 @@ exports.userOnDelete = algolia.userOnDelete;
 exports.groupOnCreate = algolia.groupOnCreate;
 exports.groupOnUpdate = algolia.groupOnUpdate;
 exports.groupOnDelete = algolia.groupOnDelete;
+
+exports.createUser = createUser.createUser;
 
 exports.clearGamesSchedule = functions.pubsub
   .schedule("every 5 minutes")

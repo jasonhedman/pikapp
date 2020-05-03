@@ -3,7 +3,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  KeyboardAvoidingView,
+  Keyboard,
   Platform,
 } from "react-native";
 import { Block } from "galio-framework";
@@ -145,13 +145,10 @@ class EditProfile extends React.Component {
   render() {
     colors = this.props.theme.colors;
     return (
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-      >
+      <>
         {this.state.loading ? <LoadingOverlay /> : null}
         <SlideModal
-          animationIn="slideInUp"
+          animationIn='slideInUp'
           transparent={true}
           isVisible={this.state.visible}
           onBackdropPress={() => this.setState({ visible: false })}
@@ -179,7 +176,7 @@ class EditProfile extends React.Component {
             }}
           >
             <Button
-              mode="contained"
+              mode='contained'
               dark={true}
               style={[styles.button]}
               onPress={this.pickImage}
@@ -192,7 +189,7 @@ class EditProfile extends React.Component {
               Choose New Image
             </Button>
             <HelperText
-              type="error"
+              type='error'
               visible={this.state.showErr}
               theme={{ colors: { error: colors.orange } }}
               style={this.state.showErr ? {} : { display: "none" }}
@@ -200,7 +197,7 @@ class EditProfile extends React.Component {
               You must grant access to your camera roll first.
             </HelperText>
             <Button
-              mode="text"
+              mode='text'
               dark={true}
               style={[
                 styles.button,
@@ -229,7 +226,10 @@ class EditProfile extends React.Component {
         >
           <Form>
             <TouchableOpacity
-              onPress={() => this.setState({ visible: true })}
+              onPress={() => {
+                this.setState({ visible: true });
+                Keyboard.dismiss();
+              }}
               style={{ marginBottom: 12 }}
             >
               <ProfilePic
@@ -240,18 +240,18 @@ class EditProfile extends React.Component {
             </TouchableOpacity>
             <InputBlock
               value={this.state.name}
-              placeholder="Name"
+              placeholder='Name'
               onChange={this.onNameChange}
               onBlur={() => this.setState({ nameBlur: true })}
             >
               <HelperText
                 visible={!this.state.name.length > 0 && this.state.nameBlur}
-                text="Please enter your name."
+                text='Please enter your name.'
               />
             </InputBlock>
             <InputBlock
               value={this.state.username}
-              placeholder="Username"
+              placeholder='Username'
               onChange={(val) => {
                 this.onUsernameChange(val.toLowerCase(), () => {
                   if (this.state.usernameBlur) {
@@ -280,7 +280,7 @@ class EditProfile extends React.Component {
               />
             </InputBlock>
             <ButtonBlock
-              text="Save Changes"
+              text='Save Changes'
               disabled={this.state.usernameTaken}
               disabledStyles={{
                 opacity: 0.3,
@@ -290,7 +290,7 @@ class EditProfile extends React.Component {
             ></ButtonBlock>
           </Form>
         </Block>
-      </KeyboardAvoidingView>
+      </>
     );
   }
 }

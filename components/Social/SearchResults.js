@@ -3,7 +3,7 @@ import { FlatList, Dimensions, TouchableOpacity, TouchableWithoutFeedback, Keybo
 import { withTheme, Text } from "react-native-paper";
 
 import { Block } from "galio-framework";
-import "firebase/firestore";
+import firebase from 'firebase';
 import { connectInfiniteHits } from "react-instantsearch-native";
 import ProfilePic from "../Utility/ProfilePic";
 import UserResult from "./SearchResults/UserResult";
@@ -32,10 +32,12 @@ class SearchResults extends React.Component {
             ? <FlatList
             data={this.props.hits}
             renderItem={({ item, index }) => {
-                if(item.type == 'User'){
+                if(item.type == 'User' && item.id !== firebase.auth().currentUser.uid){
                     return <UserResult user={item} navigate={this.props.navigate} />
-                } else if(item.type = 'Group'){
+                } else if(item.type == 'Group'){
                     return <GroupResult group={item} navigate={this.props.navigate} />
+                } else {
+                  return null;
                 }
             }}
             keyExtractor={(item) => item.objectID}
