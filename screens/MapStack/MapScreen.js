@@ -45,13 +45,11 @@ import basketballLocation from "../../assets/images/basketball-15.png";
 import HeaderBlock from "../../components/Utility/HeaderBlock";
 import LobbyModal from "../../components/Map/LobbyModal";
 
-import NewGameNearby from "../../components/Notifications/NewGameNearby";
-import NewGame from "../../components/Notifications/NewGame";
-import Invite from "../../components/Notifications/Invite";
-import Follower from "../../components/Notifications/Social/Follower";
-import NewPlayer from "../../components/Notifications/NewPlayer";
+import LoadingOverlay from "../../components/Utility/LoadingOverlay";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 import trace from "../../services/trace";
+import createUser from "../../services/createUser";
+
 
 const sportMarkers = {
   basketball: basketballMarker,
@@ -106,6 +104,7 @@ class MapScreen extends React.Component {
   }
 
   componentDidMount() {
+    // createUser();
     trace(this, "mounted component", "componentDidMount");
     // firebase
     //   .firestore()
@@ -140,6 +139,28 @@ class MapScreen extends React.Component {
             .update({
               location: geo.point(pos.coords.latitude, pos.coords.longitude),
             });
+          if (this.subscription) {
+            this.subscription.unsubscribe();
+          }
+          const query = geo
+            .query(
+              firebase
+                .firestore()
+                .collection("games")
+                .where("gameState", "==", "created")
+            )
+            .within(
+              geo.point(pos.coords.latitude, pos.coords.longitude),
+              10,
+              "location"
+            );
+          this.subscription = query.subscribe((markersArray) => {
+            let markers = {};
+            markersArray.forEach((marker) => {
+              markers[marker.id] = marker;
+            });
+            this.setState({ markers });
+          });
           // tilequeryService
           //   .listFeatures({
           //     mapIds: ["mapbox.mapbox-streets-v8"],
@@ -173,21 +194,10 @@ class MapScreen extends React.Component {
         });
       }
     });
-    const query = geo
-      .query(
-        firebase
-          .firestore()
-          .collection("games")
-          .where("gameState", "==", "created")
-      )
-      .within(this.props._currentUserProfile.location, 10, "location");
-    this.subscription = query.subscribe((markersArray) => {
-      let markers = {};
-      markersArray.forEach((marker) => {
-        markers[marker.id] = marker;
-      });
-      this.setState({ markers });
-    });
+    // let createUser = firebase
+    //   .functions()
+    //   .httpsCallable("createUser");
+    // createUser();
   }
 
   componentWillUnmount() {
@@ -368,6 +378,7 @@ class MapScreen extends React.Component {
                 marker={this.state.markers[this.state.focusMarker]}
               />
             </SlideModal>
+            <Block flex style={{backgroundColor:colors.dBlue}}>
             <MapView
               onRegionChangeComplete={(region) => {
                 this.setState({ region });
@@ -418,7 +429,7 @@ class MapScreen extends React.Component {
                 }
               })}
             </MapView>
-
+            </Block>
             {this.state.lobbyModalVisible ? null : (
               <Block style={{ position: "absolute", bottom: 8, right: 8 }}>
                 {/* <Block style={{ marginLeft: 'auto', marginBottom: 8 }}>

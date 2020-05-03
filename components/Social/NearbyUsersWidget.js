@@ -11,6 +11,8 @@ const geo = geofirex.init(firebase);
 import "firebase/firestore";
 import withAuthenticatedUser from "../../contexts/authenticatedUserContext/withAuthenticatedUser";
 import UserPreview from "./UserPreview";
+import NoResults from "../Utility/NoResults";
+
 
 class NearbyUsersWidget extends React.Component {
   constructor(props) {
@@ -26,7 +28,7 @@ class NearbyUsersWidget extends React.Component {
       .query(firebase.firestore().collection("users"))
       .within(this.props._currentUserProfile.location, 10, "location");
     this.subscription = query.subscribe((nearbyUsers) =>
-      this.setState({ nearbyUsers, nearbyComplete: true })
+      this.setState({ nearbyUsers: nearbyUsers.filter(user => user.id !== firebase.auth().currentUser.uid), nearbyComplete: true })
     );
   }
 

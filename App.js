@@ -52,7 +52,7 @@ class App extends React.Component {
     super();
     trace(this, "constructing component", "constructor");
     trace(this, `Running on ${Platform.OS}`, "constructor");
-
+    // firebase.auth().signOut()
     this.state = {
       hasCurrentUser: false,
       isLoadingAuthComplete: false,

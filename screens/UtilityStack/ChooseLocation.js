@@ -257,10 +257,15 @@ class SearchPlayers extends React.Component {
             <Block flex></Block>
             <TouchableOpacity
               onPress={() =>
-                this.props.selectLocation(
-                  "User-Created Location",
-                  this.state.userLoc
-                )
+                this.props.navigation.navigate("GameForm", {
+                  location: {
+                    name: "User-Created Location",
+                    coordinates: {
+                      longitude: this.state.userLoc.longitude,
+                      latitude: this.state.userLoc.latitude,
+                    },
+                  },
+                })
               }
             >
               <Block
