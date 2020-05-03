@@ -28,7 +28,6 @@ class Form extends React.Component {
             style={{ padding: 16, backgroundColor: colors.dBlue }}
           >
             <Block
-              center
               style={[
                 styles.registerContainer,
                 {
@@ -52,7 +51,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 2,
     padding: 16,
-    backgroundColor: "red",
   },
 });
 

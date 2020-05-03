@@ -104,7 +104,6 @@ class MapScreen extends React.Component {
     }
 
     componentDidMount() {
-        // createUser();
         trace(this, "mounted component", "componentDidMount");
         // firebase
         //   .firestore()
@@ -192,25 +191,27 @@ class MapScreen extends React.Component {
                         "componentDidMount"
                     );
                 });
-                const query = geo
-                    .query(
-                        firebase
-                            .firestore()
-                            .collection("games")
-                            .where("gameState", "==", "created")
-                    )
-                    .within(
-                        this.props._currentUserProfile.location,
-                        10,
-                        "location"
-                    );
-                this.subscription = query.subscribe((markersArray) => {
-                    let markers = {};
-                    markersArray.forEach((marker) => {
-                        markers[marker.id] = marker;
+                if (this.props._currentUserProfile.location) {
+                    const query = geo
+                        .query(
+                            firebase
+                                .firestore()
+                                .collection("games")
+                                .where("gameState", "==", "created")
+                        )
+                        .within(
+                            this.props._currentUserProfile.location,
+                            10,
+                            "location"
+                        );
+                    this.subscription = query.subscribe((markersArray) => {
+                        let markers = {};
+                        markersArray.forEach((marker) => {
+                            markers[marker.id] = marker;
+                        });
+                        this.setState({ markers });
                     });
-                    this.setState({ markers });
-                });
+                }
             }
         });
     }
