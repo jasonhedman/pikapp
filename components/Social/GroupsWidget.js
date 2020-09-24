@@ -9,6 +9,7 @@ import trace from "../../services/trace";
 
 import GroupPreview from "../Groups/GroupPreview";
 import NoResults from "../Utility/NoResults";
+import onShare from "../../services/onShare";
 
 class GroupsWidget extends React.Component {
   constructor(props) {
@@ -90,7 +91,32 @@ class GroupsWidget extends React.Component {
                 </TouchableOpacity>
               </Block>
             ) : (
-              <NoResults border={true} />
+                <Block
+                    column
+                    center
+                    middle
+                    style={{
+                        padding: 10,
+                        width: "100%",
+                        borderWidth:1, borderRadius: 8, borderColor: colors.grey
+                    }}
+                >
+                    <Text style={{ color: "#fff" }}>No Results</Text>
+                        <Button
+                            mode='contained'
+                            dark={true}
+                            onPress={() => this.props.navigate('CreateGroup')}
+                            theme={{
+                                colors: { primary: colors.orange },
+                                fonts: { medium: this.props.theme.fonts.regular },
+                            }}
+                            compact={true}
+                            style={{ marginTop: 10 }}
+                            uppercase={false}
+                        >
+                            Create Group
+                        </Button>
+                </Block>
             )}
           </Block>
         ) : (

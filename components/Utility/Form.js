@@ -21,6 +21,10 @@ class Form extends React.Component {
   render() {
     let colors = this.props.theme.colors;
     return (
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS == "ios" ? "padding" : "height"}
+        >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
           <Block
             flex
@@ -41,6 +45,7 @@ class Form extends React.Component {
             </Block>
           </Block>
       </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
   }
 }

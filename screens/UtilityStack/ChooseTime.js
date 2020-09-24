@@ -57,7 +57,13 @@ class ChooseTime extends React.Component {
             mode='contained'
             dark={false}
             style={styles.createButton}
-            onPress={() => this.props.onPress(new Date(), "Now")}
+            onPress={() => {
+                let now = new Date()
+                this.props.navigation.navigate('GameForm', {time: {
+                        time:now.toJSON(),
+                        timeString: "Now"
+                    }});
+            }}
             theme={{
               colors: { primary: colors.white },
               fonts: { medium: this.props.theme.fonts.regular },

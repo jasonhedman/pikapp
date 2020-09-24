@@ -48,7 +48,10 @@ class SearchPlayers extends React.Component {
                 nearbyLocations: json.results,
                 nearbyLocationsComplete: true,
               });
-            });
+            })
+              .catch((err) => {
+                  console.log(err)
+              })
           Location.watchPositionAsync({}, (pos) => {
             this.setState({ userLoc: pos.coords });
           });

@@ -67,10 +67,6 @@ class Register extends React.Component {
     colors = this.props.theme.colors;
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.dBlue }}>
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-        >
           <Form>
             <InputBlock
               value={this.state.email}
@@ -122,7 +118,6 @@ class Register extends React.Component {
               Sign Up
             </Button>
           </Block>
-        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }
